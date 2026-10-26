@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Getting started with susieRobust</title>
+
+<script src="site_libs/header-attrs-2.32/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">susieRobust-workflowr</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/dodat-stats/susieRobust-workflowr">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Getting started with susieRobust</h1>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-10-26
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>susieRobust-workflowr/</code>
+<span class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.2). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20261018code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20261018)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20261018code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20261018)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtreeb510ad1efe90eb4a0ee87d80e7717268f8ab2f26targetblankb510ad1a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/b510ad1efe90eb4a0ee87d80e7717268f8ab2f26" target="_blank">b510ad1</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtreeb510ad1efe90eb4a0ee87d80e7717268f8ab2f26targetblankb510ad1a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/b510ad1efe90eb4a0ee87d80e7717268f8ab2f26" target="_blank">b510ad1</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/01-get-started.Rmd</code>) and
+HTML (<code>docs/01-get-started.html</code>) files. If you’ve configured
+a remote Git repository (see <code>?wflow_git_remote</code>), click on
+the hyperlinks in the table below to view the files as they were in that
+past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/b510ad1efe90eb4a0ee87d80e7717268f8ab2f26/analysis/01-get-started.Rmd" target="_blank">b510ad1</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-10-26
+</td>
+<td>
+Add fine-mapping tutorials and saved simulation data
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="simulate-summary-statistics" class="section level2">
+<h2>1. Simulate summary statistics</h2>
+<p>Here we use coalescent simulation to simulate two populations, GWAS
+cohort and reference panel, split <span class="math inline">\(T\)</span>
+generations ago, which are then used to calculate in-sample LD matrix
+<span class="math inline">\(R\)</span> and reference LD <span
+class="math inline">\(R_0\)</span>. Both follow the EUR population-size
+history from <code>OutOfAfrica_2T12</code> (present-day effective size
+approximately 501,436), with identical growth before their split and no
+migration. Recombination is <span class="math inline">\(10^{-8}\)</span>
+per base per generation.</p>
+<pre class="r"><code>library(susieRobust)
+library(susieR)
+
+## setting
+N &lt;- 200000L
+N0 &lt;- 5000L
+T &lt;- 200L
+L_true &lt;- 3L; L_max &lt;- 10L; h2 &lt;- 0.01
+coverage &lt;- 0.95; min_abs_corr &lt;- 0.5</code></pre>
+</div>
+<div id="load-in-sample-and-reference-ld-matrices"
+class="section level2">
+<h2>1.1. Load in-sample and reference LD matrices</h2>
+<p>Load the saved simulation from the data folder; Python and stdpopsim
+are not needed for this step. The file also contains SNP positions and
+simulation settings.</p>
+<pre class="r"><code>ld &lt;- readRDS(&quot;data/getting-started/ld.rds&quot;)
+R &lt;- ld$R; R0 &lt;- ld$R0; position &lt;- ld$position
+# Use the sample sizes and split time belonging to the saved matrices.
+N &lt;- ld$settings$N; N0 &lt;- ld$settings$N0; T &lt;- ld$settings$T
+J &lt;- ncol(R)
+stopifnot(J &gt;= L_true, identical(dim(R), dim(R0)), length(position) == J)</code></pre>
+<p>To generate different LD matrices, uncomment the block below and
+adjust the settings. Run it instead of the loading block above; set
+<code>N</code>, <code>N0</code>, and <code>T</code> in the initial
+settings chunk. The optional final line replaces the saved data.</p>
+<pre class="r"><code># # Python packages are installed in /usr/bin/python3&#39;s user site-packages.
+# library(reticulate)
+# use_python(&quot;/usr/bin/python3&quot;, required = TRUE)
+# sp &lt;- import(&quot;stdpopsim&quot;, convert = FALSE)
+#
+# # 1. Settings: one study, one reference, one split time (no migration).
+# seed &lt;- 1L; length_bp &lt;- 700000L  ## 700 kb
+# recombination_rate &lt;- 1e-8; mutation_rate &lt;- 2.36e-8
+#
+# # 2. Coalescent simulation through stdpopsim, followed by shared-SNP LD.
+# # EUR growth: Tennessen et al. (2012), Science, doi:10.1126/science.1219240.
+# # stdpopsim parameters follow Fu et al. (2013), Fig. S5, doi:10.1038/nature11690.
+# # We remove migration and add a reference branch with the same EUR growth history.
+# # Binary mutations, study MAF &gt;=1%, polymorphic in BOTH cohorts, common SNP order.
+# # This single-pair illustration does not condition on the paper&#39;s other T panels.
+# py_run_string(&quot;
+# import numpy as np, msprime
+#
+# def simulate_ld(sp, N, N0, T, length_bp, rec, mut, seed):
+#     if not 0 &lt; T &lt; 2040:
+#         raise ValueError(&#39;T must be strictly between 0 and 2040 generations.&#39;)
+#     dem = sp.get_species(&#39;HomSap&#39;).get_demographic_model(&#39;OutOfAfrica_2T12&#39;).model.copy()
+#     dem.migration_matrix[:] = 0
+#     dem.events = [e for e in dem.events if not isinstance(e, msprime.MigrationRateChange)]
+#     eur = dem[&#39;EUR&#39;]
+#     changes = [e for e in dem.events if isinstance(e, msprime.PopulationParametersChange)
+#                and e.population in (&#39;EUR&#39;, eur.id)]
+#     dem.add_population(name=&#39;reference&#39;, initial_size=eur.initial_size,
+#                        growth_rate=eur.growth_rate)
+#     for e in changes:
+#         if e.time &lt; T:
+#             dem.add_population_parameters_change(time=e.time, population=&#39;reference&#39;,
+#                 initial_size=e.initial_size, growth_rate=e.growth_rate)
+#     dem.add_population_split(time=T, derived=[&#39;reference&#39;], ancestral=&#39;EUR&#39;)
+#     dem[&#39;EUR&#39;].initially_active = True
+#     dem[&#39;EUR&#39;].default_sampling_time = 0
+#     dem.sort_events()
+#     dem.validate()
+#     ts = msprime.sim_ancestry(samples={&#39;EUR&#39;: N, &#39;reference&#39;: N0}, ploidy=2,
+#         demography=dem, sequence_length=length_bp, recombination_rate=rec,
+#         model=[msprime.DiscreteTimeWrightFisher(duration=100), msprime.StandardCoalescent()],
+#         random_seed=seed)
+#     ts = msprime.sim_mutations(ts, rate=mut, model=msprime.BinaryMutationModel(), random_seed=seed+1)
+#     study, reference = ts.samples(population=dem[&#39;EUR&#39;].id), ts.samples(population=dem[&#39;reference&#39;].id)
+#     nodes = np.r_[study, reference]
+#     ids = ts.tables.nodes.individual[nodes]
+#     assert np.all(ids &gt;= 0) and np.array_equal(ids[::2], ids[1::2])
+#     sites = [s.id for tree in ts.trees(tracked_samples=study) for s in tree.sites()
+#         if len(s.mutations)==1 and 0.01 &lt;= tree.num_tracked_samples(s.mutations[0].node)/len(study) &lt;= 0.99]
+#     ts = ts.delete_sites(np.setdiff1d(np.arange(ts.num_sites), sites))
+#     dosage, positions = [], []
+#     for variant in ts.variants(samples=nodes, isolated_as_missing=False):
+#         g = variant.genotypes.reshape(-1, 2).sum(axis=1, dtype=np.int8)
+#         if np.ptp(g[:N]) &gt; 0 and np.ptp(g[N:]) &gt; 0:
+#             dosage.append(g); positions.append(variant.site.position)
+#     J = len(dosage)
+#     if J == 0:
+#         raise ValueError(&#39;No SNPs pass the MAF and shared-polymorphism filters.&#39;)
+#     G = np.asarray(dosage, dtype=np.int8).T
+#     def ld(g):
+#         sums = g.sum(axis=0, dtype=float); cross = np.zeros((J,J))
+#         for start in range(0, len(g), 2000):
+#             x = g[start:start+2000].astype(float); cross += np.dot(x.T, x)
+#         cross -= np.outer(sums, sums)/len(g)
+#         sd = np.sqrt(np.diag(cross)); return cross/sd[:,None]/sd[None,:]
+#     return {&#39;R&#39;: ld(G[:N]), &#39;R0&#39;: ld(G[N:]), &#39;position&#39;: np.asarray(positions)}
+# &quot;)
+# ld &lt;- py$simulate_ld(sp, N, N0, T, length_bp,
+#                      recombination_rate, mutation_rate, seed)
+# R &lt;- ld$R; R0 &lt;- ld$R0; position &lt;- ld$position
+# J &lt;- ncol(R)  # All retained locus variants; no SNP thinning.
+# stopifnot(J &gt;= L_true)
+# settings &lt;- list(N=N, N0=N0, T=T, seed=seed, length_bp=length_bp,
+#                  recombination_rate=recombination_rate, mutation_rate=mutation_rate,
+#                  demographic_model=&quot;OutOfAfrica_2T12&quot;, branch_design=&quot;shared_growth&quot;,
+#                  migration=FALSE, dtwf_generations=100L, study_maf_min=0.01)
+# # Optional: save the newly simulated matrices for future sessions.
+# # saveRDS(list(R=R, R0=R0, position=position, settings=settings),
+# #         &quot;data/getting-started/ld.rds&quot;, compress=&quot;gzip&quot;)</code></pre>
+</div>
+<div id="simulate-association." class="section level2">
+<h2>1.2. Simulate association.</h2>
+<pre class="r"><code># 3. Simulate marginal associations: residual variance 1, local heritability h2.
+set.seed(4)
+causal &lt;- sort(sample.int(J, L_true))
+beta &lt;- numeric(J)
+# Draw independent N(0,1) causal effects, then jointly rescale to target h2.
+beta[causal] &lt;- rnorm(L_true)
+beta &lt;- beta * sqrt(h2 / ((1-h2) * drop(crossprod(beta, R %*% beta))))
+e &lt;- eigen(R, symmetric=TRUE)  # Clip only rounding-level negative eigenvalues.
+stopifnot(min(e$values) &gt; -1e-8)
+v &lt;- drop(R %*% beta + e$vectors %*% (sqrt(pmax(e$values, 0)/N) * rnorm(J)))
+z &lt;- sqrt(N)*v  # Working Gaussian z, not a separately simulated marginal t statistic.
+
+
+neg_log10p = -log(2)/log(10)-pnorm(-abs(z), log.p=TRUE)/log(10)
+par(mfrow=c(1,1))
+plot(seq_len(J), neg_log10p,
+     pch=16, cex=.5, xlab=&quot;Variant index&quot;, ylab=&quot;-log10(P)&quot;, main=&quot;Marginal association&quot;)
+points(causal, neg_log10p[causal],
+     pch=16, cex=.8, col = &quot;red&quot;)
+abline(v=causal, col=&quot;firebrick&quot;, lty=3)</code></pre>
+<p><img src="figure/01-get-started.Rmd/unnamed-chunk-4-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>The LD panels show the same 50 consecutive retained SNPs around the
+lead SNP (largest absolute association z-score), shifting the window at
+locus boundaries.</p>
+<pre class="r"><code>lead &lt;- which.max(abs(z))
+window_size &lt;- min(50L, J)
+window_start &lt;- max(1L, min(lead - (window_size - 1L) %/% 2L,
+                          J - window_size + 1L))
+ld_index &lt;- seq.int(window_start, length.out=window_size)
+local({
+  old_par &lt;- par(mfrow=c(1,2), mar=c(4,4,3,1))
+  on.exit(par(old_par))
+  ld_colors &lt;- colorRampPalette(c(&quot;#2166AC&quot;,&quot;white&quot;,&quot;#B2182B&quot;))(101)
+  for (panel in c(&quot;In-sample LD (r)&quot;, &quot;Reference LD (r)&quot;)) {
+    ld_matrix &lt;- if (panel == &quot;In-sample LD (r)&quot;) R else R0
+    image(ld_index, ld_index, ld_matrix[ld_index, ld_index, drop=FALSE],
+          zlim=c(-1,1), col=ld_colors,
+          xlab=&quot;Variant index&quot;, ylab=&quot;Variant index&quot;, main=panel)
+    abline(v=lead, h=lead, col=&quot;black&quot;, lty=2)
+  }
+})</code></pre>
+<p><img src="figure/01-get-started.Rmd/lead-snp-ld-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+</div>
+<div id="fit-rss-with-reference-ld" class="section level2">
+<h2>2. Fit RSS with reference LD</h2>
+<pre class="r"><code># Working sufficient statistics for v ~ N(R beta, R/N), using reference LD.
+# Match the v-input convention in susie_aiw; fix residual variance at 1.
+# Active interface: susieR 0.14.2, installed on this machine.
+fit_rss &lt;- susieR::susie_suff_stat(
+  XtX=N * R0, Xty=N * v, yty=N, n=N, L=L_max,
+  residual_variance=1, estimate_residual_variance=FALSE,
+  standardize=FALSE, max_iter=1000, tol=1e-3,
+  coverage=coverage, min_abs_corr=min_abs_corr, n_purity=J)</code></pre>
+<pre><code>HINT: For large R or large XtX, consider installing the Rfast package for better performance.</code></pre>
+<pre class="r"><code># Alternative for newer susieR versions exporting susie_ss():
+# https://stephenslab.github.io/susieR/reference/susie_ss.html
+# fit_rss &lt;- susieR::susie_ss(
+#   XtX=N * R0, Xty=N * v, yty=N, n=N, L=L_max,
+#   residual_variance=1, estimate_residual_variance=FALSE,
+#   standardize=FALSE, max_iter=1000, tol=1e-3,
+#   coverage=coverage, min_abs_corr=min_abs_corr, n_purity=J)
+par(mfrow=c(1,1))
+plot_pip(fit_rss, causal=causal, R=R0, main=&quot;SuSiE-RSS PIPs&quot;)</code></pre>
+<p><img src="figure/01-get-started.Rmd/unnamed-chunk-5-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="aiw-selection-method" class="section level2">
+<h2>3. AIW-selection method</h2>
+<p>The name will be changed to PiW, but right now we use 2 of them
+exchangably.</p>
+<pre class="r"><code>fit &lt;- susie_aiw(v=v, R0=R0, N=N, L=seq_len(L_max), keep_fits=TRUE, max_iter=1000,
+                coverage=coverage, min_abs_corr=min_abs_corr, verbose=TRUE)</code></pre>
+<pre><code>HINT: For large R or large XtX, consider installing the Rfast package for better performance.</code></pre>
+<pre><code>L=1 lambda=0.00123704 eta0=98.2927 AIW score=7659.739892 (interior)</code></pre>
+<pre><code>HINT: For large R or large XtX, consider installing the Rfast package for better performance.</code></pre>
+<pre><code>L=2 lambda=0.00166016 eta0=206.283 AIW score=7687.935057 (interior)</code></pre>
+<pre><code>HINT: For large R or large XtX, consider installing the Rfast package for better performance.</code></pre>
+<pre><code>L=3 lambda=0.00181392 eta0=243.033 AIW score=7690.335008 (interior)</code></pre>
+<pre><code>HINT: For large R or large XtX, consider installing the Rfast package for better performance.</code></pre>
+<pre><code>L=4 lambda=0.00192425 eta0=268.863 AIW score=7688.511009 (interior)</code></pre>
+<pre><code>HINT: For large R or large XtX, consider installing the Rfast package for better performance.</code></pre>
+<pre><code>L=5 lambda=0.00201212 eta0=289.088 AIW score=7685.254752 (interior)</code></pre>
+<pre><code>HINT: For large R or large XtX, consider installing the Rfast package for better performance.</code></pre>
+<pre><code>L=6 lambda=0.00203984 eta0=296.223 AIW score=7679.801354 (interior)</code></pre>
+<pre><code>HINT: For large R or large XtX, consider installing the Rfast package for better performance.</code></pre>
+<pre><code>L=7 lambda=0.00206701 eta0=303.254 AIW score=7673.640175 (interior)</code></pre>
+<pre><code>HINT: For large R or large XtX, consider installing the Rfast package for better performance.</code></pre>
+<pre><code>L=8 lambda=0.0020873 eta0=308.76 AIW score=7668.098941 (interior)</code></pre>
+<pre><code>HINT: For large R or large XtX, consider installing the Rfast package for better performance.</code></pre>
+<pre><code>L=9 lambda=0.00210531 eta0=313.758 AIW score=7662.239360 (interior)</code></pre>
+<pre><code>HINT: For large R or large XtX, consider installing the Rfast package for better performance.</code></pre>
+<pre><code>L=10 lambda=0.00212751 eta0=319.695 AIW score=7654.852569 (interior)</code></pre>
+<pre class="r"><code>scores &lt;- fit$scores</code></pre>
+<p>Score plot</p>
+<pre class="r"><code>plot(scores$L, scores$objective, type=&quot;b&quot;, pch=16,
+     xlab=&quot;Candidate component count L&quot;, ylab=&quot;AIW score&quot;, main=&quot;B  AIW score&quot;)
+points(fit$selected_L, scores$objective[fit$selected_L], pch=1, col=&quot;red&quot;, cex=2)
+abline(v = fit$selected_L, col = &quot;red&quot;, lty = &quot;dashed&quot;)
+mtext(sprintf(&quot;Selected L=%d; eta0=%.1f; lambda=%.4g&quot;, fit$selected_L, fit$eta0, fit$selected_lambda), cex=.7)</code></pre>
+<p><img src="figure/01-get-started.Rmd/unnamed-chunk-7-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>Print score and diagnostics.</p>
+<pre class="r"><code>print(scores[, c(&quot;L&quot;, &quot;objective&quot;, &quot;eta0&quot;, &quot;lambda&quot;, &quot;rss_converged&quot;, &quot;parameter_converged&quot;)])</code></pre>
+<pre><code>    L objective      eta0      lambda rss_converged parameter_converged
+1   1  7659.740  98.29271 0.001237035          TRUE                TRUE
+2   2  7687.935 206.28276 0.001660160          TRUE                TRUE
+3   3  7690.335 243.03300 0.001813916          TRUE                TRUE
+4   4  7688.511 268.86252 0.001924249          TRUE                TRUE
+5   5  7685.255 289.08840 0.002012118          TRUE                TRUE
+6   6  7679.801 296.22305 0.002039836          TRUE                TRUE
+7   7  7673.640 303.25394 0.002067005          TRUE                TRUE
+8   8  7668.099 308.76013 0.002087297          TRUE                TRUE
+9   9  7662.239 313.75803 0.002105312          TRUE                TRUE
+10 10  7654.853 319.69463 0.002127506          TRUE                TRUE</code></pre>
+<p>The AIW-selected RSS fit (apply purity filtering as usual)</p>
+<pre class="r"><code>plot_pip(fit, causal=causal, R=R0, main=paste(&quot;AIW-selected RSS: L =&quot;, fit$selected_L))</code></pre>
+<p><img src="figure/01-get-started.Rmd/unnamed-chunk-9-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="susie-iw" class="section level2">
+<h2>4. SuSiE-IW</h2>
+<p>Here we will fit SuSiE-IW and plot PIP from the inferred fit. It is
+shown in the manuscript that SuSiE-IW can have better coverage than AIW
+under severe mismatch, but it might have less power under moderate to
+severe mismatch. Moreoever, its credible set sizes tend to be
+larger.</p>
+<pre class="r"><code>iw_fit &lt;- susie_iw(v=v, R0=R0, N=N, L=L_max, max_iter=1000, tol = 1e-6)</code></pre>
+<pre class="r"><code>plot(iw_fit$elbo, type = &quot;l&quot;, xlab = &quot;Iterations&quot;)</code></pre>
+<p><img src="figure/01-get-started.Rmd/unnamed-chunk-11-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot_pip(iw_fit, causal=causal, R=R0, main=&quot;susie-iw PIP plot&quot;)</code></pre>
+<p><img src="figure/01-get-started.Rmd/unnamed-chunk-12-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="summarize-all-fit" class="section level2">
+<h2>5. Summarize all fit</h2>
+<p>Here we fit susie-rss with the oracle in-sample LD and summarize all
+fit.</p>
+<pre class="r"><code># Same sufficient-statistics settings as reference RSS, using study LD.
+fit_rss_in_sample &lt;- susieR::susie_suff_stat(
+  XtX=N * R, Xty=N * v, yty=N, n=N, L=L_max,
+  residual_variance=1, estimate_residual_variance=FALSE,
+  standardize=FALSE, max_iter=1000, tol=1e-3,
+  coverage=coverage, min_abs_corr=min_abs_corr, n_purity=J)</code></pre>
+<pre><code>HINT: For large R or large XtX, consider installing the Rfast package for better performance.</code></pre>
+<pre class="r"><code># For newer susieR versions, replace susie_suff_stat above with susie_ss.</code></pre>
+<pre class="r"><code>local({
+  old_par &lt;- par(mfrow=c(2,2), mar=c(4,4,3,1))
+  on.exit(par(old_par))
+  plot_pip(fit_rss, causal=causal, R=R0, main=&quot;Reference RSS&quot;)
+  plot_pip(fit_rss_in_sample, causal=causal, R=R, main=&quot;In-sample RSS&quot;)
+  plot_pip(fit, causal=causal, R=R0, main=&quot;AIW&quot;)
+  plot_pip(iw_fit, causal=causal, R=R0, main=&quot;IW&quot;)
+})</code></pre>
+<p><img src="figure/01-get-started.Rmd/pip-comparison-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.6.1 (2026-06-24)
+Platform: aarch64-apple-darwin23
+Running under: macOS Golden Gate 27.0.1
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] C.UTF-8/C.UTF-8/C.UTF-8/C/C.UTF-8/C.UTF-8
+
+time zone: America/New_York
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] susieR_0.14.2          susieRobust_0.0.0.9000 workflowr_1.7.2       
+
+loaded via a namespace (and not attached):
+ [1] sass_0.4.10        generics_0.1.4     stringi_1.8.9      lattice_0.22-9    
+ [5] digest_0.6.39      magrittr_2.0.5     evaluate_1.0.5     grid_4.6.1        
+ [9] RColorBrewer_1.1-3 fastmap_1.2.0      plyr_1.8.9         rprojroot_2.1.1   
+[13] jsonlite_2.0.0     Matrix_1.7-5       processx_3.9.0     whisker_0.4.1     
+[17] reshape_0.8.10     mixsqp_0.3-54      promises_1.5.0     httr_1.4.9        
+[21] scales_1.4.0       jquerylib_0.1.4    cli_3.6.6          rlang_1.3.0       
+[25] crayon_1.5.3       cachem_1.1.0       yaml_2.3.12        otel_0.2.0        
+[29] tools_4.6.1        dplyr_1.2.1        ggplot2_4.0.3      httpuv_1.6.17     
+[33] vctrs_0.7.3        R6_2.6.1           matrixStats_1.5.0  lifecycle_1.0.5   
+[37] git2r_0.36.2       stringr_1.6.0      fs_2.1.0           irlba_2.3.7       
+[41] pkgconfig_2.0.3    callr_3.8.0        pillar_1.11.1      bslib_0.12.0      
+[45] later_1.4.8        gtable_0.3.6       glue_1.8.1         Rcpp_1.1.2        
+[49] xfun_0.60          tibble_3.3.1       tidyselect_1.2.1   rstudioapi_0.19.0 
+[53] knitr_1.51         farver_2.1.2       htmltools_0.5.9    rmarkdown_2.32    
+[57] compiler_4.6.1     getPass_0.2-4      S7_0.2.2          </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
