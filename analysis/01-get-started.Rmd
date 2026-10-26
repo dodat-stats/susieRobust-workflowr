@@ -1,0 +1,270 @@
+---
+title: "Getting started with susieRobust"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    toc: false
+editor_options:
+  chunk_output_type: console
+---
+
+## 1. Simulate summary statistics
+
+Here we use coalescent simulation to simulate two populations, GWAS cohort and reference panel, split $T$ generations ago, which are then used to calculate in-sample LD matrix $R$ and reference LD $R_0$. Both follow the EUR population-size history from `OutOfAfrica_2T12` (present-day effective size approximately 501,436), with identical growth before their split and no migration. Recombination is $10^{-8}$ per base per generation. 
+
+```{r}
+library(susieRobust)
+library(susieR)
+
+## setting
+N <- 200000L
+N0 <- 5000L
+T <- 200L
+L_true <- 3L; L_max <- 10L; h2 <- 0.01
+coverage <- 0.95; min_abs_corr <- 0.5
+```
+
+## 1.1. Load in-sample and reference LD matrices
+
+Load the saved simulation from the data folder; Python and stdpopsim are not
+needed for this step. The file also contains SNP positions and simulation settings.
+
+```{r}
+ld <- readRDS("data/getting-started/ld.rds")
+R <- ld$R; R0 <- ld$R0; position <- ld$position
+# Use the sample sizes and split time belonging to the saved matrices.
+N <- ld$settings$N; N0 <- ld$settings$N0; T <- ld$settings$T
+J <- ncol(R)
+stopifnot(J >= L_true, identical(dim(R), dim(R0)), length(position) == J)
+```
+
+To generate different LD matrices, uncomment the block below and adjust the
+settings. Run it instead of the loading block above; set `N`, `N0`, and `T` in
+the initial settings chunk. The optional final line replaces the saved data.
+
+```{r}
+# # Python packages are installed in /usr/bin/python3's user site-packages.
+# library(reticulate)
+# use_python("/usr/bin/python3", required = TRUE)
+# sp <- import("stdpopsim", convert = FALSE)
+#
+# # 1. Settings: one study, one reference, one split time (no migration).
+# seed <- 1L; length_bp <- 700000L  ## 700 kb
+# recombination_rate <- 1e-8; mutation_rate <- 2.36e-8
+#
+# # 2. Coalescent simulation through stdpopsim, followed by shared-SNP LD.
+# # EUR growth: Tennessen et al. (2012), Science, doi:10.1126/science.1219240.
+# # stdpopsim parameters follow Fu et al. (2013), Fig. S5, doi:10.1038/nature11690.
+# # We remove migration and add a reference branch with the same EUR growth history.
+# # Binary mutations, study MAF >=1%, polymorphic in BOTH cohorts, common SNP order.
+# # This single-pair illustration does not condition on the paper's other T panels.
+# py_run_string("
+# import numpy as np, msprime
+#
+# def simulate_ld(sp, N, N0, T, length_bp, rec, mut, seed):
+#     if not 0 < T < 2040:
+#         raise ValueError('T must be strictly between 0 and 2040 generations.')
+#     dem = sp.get_species('HomSap').get_demographic_model('OutOfAfrica_2T12').model.copy()
+#     dem.migration_matrix[:] = 0
+#     dem.events = [e for e in dem.events if not isinstance(e, msprime.MigrationRateChange)]
+#     eur = dem['EUR']
+#     changes = [e for e in dem.events if isinstance(e, msprime.PopulationParametersChange)
+#                and e.population in ('EUR', eur.id)]
+#     dem.add_population(name='reference', initial_size=eur.initial_size,
+#                        growth_rate=eur.growth_rate)
+#     for e in changes:
+#         if e.time < T:
+#             dem.add_population_parameters_change(time=e.time, population='reference',
+#                 initial_size=e.initial_size, growth_rate=e.growth_rate)
+#     dem.add_population_split(time=T, derived=['reference'], ancestral='EUR')
+#     dem['EUR'].initially_active = True
+#     dem['EUR'].default_sampling_time = 0
+#     dem.sort_events()
+#     dem.validate()
+#     ts = msprime.sim_ancestry(samples={'EUR': N, 'reference': N0}, ploidy=2,
+#         demography=dem, sequence_length=length_bp, recombination_rate=rec,
+#         model=[msprime.DiscreteTimeWrightFisher(duration=100), msprime.StandardCoalescent()],
+#         random_seed=seed)
+#     ts = msprime.sim_mutations(ts, rate=mut, model=msprime.BinaryMutationModel(), random_seed=seed+1)
+#     study, reference = ts.samples(population=dem['EUR'].id), ts.samples(population=dem['reference'].id)
+#     nodes = np.r_[study, reference]
+#     ids = ts.tables.nodes.individual[nodes]
+#     assert np.all(ids >= 0) and np.array_equal(ids[::2], ids[1::2])
+#     sites = [s.id for tree in ts.trees(tracked_samples=study) for s in tree.sites()
+#         if len(s.mutations)==1 and 0.01 <= tree.num_tracked_samples(s.mutations[0].node)/len(study) <= 0.99]
+#     ts = ts.delete_sites(np.setdiff1d(np.arange(ts.num_sites), sites))
+#     dosage, positions = [], []
+#     for variant in ts.variants(samples=nodes, isolated_as_missing=False):
+#         g = variant.genotypes.reshape(-1, 2).sum(axis=1, dtype=np.int8)
+#         if np.ptp(g[:N]) > 0 and np.ptp(g[N:]) > 0:
+#             dosage.append(g); positions.append(variant.site.position)
+#     J = len(dosage)
+#     if J == 0:
+#         raise ValueError('No SNPs pass the MAF and shared-polymorphism filters.')
+#     G = np.asarray(dosage, dtype=np.int8).T
+#     def ld(g):
+#         sums = g.sum(axis=0, dtype=float); cross = np.zeros((J,J))
+#         for start in range(0, len(g), 2000):
+#             x = g[start:start+2000].astype(float); cross += np.dot(x.T, x)
+#         cross -= np.outer(sums, sums)/len(g)
+#         sd = np.sqrt(np.diag(cross)); return cross/sd[:,None]/sd[None,:]
+#     return {'R': ld(G[:N]), 'R0': ld(G[N:]), 'position': np.asarray(positions)}
+# ")
+# ld <- py$simulate_ld(sp, N, N0, T, length_bp,
+#                      recombination_rate, mutation_rate, seed)
+# R <- ld$R; R0 <- ld$R0; position <- ld$position
+# J <- ncol(R)  # All retained locus variants; no SNP thinning.
+# stopifnot(J >= L_true)
+# settings <- list(N=N, N0=N0, T=T, seed=seed, length_bp=length_bp,
+#                  recombination_rate=recombination_rate, mutation_rate=mutation_rate,
+#                  demographic_model="OutOfAfrica_2T12", branch_design="shared_growth",
+#                  migration=FALSE, dtwf_generations=100L, study_maf_min=0.01)
+# # Optional: save the newly simulated matrices for future sessions.
+# # saveRDS(list(R=R, R0=R0, position=position, settings=settings),
+# #         "data/getting-started/ld.rds", compress="gzip")
+```
+
+## 1.2. Simulate association.
+
+```{r}
+# 3. Simulate marginal associations: residual variance 1, local heritability h2.
+set.seed(4)
+causal <- sort(sample.int(J, L_true))
+beta <- numeric(J)
+# Draw independent N(0,1) causal effects, then jointly rescale to target h2.
+beta[causal] <- rnorm(L_true)
+beta <- beta * sqrt(h2 / ((1-h2) * drop(crossprod(beta, R %*% beta))))
+e <- eigen(R, symmetric=TRUE)  # Clip only rounding-level negative eigenvalues.
+stopifnot(min(e$values) > -1e-8)
+v <- drop(R %*% beta + e$vectors %*% (sqrt(pmax(e$values, 0)/N) * rnorm(J)))
+z <- sqrt(N)*v  # Working Gaussian z, not a separately simulated marginal t statistic.
+
+
+neg_log10p = -log(2)/log(10)-pnorm(-abs(z), log.p=TRUE)/log(10)
+par(mfrow=c(1,1))
+plot(seq_len(J), neg_log10p,
+     pch=16, cex=.5, xlab="Variant index", ylab="-log10(P)", main="Marginal association")
+points(causal, neg_log10p[causal],
+     pch=16, cex=.8, col = "red")
+abline(v=causal, col="firebrick", lty=3)
+```
+
+The LD panels show the same 50 consecutive retained SNPs around the lead SNP
+(largest absolute association z-score), shifting the window at locus boundaries.
+
+```{r lead-snp-ld, fig.width=10, fig.height=5}
+lead <- which.max(abs(z))
+window_size <- min(50L, J)
+window_start <- max(1L, min(lead - (window_size - 1L) %/% 2L,
+                          J - window_size + 1L))
+ld_index <- seq.int(window_start, length.out=window_size)
+local({
+  old_par <- par(mfrow=c(1,2), mar=c(4,4,3,1))
+  on.exit(par(old_par))
+  ld_colors <- colorRampPalette(c("#2166AC","white","#B2182B"))(101)
+  for (panel in c("In-sample LD (r)", "Reference LD (r)")) {
+    ld_matrix <- if (panel == "In-sample LD (r)") R else R0
+    image(ld_index, ld_index, ld_matrix[ld_index, ld_index, drop=FALSE],
+          zlim=c(-1,1), col=ld_colors,
+          xlab="Variant index", ylab="Variant index", main=panel)
+    abline(v=lead, h=lead, col="black", lty=2)
+  }
+})
+```
+
+## 2. Fit RSS with reference LD 
+```{r}
+# Working sufficient statistics for v ~ N(R beta, R/N), using reference LD.
+# Match the v-input convention in susie_aiw; fix residual variance at 1.
+# Active interface: susieR 0.14.2, installed on this machine.
+fit_rss <- susieR::susie_suff_stat(
+  XtX=N * R0, Xty=N * v, yty=N, n=N, L=L_max,
+  residual_variance=1, estimate_residual_variance=FALSE,
+  standardize=FALSE, max_iter=1000, tol=1e-3,
+  coverage=coverage, min_abs_corr=min_abs_corr, n_purity=J)
+
+# Alternative for newer susieR versions exporting susie_ss():
+# https://stephenslab.github.io/susieR/reference/susie_ss.html
+# fit_rss <- susieR::susie_ss(
+#   XtX=N * R0, Xty=N * v, yty=N, n=N, L=L_max,
+#   residual_variance=1, estimate_residual_variance=FALSE,
+#   standardize=FALSE, max_iter=1000, tol=1e-3,
+#   coverage=coverage, min_abs_corr=min_abs_corr, n_purity=J)
+par(mfrow=c(1,1))
+plot_pip(fit_rss, causal=causal, R=R0, main="SuSiE-RSS PIPs")
+```
+
+## 3. AIW-selection method 
+The name will be changed to PiW, but right now we use 2 of them exchangably.
+
+```{r}
+
+fit <- susie_aiw(v=v, R0=R0, N=N, L=seq_len(L_max), keep_fits=TRUE, max_iter=1000,
+                coverage=coverage, min_abs_corr=min_abs_corr, verbose=TRUE)
+scores <- fit$scores
+
+```
+
+Score plot 
+
+```{r}
+plot(scores$L, scores$objective, type="b", pch=16,
+     xlab="Candidate component count L", ylab="AIW score", main="B  AIW score")
+points(fit$selected_L, scores$objective[fit$selected_L], pch=1, col="red", cex=2)
+abline(v = fit$selected_L, col = "red", lty = "dashed")
+mtext(sprintf("Selected L=%d; eta0=%.1f; lambda=%.4g", fit$selected_L, fit$eta0, fit$selected_lambda), cex=.7)
+```
+
+Print score and diagnostics. 
+
+```{r}
+print(scores[, c("L", "objective", "eta0", "lambda", "rss_converged", "parameter_converged")])
+```
+
+The AIW-selected RSS fit (apply purity filtering as usual)
+
+```{r}
+plot_pip(fit, causal=causal, R=R0, main=paste("AIW-selected RSS: L =", fit$selected_L))
+```
+
+## 4. SuSiE-IW
+
+Here we will fit SuSiE-IW and plot PIP from the inferred fit. It is shown in the manuscript that SuSiE-IW can have better coverage than AIW under severe mismatch, but it might have less power under moderate to severe mismatch. Moreoever, its credible set sizes tend to be larger.   
+
+```{r}
+iw_fit <- susie_iw(v=v, R0=R0, N=N, L=L_max, max_iter=1000, tol = 1e-6)
+```
+
+```{r}
+plot(iw_fit$elbo, type = "l", xlab = "Iterations")
+```
+
+```{r}
+plot_pip(iw_fit, causal=causal, R=R0, main="susie-iw PIP plot")
+```
+
+## 5. Summarize all fit
+
+Here we fit susie-rss with the oracle in-sample LD and summarize all fit.
+
+```{r}
+# Same sufficient-statistics settings as reference RSS, using study LD.
+fit_rss_in_sample <- susieR::susie_suff_stat(
+  XtX=N * R, Xty=N * v, yty=N, n=N, L=L_max,
+  residual_variance=1, estimate_residual_variance=FALSE,
+  standardize=FALSE, max_iter=1000, tol=1e-3,
+  coverage=coverage, min_abs_corr=min_abs_corr, n_purity=J)
+# For newer susieR versions, replace susie_suff_stat above with susie_ss.
+```
+
+```{r pip-comparison, fig.width=10, fig.height=8}
+local({
+  old_par <- par(mfrow=c(2,2), mar=c(4,4,3,1))
+  on.exit(par(old_par))
+  plot_pip(fit_rss, causal=causal, R=R0, main="Reference RSS")
+  plot_pip(fit_rss_in_sample, causal=causal, R=R, main="In-sample RSS")
+  plot_pip(fit, causal=causal, R=R0, main="AIW")
+  plot_pip(iw_fit, causal=causal, R=R0, main="IW")
+})
+```
+

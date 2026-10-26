@@ -1,0 +1,52 @@
+---
+title: "A closer look at IW"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    toc: false
+---
+
+## Reproduce the data example
+
+Use the saved LD and the same association simulation as `01-get-started` (seed 4).
+
+```{r}
+library(susieRobust)
+ld <- readRDS("data/getting-started/ld.rds")
+R <- ld$R; R0 <- ld$R0; N <- ld$settings$N
+J <- ncol(R)
+L_true <- 3L; L_max <- 10L; h2 <- 0.01
+
+set.seed(4)
+causal <- sort(sample.int(J, L_true))
+beta <- numeric(J)
+beta[causal] <- rnorm(L_true)
+beta <- beta * sqrt(h2 / ((1-h2) * drop(crossprod(beta, R %*% beta))))
+e <- eigen(R, symmetric=TRUE)
+stopifnot(min(e$values) > -1e-8)
+v <- drop(R %*% beta + e$vectors %*% (sqrt(pmax(e$values, 0)/N) * rnorm(J)))
+```
+
+## Fit IW and double eta0
+
+First estimate eta0, then hold it fixed at twice that estimate in a new fit.
+Lambda remains free to be estimated in both fits.
+
+```{r}
+fit <- susie_iw(v=v, R0=R0, N=N, L=L_max, max_iter=1000, tol=1e-6)
+eta0 <- fit$eta0
+fit_2eta0 <- susie_iw(v=v, R0=R0, N=N, L=L_max, max_iter=1000, tol=1e-6,
+                     eta0_fixed=2 * eta0)
+
+data.frame(fit=c("IW", "IW: doubled eta0"),
+           eta0=c(fit$eta0, fit_2eta0$eta0),
+           lambda=c(fit$selected_lambda, fit_2eta0$selected_lambda),
+           converged=c(fit$converged, fit_2eta0$converged))
+```
+
+```{r, fig.width=10, fig.height=4}
+par(mfrow=c(1,2))
+plot_pip(fit, causal=causal, R=R0, main="IW: learned eta0")
+plot_pip(fit_2eta0, causal=causal, R=R0, main="IW: fixed at 2 x eta0")
+par(mfrow=c(1,1))
+```

@@ -1,5 +1,5 @@
 ---
-title: "Home"
+title: "susieRobust tutorials"
 site: workflowr::wflow_site
 output:
   workflowr::wflow_html:
@@ -8,4 +8,15 @@ editor_options:
   chunk_output_type: console
 ---
 
-Welcome to my research website.
+Examples of fine-mapping with SuSiE-RSS, SuSiE-AIW, and SuSiE-IW when the
+reference LD differs from the study LD.
+
+1. [Getting started with susieRobust](01-get-started.html): load simulated LD,
+   simulate association statistics, fit the methods, and compare their posterior
+   inclusion probabilities.
+2. [A closer look at IW](02-closer-look-at-IW.html): fit IW to the same example,
+   then refit with eta0 fixed at twice its learned value.
+
+The tutorials use saved LD matrices, so Python and stdpopsim are optional.
+The [source code and example data](https://github.com/dodat-stats/susieRobust-workflowr)
+are available on GitHub.
