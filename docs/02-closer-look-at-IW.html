@@ -441,15 +441,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtreeb510ad1efe90eb4a0ee87d80e7717268f8ab2f26targetblankb510ad1a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtree4f2290194def63805b565a2ecf3e5876b6a75cc1targetblank4f22901a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/b510ad1efe90eb4a0ee87d80e7717268f8ab2f26" target="_blank">b510ad1</a>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/4f2290194def63805b565a2ecf3e5876b6a75cc1" target="_blank">4f22901</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtreeb510ad1efe90eb4a0ee87d80e7717268f8ab2f26targetblankb510ad1a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtree4f2290194def63805b565a2ecf3e5876b6a75cc1targetblank4f22901a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -459,7 +459,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/b510ad1efe90eb4a0ee87d80e7717268f8ab2f26" target="_blank">b510ad1</a>.
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/4f2290194def63805b565a2ecf3e5876b6a75cc1" target="_blank">4f22901</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -521,6 +521,23 @@ Message
 <tbody>
 <tr>
 <td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/dodat-stats/susieRobust-workflowr/e3d35a98b86000806a99fe613851aa2f8094c904/docs/02-closer-look-at-IW.html" target="_blank">e3d35a9</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-10-26
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
 Rmd
 </td>
 <td>
@@ -576,12 +593,49 @@ data.frame(fit=c(&quot;IW&quot;, &quot;IW: doubled eta0&quot;),
            lambda=c(fit$selected_lambda, fit_2eta0$selected_lambda),
            converged=c(fit$converged, fit_2eta0$converged))</code></pre>
 <pre><code>               fit     eta0      lambda converged
-1               IW 203.4635 0.001667073      TRUE
-2 IW: doubled eta0 406.9269 0.002623511      TRUE</code></pre>
+1               IW 235.0989 0.001803674      TRUE
+2 IW: doubled eta0 470.1977 0.002954355      TRUE</code></pre>
 <pre class="r"><code>par(mfrow=c(1,2))
 plot_pip(fit, causal=causal, R=R0, main=&quot;IW: learned eta0&quot;)
 plot_pip(fit_2eta0, causal=causal, R=R0, main=&quot;IW: fixed at 2 x eta0&quot;)</code></pre>
 <p><img src="figure/02-closer-look-at-IW.Rmd/unnamed-chunk-3-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-3-1">
+Past versions of unnamed-chunk-3-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-3-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/e3d35a98b86000806a99fe613851aa2f8094c904/docs/figure/02-closer-look-at-IW.Rmd/unnamed-chunk-3-1.png" target="_blank">e3d35a9</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-10-26
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>par(mfrow=c(1,1))</code></pre>
 <br>
 <p>
@@ -610,7 +664,7 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] susieRobust_0.0.0.9000 workflowr_1.7.2       
+[1] susieRobust_0.0.0.9001 workflowr_1.7.2       
 
 loaded via a namespace (and not attached):
  [1] sass_0.4.10        generics_0.1.4     stringi_1.8.9      lattice_0.22-9    
