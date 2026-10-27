@@ -289,7 +289,7 @@ $(document).ready(function () {
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-ok text-success"
+workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -300,8 +300,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-</a>
+class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -310,13 +310,13 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-10-26
+<strong>Last updated:</strong> 2026-10-27
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 1
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 0
+aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>susieRobust-workflowr/</code>
@@ -339,33 +339,36 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
-<span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
-</a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
+changes </a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguptodate"
+<div id="strongRMarkdownfilestronguncommittedchanges"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great! Since the R Markdown file has been committed to the Git
-repository, you know the exact version of the code that produced these
-results.</p>
+<p>The R Markdown file has unstaged changes. To know which version of
+the R Markdown file created these results, you’ll want to first commit
+it to the Git repo. If you’re still working on the analysis, you can
+ignore this warning. When you’re finished, you can run
+<code>wflow_publish</code> to commit the R Markdown file and build the
+HTML.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtree4f2290194def63805b565a2ecf3e5876b6a75cc1targetblank4f22901a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtreeecc8061827339e5a4f773221afc6b8265e2aa259targetblankecc8061a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/4f2290194def63805b565a2ecf3e5876b6a75cc1" target="_blank">4f22901</a>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/ecc8061827339e5a4f773221afc6b8265e2aa259" target="_blank">ecc8061</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtree4f2290194def63805b565a2ecf3e5876b6a75cc1targetblank4f22901a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtreeecc8061827339e5a4f773221afc6b8265e2aa259targetblankecc8061a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -375,7 +378,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/4f2290194def63805b565a2ecf3e5876b6a75cc1" target="_blank">4f22901</a>.
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/ecc8061827339e5a4f773221afc6b8265e2aa259" target="_blank">ecc8061</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -391,6 +394,19 @@ were generated:
 <pre><code>
 Ignored files:
     Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/.DS_Store
+    Ignored:    analysis/.RData
+    Ignored:    analysis/.Rhistory
+
+Untracked files:
+    Untracked:  analysis/03-problematic-simulation.Rmd
+    Untracked:  data/problematic-simulation/
+
+Unstaged changes:
+    Modified:   analysis/01-get-started.Rmd
+    Modified:   analysis/index.Rmd
 
 </code></pre>
 <p>
@@ -434,6 +450,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/dodat-stats/susieRobust-workflowr/1d4e5ac7a4565e95c96b550c489bfa06c8820c35/docs/index.html" target="_blank">1d4e5ac</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-10-26
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -495,12 +528,16 @@ Start workflowr project.
 <p>Examples of fine-mapping with SuSiE-RSS, SuSiE-AIW, and SuSiE-IW when
 the reference LD differs from the study LD.</p>
 <ol style="list-style-type: decimal">
-<li><a href="01-get-started.html">Getting started with susieRobust</a>:
-load simulated LD, simulate association statistics, fit the methods, and
-compare their posterior inclusion probabilities.</li>
-<li><a href="02-closer-look-at-IW.html">A closer look at IW</a>: fit IW
-to the same example, then refit with eta0 fixed at twice its learned
-value.</li>
+<li><p><a href="01-get-started.html">Getting started with
+susieRobust</a>: load simulated LD, simulate association statistics, fit
+the methods, and compare their posterior inclusion
+probabilities.</p></li>
+<li><p><a href="02-closer-look-at-IW.html">A closer look at IW</a>: fit
+IW to the same example, then refit with eta0 fixed at twice its learned
+value.</p></li>
+<li><p><a href="03-problematic-simulation.html">A problematic simulation
+example</a>: inspect a linearly dependent SNP configuration and compare
+AIW under two iteration caps.</p></li>
 </ol>
 <p>The tutorials use saved LD matrices, so Python and stdpopsim are
 optional. The <a

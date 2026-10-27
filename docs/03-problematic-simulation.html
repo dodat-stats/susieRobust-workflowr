@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>A problematic simulation example</title>
+
+<script src="site_libs/header-attrs-2.32/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">susieRobust-workflowr</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/dodat-stats/susieRobust-workflowr">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">A problematic simulation example</h1>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-10-27
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 1
+</p>
+<p>
+<strong>Knit directory:</strong> <code>susieRobust-workflowr/</code>
+<span class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.2). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
+changes </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguncommittedchanges"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The R Markdown is untracked by Git. To know which version of the R
+Markdown file created these results, you’ll want to first commit it to
+the Git repo. If you’re still working on the analysis, you can ignore
+this warning. When you’re finished, you can run
+<code>wflow_publish</code> to commit the R Markdown file and build the
+HTML.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20261018code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20261018)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20261018code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20261018)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtreeecc8061827339e5a4f773221afc6b8265e2aa259targetblankecc8061a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/ecc8061827339e5a4f773221afc6b8265e2aa259" target="_blank">ecc8061</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtreeecc8061827339e5a4f773221afc6b8265e2aa259targetblankecc8061a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/ecc8061827339e5a4f773221afc6b8265e2aa259" target="_blank">ecc8061</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/.DS_Store
+    Ignored:    analysis/.RData
+    Ignored:    analysis/.Rhistory
+
+Untracked files:
+    Untracked:  analysis/03-problematic-simulation.Rmd
+    Untracked:  data/problematic-simulation/
+
+Unstaged changes:
+    Modified:   analysis/01-get-started.Rmd
+    Modified:   analysis/index.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+There are no past versions. Publish this analysis with
+<code>wflow_publish()</code> to start tracking its development.
+</p>
+<hr>
+</div>
+</div>
+</div>
+<div id="a-problematic-simulation-example" class="section level2">
+<h2>1. A problematic simulation example</h2>
+<p>This is a saved example from the RCC v5 pilot: a 2 Mb locus with
+3,508 variants, 200,000 study individuals, and 5,000 reference
+individuals. The populations split 200 generations ago. There is one
+causal variant (SNP 729), and regional heritability is 0.3%.
+Recombination is <span class="math inline">\(10^{-8}\)</span> per base
+per generation. We load the original LD matrices and association
+statistics without resimulating. All SNP indices below use R’s one-based
+indexing.</p>
+<pre class="r"><code>library(susieRobust)
+library(susieR)
+# The prior-variance plot uses the trace$effect format in susieR 0.16.6.
+
+example &lt;- readRDS(&quot;data/problematic-simulation/example.rds&quot;)
+R &lt;- readRDS(&quot;data/problematic-simulation/R.rds&quot;)
+R0 &lt;- readRDS(&quot;data/problematic-simulation/R0.rds&quot;)
+v &lt;- example$v
+N &lt;- example$N; causal &lt;- example$causal; J &lt;- length(v)
+L_max &lt;- 10L; max_iter &lt;- 100L; tol &lt;- 1e-4
+coverage &lt;- 0.95; min_abs_corr &lt;- 0.5</code></pre>
+<div id="three-linearly-dependent-variants" class="section level3">
+<h3>Three linearly dependent variants</h3>
+<p>SNPs 588, 597, and 600 are linearly dependent in the reference panel.
+Their <span class="math inline">\(3\times3\)</span> reference LD matrix
+has a zero eigenvalue, even though no pair is perfectly correlated. If
+<span class="math inline">\(a\)</span> is its unit null eigenvector,
+then <span class="math inline">\(R_{0,\gamma}a=0\)</span>, but <span
+class="math inline">\(a^\top v_\gamma\ne0\)</span>: the association
+statistics do not respect the reference panel’s linear dependence. The
+corresponding in-sample LD block does not have this exact
+dependence.</p>
+<pre class="r"><code>gamma &lt;- c(588L, 597L, 600L)
+round(R0[gamma, gamma], 4)</code></pre>
+<pre><code>        [,1]   [,2]    [,3]
+[1,]  1.0000 0.4153 -0.0302
+[2,]  0.4153 1.0000  0.8967
+[3,] -0.0302 0.8967  1.0000</code></pre>
+<pre class="r"><code>e &lt;- eigen(R0[gamma, gamma], symmetric=TRUE)
+a &lt;- e$vectors[, which.min(e$values)]
+if (a[2] &lt; 0) a &lt;- -a  # Fix the arbitrary eigenvector sign.
+data.frame(SNP=gamma, null_direction=a, v=v[gamma])</code></pre>
+<pre><code>  SNP null_direction            v
+1 588     -0.3112011 -0.039170211
+2 597      0.7028437 -0.028368323
+3 600     -0.6396597  0.001111234</code></pre>
+<pre class="r"><code>data.frame(
+  reference_min_eigenvalue=min(e$values),
+  in_sample_min_eigenvalue=min(eigen(R[gamma, gamma], symmetric=TRUE)$values),
+  reference_null_residual=sqrt(sum((R0[, gamma] %*% a)^2)),
+  association_null_contrast=sum(a * v[gamma])
+)</code></pre>
+<pre><code>  reference_min_eigenvalue in_sample_min_eigenvalue reference_null_residual
+1             2.442491e-15              0.006242688             4.27246e-15
+  association_null_contrast
+1              -0.008459496</code></pre>
+<p>Along this direction, the RSS likelihood can favor large opposing
+effects. A small ridge makes the matrix invertible, but leaves a weakly
+penalized direction and can lead to slow updates. Here we use the same
+ridge, <span class="math inline">\(10^{-4}\)</span>, for both in-sample
+and reference RSS, learn the effect prior variances, and keep the
+residual variance fixed at 1.</p>
+<pre class="r"><code>ridge &lt;- 1e-4
+fit_in_sample &lt;- susieR::susie_ss(
+  XtX=N * ((1-ridge)*R + ridge*diag(J)), Xty=N*v, yty=N, n=N,
+  L=L_max, standardize=FALSE, residual_variance=1,
+  estimate_residual_variance=FALSE, estimate_prior_variance=TRUE,
+  scaled_prior_variance=0.2, check_prior=FALSE,
+  max_iter=max_iter, tol=tol, coverage=coverage,
+  min_abs_corr=min_abs_corr, n_purity=J, track_fit=TRUE)
+
+fit_reference &lt;- susieR::susie_ss(
+  XtX=N * ((1-ridge)*R0 + ridge*diag(J)), Xty=N*v, yty=N, n=N,
+  L=L_max, standardize=FALSE, residual_variance=1,
+  estimate_residual_variance=FALSE, estimate_prior_variance=TRUE,
+  scaled_prior_variance=0.2, check_prior=FALSE,
+  max_iter=max_iter, tol=tol, coverage=coverage,
+  min_abs_corr=min_abs_corr, n_purity=J, track_fit=TRUE)</code></pre>
+<pre><code>WARNING: IBSS algorithm did not converge in 100 iterations!</code></pre>
+<pre><code>Warning: IBSS algorithm did not converge in 100 iterations!</code></pre>
+<pre class="r"><code>data.frame(
+  LD=c(&quot;In-sample&quot;, &quot;Reference&quot;),
+  iterations=c(fit_in_sample$niter, fit_reference$niter),
+  converged=c(fit_in_sample$converged, fit_reference$converged),
+  causal_PIP=c(fit_in_sample$pip[causal], fit_reference$pip[causal])
+)</code></pre>
+<pre><code>         LD iterations converged causal_PIP
+1 In-sample          2      TRUE  1.0000000
+2 Reference        100     FALSE  0.9999999</code></pre>
+<p>The causal SNP is marked in red in the PIP plots.</p>
+<pre class="r"><code>par(mfrow=c(1,2))
+plot_pip(fit_in_sample, causal=causal, R=R, main=&quot;In-sample RSS: L = 10&quot;)
+plot_pip(fit_reference, causal=causal, R=R0, main=&quot;Reference RSS: L = 10&quot;)</code></pre>
+<p><img src="figure/03-problematic-simulation.Rmd/rss-pips-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>par(mfrow=c(1,1))</code></pre>
+<p>Each curve below is the learned prior variance of one single-effect
+component. Iteration 0 is the initialization. The in-sample trace ends
+when its fit stops.</p>
+<pre class="r"><code>par(mfrow=c(1,2))
+for (name in c(&quot;In-sample&quot;, &quot;Reference&quot;)) {
+  fit &lt;- if (name == &quot;In-sample&quot;) fit_in_sample else fit_reference
+  history &lt;- fit$trace$effect
+  V &lt;- with(history, tapply(V, list(iteration, effect), identity))
+  matplot(as.numeric(rownames(V)), V, type=&quot;l&quot;, lty=1,
+          xlab=&quot;Iteration&quot;, ylab=&quot;Learned prior variance&quot;,
+          main=paste(name, &quot;RSS: L = 10&quot;))
+}</code></pre>
+<p><img src="figure/03-problematic-simulation.Rmd/prior-variance-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>par(mfrow=c(1,1))</code></pre>
+</div>
+</div>
+<div id="aiw-with-100-iteration-cap" class="section level2">
+<h2>2. AIW with 100 iteration cap</h2>
+<p>Now restrict AIW to <span
+class="math inline">\(L=1,\ldots,5\)</span>, keeping the same
+100-iteration cap and RSS convergence tolerance. All candidate fits
+start from fresh initialization.</p>
+<pre class="r"><code>set.seed(example$seed)
+time_aiw &lt;- system.time(fit_aiw &lt;- susie_aiw(
+  v=v, R0=R0, N=N, L=1:5, max_iter=100, tol=1e-4,
+  rss_ridge=1e-4, estimate_prior_variance=TRUE,
+  lambda_max = .1,
+  keep_fits=TRUE))[&quot;elapsed&quot;]</code></pre>
+<pre><code>WARNING: IBSS algorithm did not converge in 100 iterations!</code></pre>
+<pre><code>Warning: IBSS algorithm did not converge in 100 iterations!</code></pre>
+<pre><code>Warning: SuSiE-RSS did not converge for L = 3 within max_iter = 100; AIW will
+score and retain its final iterate. Inspect candidate diagnostics.</code></pre>
+<pre><code>WARNING: IBSS algorithm did not converge in 100 iterations!</code></pre>
+<pre><code>Warning: IBSS algorithm did not converge in 100 iterations!</code></pre>
+<pre><code>Warning: SuSiE-RSS did not converge for L = 4 within max_iter = 100; AIW will
+score and retain its final iterate. Inspect candidate diagnostics.</code></pre>
+<pre><code>WARNING: IBSS algorithm did not converge in 100 iterations!</code></pre>
+<pre><code>Warning: IBSS algorithm did not converge in 100 iterations!</code></pre>
+<pre><code>Warning: SuSiE-RSS did not converge for L = 5 within max_iter = 100; AIW will
+score and retain its final iterate. Inspect candidate diagnostics.</code></pre>
+<pre class="r"><code>fit_aiw$scores[, c(&quot;L&quot;, &quot;objective&quot;, &quot;rss_iterations&quot;, &quot;rss_converged&quot;,
+                   &quot;rss_last_elbo_change&quot;, &quot;selected&quot;)]</code></pre>
+<pre><code>  L objective rss_iterations rss_converged rss_last_elbo_change selected
+1 1  19551.04              2          TRUE         0.000000e+00    FALSE
+2 2  19553.36              4          TRUE         3.338244e-05     TRUE
+3 3 -49934.43            100         FALSE         2.774708e+01    FALSE
+4 4 -49762.22            100         FALSE         2.759806e+01    FALSE
+5 5 -49158.50            100         FALSE         2.745763e+01    FALSE</code></pre>
+<pre class="r"><code>par(mfrow=c(1,2))
+plot(fit_aiw$scores$L, fit_aiw$scores$objective, type=&quot;b&quot;, pch=16,
+     xlab=&quot;Candidate L&quot;, ylab=&quot;AIW score&quot;, main=&quot;Ridge = 1e-4&quot;)
+abline(v=fit_aiw$selected_L, col=&quot;red&quot;, lty=2)
+plot_pip(fit_aiw, causal=causal, R=R0,
+         main=paste(&quot;AIW-selected RSS: L =&quot;, fit_aiw$selected_L))</code></pre>
+<p><img src="figure/03-problematic-simulation.Rmd/aiw-small-ridge-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>par(mfrow=c(1,1))</code></pre>
+<p>The convergence problem is still present among the candidate RSS
+fits, but AIW selects <span class="math inline">\(L=2\)</span>, whose
+RSS fit did converge. Convergence does not guarantee perfect
+fine-mapping: inspect the selected credible sets below, including
+whether they contain the true causal SNP.</p>
+<pre class="r"><code>data.frame(CS=names(fit_aiw$sets$cs), size=lengths(fit_aiw$sets$cs),
+           contains_causal=sapply(fit_aiw$sets$cs, function(s) any(causal %in% s)))</code></pre>
+<pre><code>   CS size contains_causal
+L1 L1    1            TRUE
+L2 L2    2           FALSE</code></pre>
+</div>
+<div id="aiw-with-a-1000-iteration-cap" class="section level2">
+<h2>3. AIW with a 1,000-iteration cap</h2>
+<p>Increase only the iteration cap from 100 to 1,000. Keep <span
+class="math inline">\(L=1,\ldots,5\)</span>,
+<code>rss_ridge = 1e-4</code>, and all other settings the same as in
+section 2.</p>
+<pre class="r"><code>set.seed(example$seed)
+time_aiw_1000 &lt;- system.time(fit_aiw_1000 &lt;- susie_aiw(
+  v=v, R0=R0, N=N, L=1:5, max_iter=1000, tol=1e-4,
+  rss_ridge=1e-4, estimate_prior_variance=TRUE,
+  lambda_max = .1,
+  keep_fits=TRUE))[&quot;elapsed&quot;]</code></pre>
+<pre><code>WARNING: IBSS algorithm did not converge in 1000 iterations!</code></pre>
+<pre><code>Warning: IBSS algorithm did not converge in 1000 iterations!</code></pre>
+<pre><code>Warning: SuSiE-RSS did not converge for L = 3 within max_iter = 1000; AIW will
+score and retain its final iterate. Inspect candidate diagnostics.</code></pre>
+<pre><code>WARNING: IBSS algorithm did not converge in 1000 iterations!</code></pre>
+<pre><code>Warning: IBSS algorithm did not converge in 1000 iterations!</code></pre>
+<pre><code>Warning: SuSiE-RSS did not converge for L = 4 within max_iter = 1000; AIW will
+score and retain its final iterate. Inspect candidate diagnostics.</code></pre>
+<pre><code>WARNING: IBSS algorithm did not converge in 1000 iterations!</code></pre>
+<pre><code>Warning: IBSS algorithm did not converge in 1000 iterations!</code></pre>
+<pre><code>Warning: SuSiE-RSS did not converge for L = 5 within max_iter = 1000; AIW will
+score and retain its final iterate. Inspect candidate diagnostics.</code></pre>
+<pre class="r"><code>fit_aiw_1000$scores[, c(&quot;L&quot;, &quot;objective&quot;, &quot;rss_iterations&quot;, &quot;rss_converged&quot;,
+                       &quot;rss_last_elbo_change&quot;, &quot;selected&quot;)]</code></pre>
+<pre><code>  L objective rss_iterations rss_converged rss_last_elbo_change selected
+1 1  19551.04              2          TRUE         0.000000e+00    FALSE
+2 2  19553.36              4          TRUE         3.338244e-05     TRUE
+3 3 -28914.84           1000         FALSE         1.941596e+01    FALSE
+4 4 -28776.09           1000         FALSE         1.938474e+01    FALSE
+5 5 -28401.55           1000         FALSE         1.917327e+01    FALSE</code></pre>
+<pre class="r"><code>par(mfrow=c(1,2))
+plot(fit_aiw_1000$scores$L, fit_aiw_1000$scores$objective,
+     type=&quot;b&quot;, pch=16, xlab=&quot;Candidate L&quot;, ylab=&quot;AIW score&quot;, main=&quot;Iteration cap = 1000&quot;)
+abline(v=fit_aiw_1000$selected_L, col=&quot;red&quot;, lty=2)
+plot_pip(fit_aiw_1000, causal=causal, R=R0,
+         main=paste(&quot;AIW-selected RSS: L =&quot;, fit_aiw_1000$selected_L))</code></pre>
+<p><img src="figure/03-problematic-simulation.Rmd/aiw-1000-iterations-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>par(mfrow=c(1,1))</code></pre>
+<pre class="r"><code>selected_100 &lt;- subset(fit_aiw$scores, selected)
+selected_1000 &lt;- subset(fit_aiw_1000$scores, selected)
+data.frame(
+  iteration_cap=c(100, 1000),
+  elapsed_seconds=c(unname(time_aiw), unname(time_aiw_1000)),
+  selected_L=c(fit_aiw$selected_L, fit_aiw_1000$selected_L),
+  selected_RSS_iterations=c(selected_100$rss_iterations, selected_1000$rss_iterations),
+  selected_RSS_converged=c(selected_100$rss_converged, selected_1000$rss_converged)
+)</code></pre>
+<pre><code>  iteration_cap elapsed_seconds selected_L selected_RSS_iterations
+1           100          54.454          2                       4
+2          1000         256.201          2                       4
+  selected_RSS_converged
+1                   TRUE
+2                   TRUE</code></pre>
+<pre class="r"><code>data.frame(
+  max_PIP_difference=max(abs(fit_aiw$pip - fit_aiw_1000$pip)),
+  identical_credible_sets=identical(fit_aiw$sets$cs, fit_aiw_1000$sets$cs)
+)</code></pre>
+<pre><code>  max_PIP_difference identical_credible_sets
+1                  0                    TRUE</code></pre>
+<p>The RSS fit at the AIW-selected <span
+class="math inline">\(L=2\)</span> converges in only 4 iterations, well
+below either cap. Increasing the cap makes the overall algorithm slower
+because the larger, nonconverged candidates continue running. It does
+not change the selected <span class="math inline">\(L\)</span>, PIPs, or
+credible sets in this example. The scores of the nonselected candidates
+do change as their RSS fits continue to update.</p>
+</div>
+<div id="conclusion" class="section level2">
+<h2>4. Conclusion</h2>
+<!-- To be filled in. -->
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.6.1 (2026-06-24)
+Platform: aarch64-apple-darwin23
+Running under: macOS Golden Gate 27.0.1
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] C.UTF-8/C.UTF-8/C.UTF-8/C/C.UTF-8/C.UTF-8
+
+time zone: America/New_York
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] susieR_0.16.6          susieRobust_0.0.0.9001 workflowr_1.7.2       
+
+loaded via a namespace (and not attached):
+ [1] generics_0.1.4     sass_0.4.10        stringi_1.8.9      lattice_0.22-9    
+ [5] digest_0.6.39      magrittr_2.0.5     evaluate_1.0.5     grid_4.6.1        
+ [9] RColorBrewer_1.1-3 fastmap_1.2.0      plyr_1.8.9         rprojroot_2.1.1   
+[13] jsonlite_2.0.0     Matrix_1.7-5       processx_3.9.0     whisker_0.4.1     
+[17] reshape_0.8.10     mixsqp_0.3-54      promises_1.5.0     httr_1.4.9        
+[21] scales_1.4.0       jquerylib_0.1.4    cli_3.6.6          rlang_1.3.0       
+[25] zigg_0.0.2         crayon_1.5.3       cachem_1.1.0       yaml_2.3.12       
+[29] otel_0.2.0         tools_4.6.1        dplyr_1.2.1        ggplot2_4.0.3     
+[33] httpuv_1.6.17      Rfast_2.1.5.2      vctrs_0.7.3        R6_2.6.1          
+[37] matrixStats_1.5.0  lifecycle_1.0.5    git2r_0.36.2       stringr_1.6.0     
+[41] fs_2.1.0           irlba_2.3.7        pkgconfig_2.0.3    callr_3.8.0       
+[45] RcppParallel_6.2.1 pillar_1.11.1      bslib_0.12.0       later_1.4.8       
+[49] gtable_0.3.6       glue_1.8.1         Rcpp_1.1.2         tidyselect_1.2.1  
+[53] xfun_0.60          tibble_3.3.1       rstudioapi_0.19.0  knitr_1.51        
+[57] farver_2.1.2       htmltools_0.5.9    rmarkdown_2.32     compiler_4.6.1    
+[61] getPass_0.2-4      S7_0.2.2          </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

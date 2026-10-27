@@ -1,0 +1,204 @@
+---
+title: "A problematic simulation example"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    toc: false
+editor_options:
+  chunk_output_type: inline
+---
+
+## 1. A problematic simulation example
+
+This is a saved example from the RCC v5 pilot: a 2 Mb locus with 3,508 variants,
+200,000 study individuals, and 5,000 reference individuals. The populations split
+200 generations ago. There is one causal variant (SNP 729), and regional
+heritability is 0.3%. Recombination is $10^{-8}$ per base per generation.
+We load the original LD matrices and association statistics without resimulating.
+All SNP indices below use R's one-based indexing.
+
+```{r}
+library(susieRobust)
+library(susieR)
+# The prior-variance plot uses the trace$effect format in susieR 0.16.6.
+
+example <- readRDS("data/problematic-simulation/example.rds")
+R <- readRDS("data/problematic-simulation/R.rds")
+R0 <- readRDS("data/problematic-simulation/R0.rds")
+v <- example$v
+N <- example$N; causal <- example$causal; J <- length(v)
+L_max <- 10L; max_iter <- 100L; tol <- 1e-4
+coverage <- 0.95; min_abs_corr <- 0.5
+```
+
+### Three linearly dependent variants
+
+SNPs 588, 597, and 600 are linearly dependent in the reference panel. Their
+$3\times3$ reference LD matrix has a zero eigenvalue, even though no pair is
+perfectly correlated. If $a$ is its unit null eigenvector, then
+$R_{0,\gamma}a=0$, but $a^\top v_\gamma\ne0$: the association statistics do not
+respect the reference panel's linear dependence. The corresponding in-sample
+LD block does not have this exact dependence.
+
+```{r}
+gamma <- c(588L, 597L, 600L)
+round(R0[gamma, gamma], 4)
+e <- eigen(R0[gamma, gamma], symmetric=TRUE)
+a <- e$vectors[, which.min(e$values)]
+if (a[2] < 0) a <- -a  # Fix the arbitrary eigenvector sign.
+data.frame(SNP=gamma, null_direction=a, v=v[gamma])
+data.frame(
+  reference_min_eigenvalue=min(e$values),
+  in_sample_min_eigenvalue=min(eigen(R[gamma, gamma], symmetric=TRUE)$values),
+  reference_null_residual=sqrt(sum((R0[, gamma] %*% a)^2)),
+  association_null_contrast=sum(a * v[gamma])
+)
+```
+
+Along this direction, the RSS likelihood can favor large opposing effects.
+A small ridge makes the matrix invertible, but leaves a weakly penalized
+direction and can lead to slow updates. Here we use the same ridge,
+$10^{-4}$, for both in-sample and reference RSS, learn the effect prior
+variances, and keep the residual variance fixed at 1.
+
+```{r}
+ridge <- 1e-4
+fit_in_sample <- susieR::susie_ss(
+  XtX=N * ((1-ridge)*R + ridge*diag(J)), Xty=N*v, yty=N, n=N,
+  L=L_max, standardize=FALSE, residual_variance=1,
+  estimate_residual_variance=FALSE, estimate_prior_variance=TRUE,
+  scaled_prior_variance=0.2, check_prior=FALSE,
+  max_iter=max_iter, tol=tol, coverage=coverage,
+  min_abs_corr=min_abs_corr, n_purity=J, track_fit=TRUE)
+
+fit_reference <- susieR::susie_ss(
+  XtX=N * ((1-ridge)*R0 + ridge*diag(J)), Xty=N*v, yty=N, n=N,
+  L=L_max, standardize=FALSE, residual_variance=1,
+  estimate_residual_variance=FALSE, estimate_prior_variance=TRUE,
+  scaled_prior_variance=0.2, check_prior=FALSE,
+  max_iter=max_iter, tol=tol, coverage=coverage,
+  min_abs_corr=min_abs_corr, n_purity=J, track_fit=TRUE)
+
+data.frame(
+  LD=c("In-sample", "Reference"),
+  iterations=c(fit_in_sample$niter, fit_reference$niter),
+  converged=c(fit_in_sample$converged, fit_reference$converged),
+  causal_PIP=c(fit_in_sample$pip[causal], fit_reference$pip[causal])
+)
+```
+
+The causal SNP is marked in red in the PIP plots.
+
+```{r rss-pips, fig.width=10, fig.height=4}
+par(mfrow=c(1,2))
+plot_pip(fit_in_sample, causal=causal, R=R, main="In-sample RSS: L = 10")
+plot_pip(fit_reference, causal=causal, R=R0, main="Reference RSS: L = 10")
+par(mfrow=c(1,1))
+```
+
+Each curve below is the learned prior variance of one single-effect component.
+Iteration 0 is the initialization. The in-sample trace ends when its fit stops.
+
+```{r prior-variance, fig.width=10, fig.height=4}
+par(mfrow=c(1,2))
+for (name in c("In-sample", "Reference")) {
+  fit <- if (name == "In-sample") fit_in_sample else fit_reference
+  history <- fit$trace$effect
+  V <- with(history, tapply(V, list(iteration, effect), identity))
+  matplot(as.numeric(rownames(V)), V, type="l", lty=1,
+          xlab="Iteration", ylab="Learned prior variance",
+          main=paste(name, "RSS: L = 10"))
+}
+par(mfrow=c(1,1))
+```
+
+## 2. AIW with 100 iteration cap
+
+Now restrict AIW to $L=1,\ldots,5$, keeping the same 100-iteration cap and
+RSS convergence tolerance. All candidate fits start from fresh initialization.
+
+```{r}
+set.seed(example$seed)
+time_aiw <- system.time(fit_aiw <- susie_aiw(
+  v=v, R0=R0, N=N, L=1:5, max_iter=100, tol=1e-4,
+  rss_ridge=1e-4, estimate_prior_variance=TRUE,
+  lambda_max = .1,
+  keep_fits=TRUE))["elapsed"]
+
+fit_aiw$scores[, c("L", "objective", "rss_iterations", "rss_converged",
+                   "rss_last_elbo_change", "selected")]
+```
+
+```{r aiw-small-ridge, fig.width=10, fig.height=4}
+par(mfrow=c(1,2))
+plot(fit_aiw$scores$L, fit_aiw$scores$objective, type="b", pch=16,
+     xlab="Candidate L", ylab="AIW score", main="Ridge = 1e-4")
+abline(v=fit_aiw$selected_L, col="red", lty=2)
+plot_pip(fit_aiw, causal=causal, R=R0,
+         main=paste("AIW-selected RSS: L =", fit_aiw$selected_L))
+par(mfrow=c(1,1))
+```
+
+The convergence problem is still present among the candidate RSS fits, but
+AIW selects $L=`r fit_aiw$selected_L`$, whose RSS fit did converge.
+Convergence does not guarantee perfect fine-mapping: inspect the selected
+credible sets below, including whether they contain the true causal SNP.
+
+```{r}
+data.frame(CS=names(fit_aiw$sets$cs), size=lengths(fit_aiw$sets$cs),
+           contains_causal=sapply(fit_aiw$sets$cs, function(s) any(causal %in% s)))
+```
+
+## 3. AIW with a 1,000-iteration cap
+
+Increase only the iteration cap from 100 to 1,000. Keep $L=1,\ldots,5$,
+`rss_ridge = 1e-4`, and all other settings the same as in section 2.
+
+```{r}
+set.seed(example$seed)
+time_aiw_1000 <- system.time(fit_aiw_1000 <- susie_aiw(
+  v=v, R0=R0, N=N, L=1:5, max_iter=1000, tol=1e-4,
+  rss_ridge=1e-4, estimate_prior_variance=TRUE,
+  lambda_max = .1,
+  keep_fits=TRUE))["elapsed"]
+
+fit_aiw_1000$scores[, c("L", "objective", "rss_iterations", "rss_converged",
+                       "rss_last_elbo_change", "selected")]
+```
+
+```{r aiw-1000-iterations, fig.width=10, fig.height=4}
+par(mfrow=c(1,2))
+plot(fit_aiw_1000$scores$L, fit_aiw_1000$scores$objective,
+     type="b", pch=16, xlab="Candidate L", ylab="AIW score", main="Iteration cap = 1000")
+abline(v=fit_aiw_1000$selected_L, col="red", lty=2)
+plot_pip(fit_aiw_1000, causal=causal, R=R0,
+         main=paste("AIW-selected RSS: L =", fit_aiw_1000$selected_L))
+par(mfrow=c(1,1))
+```
+
+```{r}
+selected_100 <- subset(fit_aiw$scores, selected)
+selected_1000 <- subset(fit_aiw_1000$scores, selected)
+data.frame(
+  iteration_cap=c(100, 1000),
+  elapsed_seconds=c(unname(time_aiw), unname(time_aiw_1000)),
+  selected_L=c(fit_aiw$selected_L, fit_aiw_1000$selected_L),
+  selected_RSS_iterations=c(selected_100$rss_iterations, selected_1000$rss_iterations),
+  selected_RSS_converged=c(selected_100$rss_converged, selected_1000$rss_converged)
+)
+data.frame(
+  max_PIP_difference=max(abs(fit_aiw$pip - fit_aiw_1000$pip)),
+  identical_credible_sets=identical(fit_aiw$sets$cs, fit_aiw_1000$sets$cs)
+)
+```
+
+The RSS fit at the AIW-selected $L=`r fit_aiw_1000$selected_L`$ converges in
+only `r selected_1000$rss_iterations` iterations, well below either cap.
+Increasing the cap makes the overall algorithm slower because the larger,
+nonconverged candidates continue running. It does not change the selected
+$L$, PIPs, or credible sets in this example. The scores of the nonselected
+candidates do change as their RSS fits continue to update.
+
+## 4. Conclusion
+
+<!-- To be filled in. -->

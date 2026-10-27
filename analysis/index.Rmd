@@ -17,6 +17,9 @@ reference LD differs from the study LD.
 2. [A closer look at IW](02-closer-look-at-IW.html): fit IW to the same example,
    then refit with eta0 fixed at twice its learned value.
 
+3. [A problematic simulation example](03-problematic-simulation.html): inspect a
+   linearly dependent SNP configuration and compare AIW under two iteration caps.
+
 The tutorials use saved LD matrices, so Python and stdpopsim are optional.
 The [source code and example data](https://github.com/dodat-stats/susieRobust-workflowr)
 are available on GitHub.
