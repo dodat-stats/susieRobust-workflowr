@@ -61,6 +61,60 @@ direction and can lead to slow updates. Here we use the same ridge,
 $10^{-4}$, for both in-sample and reference RSS, learn the effect prior
 variances, and keep the residual variance fixed at 1.
 
+### Log Bayes factor for a fixed configuration
+
+Let $\gamma=(j_1,\ldots,j_L)$ specify distinct causal SNPs, and write
+$C=(1-\epsilon)R_0+\epsilon I$, $C_\gamma=C[\gamma,\gamma]$,
+and $v_\gamma=v[\gamma]$. Conditional on this configuration, use the
+Gaussian effect prior $\beta_\gamma\sim N(0,D)$, where
+$D=\operatorname{diag}(V_1,\ldots,V_L)$ is held fixed when integrating.
+With residual variance 1, the RSS likelihood ratio against the null is
+$$
+\frac{\mathcal L(\beta_\gamma)}{\mathcal L(0)}
+=\exp\left\{N v_\gamma^\top\beta_\gamma
+-\frac{N}{2}\beta_\gamma^\top C_\gamma\beta_\gamma\right\}.
+$$
+Integrating over the effects gives the exact configuration-specific log BF:
+$$
+\boxed{
+\log\mathrm{BF}_\gamma
+=-\frac12\log\det(I+N D^{1/2}C_\gamma D^{1/2})
++\frac{N^2}{2}v_\gamma^\top
+(D^{-1}+N C_\gamma)^{-1}v_\gamma .
+}
+$$
+This expression assumes positive $V_l$; the code below also handles zero
+variances by using $D^{1/2}(I+N D^{1/2}C_\gamma D^{1/2})^{-1}D^{1/2}$.
+It does not include prior odds on $\gamma$ and is not the variational ELBO
+or the AIW score.
+
+For a common prior variance $V_l=\tau^2$, let $C_\gamma u_k=d_k u_k$
+with orthonormal $u_k$. Then
+$$
+\log\mathrm{BF}_\gamma
+=\frac12\sum_k\left[
+\frac{N^2\tau^2(u_k^\top v_\gamma)^2}{1+N\tau^2d_k}
+-\log(1+N\tau^2d_k)\right].
+$$
+A small eigenvalue $d_k$ together with a nonzero association contrast
+$u_k^\top v_\gamma$ can therefore produce a very large BF. Here the
+reference null direction becomes an eigenvector with eigenvalue
+$d_k=\epsilon=10^{-4}$ after adding the ridge.
+
+```{r}
+log_bf <- function(gamma, V, C, v, N) {
+  D_half <- diag(sqrt(V), nrow=length(gamma))
+  B <- diag(length(gamma)) + N * D_half %*% C[gamma, gamma] %*% D_half
+  b <- D_half %*% v[gamma]
+  -0.5 * as.numeric(determinant(B, logarithm=TRUE)$modulus) +
+    0.5 * N^2 * drop(crossprod(b, solve(B, b)))
+}
+C <- (1-1e-4)*R0 + 1e-4*diag(J)
+log_bf(gamma, V=rep(0.2, 3), C=C, v=v, N=N)
+```
+
+### In-sample and reference RSS with $L=10$
+
 ```{r}
 ridge <- 1e-4
 fit_in_sample <- susieR::susie_ss(
@@ -110,6 +164,60 @@ for (name in c("In-sample", "Reference")) {
           main=paste(name, "RSS: L = 10"))
 }
 par(mfrow=c(1,1))
+```
+
+### How the reference RSS fit evolves with $L=3$
+
+Use ridge $10^{-4}$ and the same 100-iteration cap, now with three
+single-effect components. The trace records their learned prior variances
+and highest-probability SNPs after each iteration.
+
+```{r}
+fit_L3 <- susieR::susie_ss(
+  XtX=N*C, Xty=N*v, yty=N, n=N, L=3,
+  standardize=FALSE, residual_variance=1,
+  estimate_residual_variance=FALSE, estimate_prior_variance=TRUE,
+  scaled_prior_variance=0.2, check_prior=FALSE,
+  max_iter=100, tol=1e-4, coverage=coverage,
+  min_abs_corr=min_abs_corr, n_purity=J, track_fit=TRUE)
+history_L3 <- fit_L3$trace$effect
+V_L3 <- with(history_L3, tapply(V, list(iteration, effect), identity))
+iterations_L3 <- as.numeric(rownames(V_L3))
+bf_L3 <- apply(V_L3, 1, function(V)
+  log_bf(gamma, V=V, C=C, v=v, N=N))
+```
+
+For the BF curve, hold $\gamma=(588,597,600)$ fixed and insert the learned
+variances at each iteration, assigning component $l$ to SNP $\gamma_l$.
+Each value is an exact Gaussian integral conditional on those variances;
+this diagnostic curve is not the evidence averaged over SuSiE configurations.
+
+```{r L3-evolution, fig.width=12, fig.height=4}
+par(mfrow=c(1,3))
+plot(seq_along(fit_L3$elbo), fit_L3$elbo, type="l",
+     xlab="Iteration", ylab="ELBO", main="Reference RSS: L = 3")
+matplot(iterations_L3, V_L3, type="l", lty=1, col=1:3,
+        xlab="Iteration", ylab="Learned prior variance", main="Effect prior variances")
+legend("topleft", legend=paste("Effect", 1:3), col=1:3, lty=1, bty="n", cex=.8)
+plot(iterations_L3, bf_L3, type="l",
+     xlab="Iteration", ylab="Log BF", main="Fixed configuration: 588, 597, 600")
+par(mfrow=c(1,1))
+```
+
+The snapshots show the fit moving away from the true SNP 729 and onto the
+linearly dependent reference configuration. The prior variances then grow,
+and the ELBO is still increasing at the iteration cap.
+
+```{r}
+top_SNP <- with(history_L3, tapply(top_variable, list(iteration, effect), identity))
+top_alpha <- with(history_L3, tapply(top_alpha, list(iteration, effect), identity))
+snapshots <- c(1, 5, 10, 25, 50, 75, 100)
+rows <- match(snapshots, iterations_L3)
+data.frame(iteration=snapshots,
+           SNP_1=top_SNP[rows, 1], SNP_2=top_SNP[rows, 2], SNP_3=top_SNP[rows, 3],
+           alpha_1=top_alpha[rows, 1], alpha_2=top_alpha[rows, 2], alpha_3=top_alpha[rows, 3])
+data.frame(iterations=fit_L3$niter, converged=fit_L3$converged,
+           last_ELBO_increase=tail(diff(fit_L3$elbo), 1), causal_PIP=fit_L3$pip[causal])
 ```
 
 ## 2. AIW with 100 iteration cap

@@ -348,10 +348,10 @@ changes </a>
 <div id="strongRMarkdownfilestronguncommittedchanges"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown is untracked by Git. To know which version of the R
-Markdown file created these results, you’ll want to first commit it to
-the Git repo. If you’re still working on the analysis, you can ignore
-this warning. When you’re finished, you can run
+<p>The R Markdown file has unstaged changes. To know which version of
+the R Markdown file created these results, you’ll want to first commit
+it to the Git repo. If you’re still working on the analysis, you can
+ignore this warning. When you’re finished, you can run
 <code>wflow_publish</code> to commit the R Markdown file and build the
 HTML.</p>
 </div>
@@ -444,15 +444,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtreeecc8061827339e5a4f773221afc6b8265e2aa259targetblankecc8061a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtree465f3c943fab1d11446de1929e98e1c3faddb18etargetblank465f3c9a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/ecc8061827339e5a4f773221afc6b8265e2aa259" target="_blank">ecc8061</a>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/465f3c943fab1d11446de1929e98e1c3faddb18e" target="_blank">465f3c9</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtreeecc8061827339e5a4f773221afc6b8265e2aa259targetblankecc8061a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtree465f3c943fab1d11446de1929e98e1c3faddb18etargetblank465f3c9a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -462,7 +462,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/ecc8061827339e5a4f773221afc6b8265e2aa259" target="_blank">ecc8061</a>.
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/465f3c943fab1d11446de1929e98e1c3faddb18e" target="_blank">465f3c9</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -484,12 +484,9 @@ Ignored files:
     Ignored:    analysis/.RData
     Ignored:    analysis/.Rhistory
 
-Untracked files:
-    Untracked:  analysis/03-problematic-simulation.Rmd
-    Untracked:  data/problematic-simulation/
-
 Unstaged changes:
     Modified:   analysis/01-get-started.Rmd
+    Modified:   analysis/03-problematic-simulation.Rmd
     Modified:   analysis/index.Rmd
 
 </code></pre>
@@ -506,9 +503,73 @@ have uncommitted changes.
 </div>
 <div id="versions" class="tab-pane fade">
 <p>
-There are no past versions. Publish this analysis with
-<code>wflow_publish()</code> to start tracking its development.
+These are the previous versions of the repository in which changes were
+made to the R Markdown
+(<code>analysis/03-problematic-simulation.Rmd</code>) and HTML
+(<code>docs/03-problematic-simulation.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
 </p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/465f3c943fab1d11446de1929e98e1c3faddb18e/analysis/03-problematic-simulation.Rmd" target="_blank">465f3c9</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-10-27
+</td>
+<td>
+Add problematic simulation example and AIW iteration-cap comparison
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/dodat-stats/susieRobust-workflowr/465f3c943fab1d11446de1929e98e1c3faddb18e/docs/03-problematic-simulation.html" target="_blank">465f3c9</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-10-27
+</td>
+<td>
+Add problematic simulation example and AIW iteration-cap comparison
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 <hr>
 </div>
 </div>
@@ -575,6 +636,67 @@ penalized direction and can lead to slow updates. Here we use the same
 ridge, <span class="math inline">\(10^{-4}\)</span>, for both in-sample
 and reference RSS, learn the effect prior variances, and keep the
 residual variance fixed at 1.</p>
+</div>
+<div id="log-bayes-factor-for-a-fixed-configuration"
+class="section level3">
+<h3>Log Bayes factor for a fixed configuration</h3>
+<p>Let <span class="math inline">\(\gamma=(j_1,\ldots,j_L)\)</span>
+specify distinct causal SNPs, and write <span
+class="math inline">\(C=(1-\epsilon)R_0+\epsilon I\)</span>, <span
+class="math inline">\(C_\gamma=C[\gamma,\gamma]\)</span>, and <span
+class="math inline">\(v_\gamma=v[\gamma]\)</span>. Conditional on this
+configuration, use the Gaussian effect prior <span
+class="math inline">\(\beta_\gamma\sim N(0,D)\)</span>, where <span
+class="math inline">\(D=\operatorname{diag}(V_1,\ldots,V_L)\)</span> is
+held fixed when integrating. With residual variance 1, the RSS
+likelihood ratio against the null is <span class="math display">\[
+\frac{\mathcal L(\beta_\gamma)}{\mathcal L(0)}
+=\exp\left\{N v_\gamma^\top\beta_\gamma
+-\frac{N}{2}\beta_\gamma^\top C_\gamma\beta_\gamma\right\}.
+\]</span> Integrating over the effects gives the exact
+configuration-specific log BF: <span class="math display">\[
+\boxed{
+\log\mathrm{BF}_\gamma
+=-\frac12\log\det(I+N D^{1/2}C_\gamma D^{1/2})
++\frac{N^2}{2}v_\gamma^\top
+(D^{-1}+N C_\gamma)^{-1}v_\gamma .
+}
+\]</span> This expression assumes positive <span
+class="math inline">\(V_l\)</span>; the code below also handles zero
+variances by using <span class="math inline">\(D^{1/2}(I+N
+D^{1/2}C_\gamma D^{1/2})^{-1}D^{1/2}\)</span>. It does not include prior
+odds on <span class="math inline">\(\gamma\)</span> and is not the
+variational ELBO or the AIW score.</p>
+<p>For a common prior variance <span
+class="math inline">\(V_l=\tau^2\)</span>, let <span
+class="math inline">\(C_\gamma u_k=d_k u_k\)</span> with orthonormal
+<span class="math inline">\(u_k\)</span>. Then <span
+class="math display">\[
+\log\mathrm{BF}_\gamma
+=\frac12\sum_k\left[
+\frac{N^2\tau^2(u_k^\top v_\gamma)^2}{1+N\tau^2d_k}
+-\log(1+N\tau^2d_k)\right].
+\]</span> A small eigenvalue <span class="math inline">\(d_k\)</span>
+together with a nonzero association contrast <span
+class="math inline">\(u_k^\top v_\gamma\)</span> can therefore produce a
+very large BF. Here the reference null direction becomes an eigenvector
+with eigenvalue <span
+class="math inline">\(d_k=\epsilon=10^{-4}\)</span> after adding the
+ridge.</p>
+<pre class="r"><code>log_bf &lt;- function(gamma, V, C, v, N) {
+  D_half &lt;- diag(sqrt(V), nrow=length(gamma))
+  B &lt;- diag(length(gamma)) + N * D_half %*% C[gamma, gamma] %*% D_half
+  b &lt;- D_half %*% v[gamma]
+  -0.5 * as.numeric(determinant(B, logarithm=TRUE)$modulus) +
+    0.5 * N^2 * drop(crossprod(b, solve(B, b)))
+}
+C &lt;- (1-1e-4)*R0 + 1e-4*diag(J)
+log_bf(gamma, V=rep(0.2, 3), C=C, v=v, N=N)</code></pre>
+<pre><code>[1] 57416.55</code></pre>
+</div>
+<div id="in-sample-and-reference-rss-with-l10" class="section level3">
+<h3>In-sample and reference RSS with <span
+class="math inline">\(L=10\)</span></h3>
 <pre class="r"><code>ridge &lt;- 1e-4
 fit_in_sample &lt;- susieR::susie_ss(
   XtX=N * ((1-ridge)*R + ridge*diag(J)), Xty=N*v, yty=N, n=N,
@@ -607,6 +729,43 @@ fit_reference &lt;- susieR::susie_ss(
 plot_pip(fit_in_sample, causal=causal, R=R, main=&quot;In-sample RSS: L = 10&quot;)
 plot_pip(fit_reference, causal=causal, R=R0, main=&quot;Reference RSS: L = 10&quot;)</code></pre>
 <p><img src="figure/03-problematic-simulation.Rmd/rss-pips-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-rss-pips-1">
+Past versions of rss-pips-1.png
+</button>
+</p>
+<div id="fig-rss-pips-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/465f3c943fab1d11446de1929e98e1c3faddb18e/docs/figure/03-problematic-simulation.Rmd/rss-pips-1.png" target="_blank">465f3c9</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-10-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>par(mfrow=c(1,1))</code></pre>
 <p>Each curve below is the learned prior variance of one single-effect
 component. Iteration 0 is the initialization. The in-sample trace ends
@@ -621,7 +780,106 @@ for (name in c(&quot;In-sample&quot;, &quot;Reference&quot;)) {
           main=paste(name, &quot;RSS: L = 10&quot;))
 }</code></pre>
 <p><img src="figure/03-problematic-simulation.Rmd/prior-variance-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-prior-variance-1">
+Past versions of prior-variance-1.png
+</button>
+</p>
+<div id="fig-prior-variance-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/465f3c943fab1d11446de1929e98e1c3faddb18e/docs/figure/03-problematic-simulation.Rmd/prior-variance-1.png" target="_blank">465f3c9</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-10-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>par(mfrow=c(1,1))</code></pre>
+</div>
+<div id="how-the-reference-rss-fit-evolves-with-l3"
+class="section level3">
+<h3>How the reference RSS fit evolves with <span
+class="math inline">\(L=3\)</span></h3>
+<p>Use ridge <span class="math inline">\(10^{-4}\)</span> and the same
+100-iteration cap, now with three single-effect components. The trace
+records their learned prior variances and highest-probability SNPs after
+each iteration.</p>
+<pre class="r"><code>fit_L3 &lt;- susieR::susie_ss(
+  XtX=N*C, Xty=N*v, yty=N, n=N, L=3,
+  standardize=FALSE, residual_variance=1,
+  estimate_residual_variance=FALSE, estimate_prior_variance=TRUE,
+  scaled_prior_variance=0.2, check_prior=FALSE,
+  max_iter=100, tol=1e-4, coverage=coverage,
+  min_abs_corr=min_abs_corr, n_purity=J, track_fit=TRUE)</code></pre>
+<pre><code>WARNING: IBSS algorithm did not converge in 100 iterations!</code></pre>
+<pre><code>Warning: IBSS algorithm did not converge in 100 iterations!</code></pre>
+<pre class="r"><code>history_L3 &lt;- fit_L3$trace$effect
+V_L3 &lt;- with(history_L3, tapply(V, list(iteration, effect), identity))
+iterations_L3 &lt;- as.numeric(rownames(V_L3))
+bf_L3 &lt;- apply(V_L3, 1, function(V)
+  log_bf(gamma, V=V, C=C, v=v, N=N))</code></pre>
+<p>For the BF curve, hold <span
+class="math inline">\(\gamma=(588,597,600)\)</span> fixed and insert the
+learned variances at each iteration, assigning component <span
+class="math inline">\(l\)</span> to SNP <span
+class="math inline">\(\gamma_l\)</span>. Each value is an exact Gaussian
+integral conditional on those variances; this diagnostic curve is not
+the evidence averaged over SuSiE configurations.</p>
+<pre class="r"><code>par(mfrow=c(1,3))
+plot(seq_along(fit_L3$elbo), fit_L3$elbo, type=&quot;l&quot;,
+     xlab=&quot;Iteration&quot;, ylab=&quot;ELBO&quot;, main=&quot;Reference RSS: L = 3&quot;)
+matplot(iterations_L3, V_L3, type=&quot;l&quot;, lty=1, col=1:3,
+        xlab=&quot;Iteration&quot;, ylab=&quot;Learned prior variance&quot;, main=&quot;Effect prior variances&quot;)
+legend(&quot;topleft&quot;, legend=paste(&quot;Effect&quot;, 1:3), col=1:3, lty=1, bty=&quot;n&quot;, cex=.8)
+plot(iterations_L3, bf_L3, type=&quot;l&quot;,
+     xlab=&quot;Iteration&quot;, ylab=&quot;Log BF&quot;, main=&quot;Fixed configuration: 588, 597, 600&quot;)</code></pre>
+<p><img src="figure/03-problematic-simulation.Rmd/L3-evolution-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>par(mfrow=c(1,1))</code></pre>
+<p>The snapshots show the fit moving away from the true SNP 729 and onto
+the linearly dependent reference configuration. The prior variances then
+grow, and the ELBO is still increasing at the iteration cap.</p>
+<pre class="r"><code>top_SNP &lt;- with(history_L3, tapply(top_variable, list(iteration, effect), identity))
+top_alpha &lt;- with(history_L3, tapply(top_alpha, list(iteration, effect), identity))
+snapshots &lt;- c(1, 5, 10, 25, 50, 75, 100)
+rows &lt;- match(snapshots, iterations_L3)
+data.frame(iteration=snapshots,
+           SNP_1=top_SNP[rows, 1], SNP_2=top_SNP[rows, 2], SNP_3=top_SNP[rows, 3],
+           alpha_1=top_alpha[rows, 1], alpha_2=top_alpha[rows, 2], alpha_3=top_alpha[rows, 3])</code></pre>
+<pre><code>    iteration SNP_1 SNP_2 SNP_3   alpha_1   alpha_2   alpha_3
+1           1   729   668   600 1.0000000 0.6569835 0.9999976
+5           5   729   668   600 1.0000000 0.6318300 1.0000000
+10         10   729   627   600 1.0000000 0.5773257 1.0000000
+25         25   729   627   600 0.7007519 0.8497901 1.0000000
+50         50   588   627   600 0.6249602 0.8194393 1.0000000
+75         75   588   597   600 0.9819158 1.0000000 1.0000000
+100       100   588   597   600 0.9991127 1.0000000 1.0000000</code></pre>
+<pre class="r"><code>data.frame(iterations=fit_L3$niter, converged=fit_L3$converged,
+           last_ELBO_increase=tail(diff(fit_L3$elbo), 1), causal_PIP=fit_L3$pip[causal])</code></pre>
+<pre><code>  iterations converged last_ELBO_increase causal_PIP
+1        100     FALSE           27.74708          0</code></pre>
 </div>
 </div>
 <div id="aiw-with-100-iteration-cap" class="section level2">
@@ -663,6 +921,43 @@ abline(v=fit_aiw$selected_L, col=&quot;red&quot;, lty=2)
 plot_pip(fit_aiw, causal=causal, R=R0,
          main=paste(&quot;AIW-selected RSS: L =&quot;, fit_aiw$selected_L))</code></pre>
 <p><img src="figure/03-problematic-simulation.Rmd/aiw-small-ridge-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-aiw-small-ridge-1">
+Past versions of aiw-small-ridge-1.png
+</button>
+</p>
+<div id="fig-aiw-small-ridge-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/465f3c943fab1d11446de1929e98e1c3faddb18e/docs/figure/03-problematic-simulation.Rmd/aiw-small-ridge-1.png" target="_blank">465f3c9</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-10-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>par(mfrow=c(1,1))</code></pre>
 <p>The convergence problem is still present among the candidate RSS
 fits, but AIW selects <span class="math inline">\(L=2\)</span>, whose
@@ -714,6 +1009,43 @@ abline(v=fit_aiw_1000$selected_L, col=&quot;red&quot;, lty=2)
 plot_pip(fit_aiw_1000, causal=causal, R=R0,
          main=paste(&quot;AIW-selected RSS: L =&quot;, fit_aiw_1000$selected_L))</code></pre>
 <p><img src="figure/03-problematic-simulation.Rmd/aiw-1000-iterations-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-aiw-1000-iterations-1">
+Past versions of aiw-1000-iterations-1.png
+</button>
+</p>
+<div id="fig-aiw-1000-iterations-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/465f3c943fab1d11446de1929e98e1c3faddb18e/docs/figure/03-problematic-simulation.Rmd/aiw-1000-iterations-1.png" target="_blank">465f3c9</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-10-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>par(mfrow=c(1,1))</code></pre>
 <pre class="r"><code>selected_100 &lt;- subset(fit_aiw$scores, selected)
 selected_1000 &lt;- subset(fit_aiw_1000$scores, selected)
@@ -725,8 +1057,8 @@ data.frame(
   selected_RSS_converged=c(selected_100$rss_converged, selected_1000$rss_converged)
 )</code></pre>
 <pre><code>  iteration_cap elapsed_seconds selected_L selected_RSS_iterations
-1           100          54.454          2                       4
-2          1000         256.201          2                       4
+1           100          52.577          2                       4
+2          1000         248.794          2                       4
   selected_RSS_converged
 1                   TRUE
 2                   TRUE</code></pre>
