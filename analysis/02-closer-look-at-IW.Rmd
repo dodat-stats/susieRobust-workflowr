@@ -4,9 +4,11 @@ site: workflowr::wflow_site
 output:
   workflowr::wflow_html:
     toc: false
+editor_options: 
+  chunk_output_type: inline
 ---
 
-## Reproduce the data example
+## 1. Reproduce the data example
 
 Use the saved LD and the same association simulation as `01-get-started` (seed 4).
 
@@ -27,7 +29,7 @@ stopifnot(min(e$values) > -1e-8)
 v <- drop(R %*% beta + e$vectors %*% (sqrt(pmax(e$values, 0)/N) * rnorm(J)))
 ```
 
-## Fit IW and double eta0
+## 2. Fit IW and double eta0
 
 First estimate eta0, then hold it fixed at twice that estimate in a new fit.
 Lambda remains free to be estimated in both fits.
@@ -49,4 +51,73 @@ par(mfrow=c(1,2))
 plot_pip(fit, causal=causal, R=R0, main="IW: learned eta0")
 plot_pip(fit_2eta0, causal=causal, R=R0, main="IW: fixed at 2 x eta0")
 par(mfrow=c(1,1))
+```
+
+
+## 3. Intial eta_0
+
+One thing that I do not really happy about the previous fit it that it has a saddle point in the ELBO, which may suggest an early stop if the tol is not set to small. Now let me try to intialize eta_0 to large value to see if we can avoid this behavior
+
+```{r}
+fit <- susie_iw(v=v, R0=R0, N=N, L=L_max, max_iter=1000, tol=1e-6, eta0_init = 3000)
+plot(fit$elbo, type = "l")
+```
+
+```{r}
+plot_pip(fit, causal=causal)
+```
+
+So it looks like initialize at a higher eta0 does help. The default is 1000.
+
+## 4. IW without purity filtering
+
+We can recover credible sets from the existing `fit` without fitting IW again.
+Purity filtering is a reporting step: setting `min_abs_corr = 0` retains sets
+regardless of their LD purity, while still calculating purity for inspection.
+If SER fallback
+was used, its top-level posterior is the fallback result, so we instead use the
+saved original IW posterior. Neither `fit$sets` nor `fit$raw_sets` alone recovers
+discarded sets, since both were constructed using the original purity threshold.
+
+```{r}
+iw_posterior <- fit
+if (isTRUE(fit$postprocess$fallback_used)) {
+  iw_posterior <- list(alpha = fit$raw_alpha,
+                       V = fit$raw_fit$sigma2,
+                       pip = fit$raw_pip)
+}
+cs_no_purity <- susieR::susie_get_cs(
+  iw_posterior, Xcorr = fit$purity_R, coverage = 0.95,
+  min_abs_corr = 0, n_purity = ncol(fit$purity_R)
+)
+cs_no_purity$purity
+```
+
+```{r, fig.width=10, fig.height=5}
+plot_pip(iw_posterior,
+         sets = if (is.null(cs_no_purity$cs)) list() else cs_no_purity$cs,
+         causal = causal, R = fit$purity_R,
+         main = "IW: no purity filtering")
+```
+
+```{r}
+fit$V
+
+```
+
+Some of the sets got filtered out because of being deduplicated. 
+
+```{r}
+cs_all <- susieR::susie_get_cs(
+  iw_posterior, Xcorr = fit$purity_R,
+  coverage = 0.95, min_abs_corr = 0,
+  dedup = FALSE, n_purity = ncol(fit$purity_R)
+)
+
+length(cs_all$cs)
+data.frame(
+  component = names(cs_all$cs),
+  size = lengths(cs_all$cs),
+  duplicate = duplicated(cs_all$cs)
+)
 ```
