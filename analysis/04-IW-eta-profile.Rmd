@@ -8,269 +8,144 @@ editor_options:
   chunk_output_type: inline
 ---
 
-## 1. Simulation and fixed-eta0 fits
+## 1. Load the simulated data
 
-Does sensitivity to the initial $\eta_0$ imply that the profiled IW ELBO has
-multiple local maxima? We examine one new simulated locus, using the shared
-European-like growth model from the v5 simulations.
+This 1 Mb locus has 1,752 SNPs, $N=200{,}000$, $N_0=5{,}000$, $T=200$,
+$L_{\mathrm{true}}=3$ and $h^2=1\%$. We use shared European-like growth,
+recombination $10^{-8}$, and random normal causal effects. The saved file
+contains the original study LD, reference LD and association statistics.
 
-The locus is 1 Mb, with 200,000 study individuals and 5,000 reference
-individuals. The populations split $T=200$ generations ago. Recombination is
-$10^{-8}$ per base per generation, and mutation is $2.36\times10^{-8}$.
-We use DTWF ancestry for the first 100 generations backward in time, followed
-by Hudson ancestry, retaining the specified demographic history.
-We keep all shared variable biallelic SNPs with study MAF at least 1%.
-This gives 1,752 SNPs and relative LD distance
-$\lVert R_0-R\rVert_F/\lVert R\rVert_F=0.2625$.
+```{r}
+library(susieRobust)
+library(susieR)
+# This analysis uses susieRobust 0.0.0.9002 and susieR 0.14.2.
 
-We sample $L_{\mathrm{true}}=3$ causal variants without a correlation cutoff,
-draw independent normal effects, and rescale them so that
-$\beta^\top R\beta=h^2/(1-h^2)$ with $h^2=1\%$. Then
-$$
-v=R\beta+\epsilon,\qquad \epsilon\sim N(0,R/N).
-$$
-The master seed is 20261101. This locus was not selected based on its fitting
-results. One of its three sampled effects is weak.
+example <- readRDS("data/iw-eta-profile/example.rds")
+R <- example$R; R0 <- example$R0; v <- example$v
+N <- example$N; causal <- example$causal
+L_max <- 10L
+```
 
-We fit IW with $L=10$, fixing $\eta_0$ at 21 log-spaced values from 100 to
-10,000. Lambda and effect prior variances remain free; lambda is bounded by
-$[10^{-5},0.2]$, and prior variances start at 0.2. SER fallback is disabled.
-We use independent fits and warm starts along the grid in both directions.
-The coarse fits use relative tolerance $10^{-8}$ and at most 1,000 iterations.
-We then refine the range 200--600 with 25 log-spaced points, tolerance
-$10^{-10}$, and at most 2,000 iterations, plus an independent fit at the best
-refined grid point.
+## 2. Fit IW from different initial values
 
-The fits used susieRobust 0.0.0.9002 and susieR 0.14.2. A local copy of the
-internal fitter supplied continuation and a cached reference spectrum;
-a regression check confirmed that cached cold fits match the native fitter.
-This page reads the saved numerical results and regenerates the figure; it
-does not rerun the simulations or fits.
+Fit the same data from five initial values of $\eta_0$. Both $\eta_0$ and
+$\lambda$ are learned. Restarts are disabled; SER fallback is enabled.
+
+```{r}
+eta0_init <- c(10, 100, 1000, 5000, 10000)
+fits <- lapply(eta0_init, function(initial) {
+  susie_iw(v=v, R0=R0, N=N, L=L_max, eta0_init=initial,
+           lambda_min=1e-5, lambda_max=0.2,
+           scaled_prior_variance=0.2, estimate_prior_variance=TRUE,
+           max_iter=3000, tol=1e-8, optimizer_starts=3,
+           restart_on_nonconvergence=FALSE,
+           ser_fallback=TRUE, partition_ser=FALSE,
+           coverage=0.95, min_abs_corr=0.5, purity_matrix="R0",
+           track_fit=TRUE)
+})
+names(fits) <- eta0_init
+```
+
+Report the IW ELBO and CS count **before fallback**. Fallback is applied
+after fitting if zero or one CS remains after purity filtering and
+deduplication.
+
+```{r}
+results <- do.call(rbind, lapply(seq_along(fits), function(i) {
+  f <- fits[[i]]
+  data.frame(Start=eta0_init[i], eta0=f$eta0,
+             ELBO=tail(f$raw_fit$elbo, 1),
+             Iterations=length(f$raw_fit$elbo), CSs=length(f$raw_sets),
+             SER=f$postprocess$fallback_used, Converged=f$converged)
+}))
+knitr::kable(results, digits=3, row.names=FALSE)
+```
+
+```{r initialization-trajectories, fig.width=11, fig.height=4.8}
+traces <- lapply(fits, function(f) f$iw$optimization_trace)
+colors <- c("grey50", "#E69F00", "#D55E00", "#009E73", "#0072B2")
+xlim <- c(1, max(results$Iterations))
+par(mfrow=c(1, 2), mar=c(4.2, 4.5, 2.5, 1))
+
+plot(NA, xlim=xlim, ylim=range(unlist(lapply(traces, `[[`, "eta0"))),
+     xlab="Iteration", ylab=expression(eta[0]),
+     main="Eta0 after each update", las=1)
+for (i in seq_along(traces)) {
+  d <- traces[[i]]
+  lines(d$iteration, d$eta0, col=colors[i], lty=i, lwd=2)
+  points(tail(d$iteration, 1), tail(d$eta0, 1), col=colors[i], pch=19)
+}
+legend("bottomright", paste("Initial eta0 =", eta0_init),
+       col=colors, lty=seq_along(fits), lwd=2, bty="n", cex=0.8)
+
+plot(NA, xlim=xlim, ylim=c(9878, 9886),
+     xlab="Iteration", ylab="Core IW ELBO",
+     main="ELBO near the endpoints", las=1)
+for (i in seq_along(traces)) {
+  d <- traces[[i]]
+  lines(d$iteration, d$elbo, col=colors[i], lty=i, lwd=2)
+  points(tail(d$iteration, 1), tail(d$elbo, 1), col=colors[i], pch=19)
+}
+par(mfrow=c(1, 1))
+```
+
+The curves start after the first update; points mark the stopping iterations.
+The ELBO panel zooms in on the endpoints. Small starts tend to reach the
+lower-ELBO, one-CS solution and trigger SER fallback; larger starts can
+reach a higher-ELBO solution with multiple CSs. This is a numerical example,
+not a guarantee for other loci.
+
+## 3. Profile ELBO
+
+For comparison, load the earlier fixed-$\eta_0$ fits. These used independent
+fits and continuation in both directions, with fallback disabled. The coarse
+grid has 21 log-spaced values from 100 to 10,000 ($10^{-8}$ tolerance, at most
+1,000 iterations); the refined grid has 25 values from 200 to 600
+($10^{-10}$ tolerance, at most 2,000 iterations).
 
 ```{r}
 coarse <- read.csv("data/iw-eta-profile/profile_results.csv")
 fine <- read.csv("data/iw-eta-profile/refined_results.csv")
 cols <- c("path", "eta0_fixed", "elbo", "converged")
-fits <- rbind(coarse[, cols], fine[, cols])
-stopifnot(nrow(coarse) == 63, nrow(fine) == 51,
-          all(coarse$converged), sum(!fine$converged) == 1)
-
-# Highest converged ELBO found at each fixed eta0.
+all_fits <- rbind(coarse[, cols], fine[, cols])
 best_found <- function(x) {
   x <- x[x$converged, ]
   x <- x[order(-x$elbo), ]
   x <- x[!duplicated(round(x$eta0_fixed, 8)), ]
   x[order(x$eta0_fixed), ]
 }
-profile <- best_found(fits)
-fine_profile <- best_found(fine)
-```
-
-## 2. Initialization, multiple CSs, and SER fallback
-
-Our initialization experiments suggest a tendency: small initial $\eta_0$
-can lead IW to a lower-ELBO solution with one retained credible set, which
-then triggers SER fallback. Starting larger tends to help IW reach a
-higher-ELBO solution with multiple credible sets and avoid fallback. Below,
-independent free-$\eta_0$ fits confirm this pattern on this locus. It is not
-a guarantee for other datasets, nor an estimate of how often it happens.
-
-### Fixed-eta0 branches
-
-The two continuation paths find different ELBO values at the same fixed
-$\eta_0$. The lower branch peaks near 302, while the higher branch peaks
-near 346. Their peak ELBO values differ by about 4.51.
-The ascending path eventually leaves the lower branch and joins the higher
-one. This is evidence of sensitivity to the optimization path, consistent
-with distinct local solutions of the joint variational optimization.
-
-```{r}
-local_peaks <- function(x) {
-  x <- x[order(x$eta0_fixed), ]
-  y <- x$elbo
-  i <- which(y[2:(length(y)-1)] > y[1:(length(y)-2)] &
-             y[2:(length(y)-1)] > y[3:length(y)]) + 1L
-  x[i, ]
-}
-lower <- local_peaks(subset(fine, path == "ascending" & converged))[1, ]
-higher <- fine_profile[which.max(fine_profile$elbo), ]
-knitr::kable(data.frame(
-  branch=c("Lower branch", "Higher branch"),
-  eta0=c(lower$eta0_fixed, higher$eta0_fixed),
-  ELBO=c(lower$elbo, higher$elbo)
-), digits=3, row.names=FALSE)
 ```
 
 ```{r eta-profile, fig.width=11, fig.height=4.8}
-oldpar <- par(mfrow=c(1, 2), mar=c(4.2, 4.5, 2.5, 1))
-colors <- c(ascending="#D55E00", descending="#0072B2")
 draw_profile <- function(points, envelope, xlim, ylim, title) {
   plot(envelope$eta0_fixed, envelope$elbo, type="n", log="x",
        xlim=xlim, ylim=ylim, xlab=expression("Fixed " * eta[0]),
        ylab="IW ELBO", main=title, las=1)
-  for (path in names(colors)) {
-    d <- points[points$path == path, ]
+  paths <- c("ascending", "descending")
+  for (i in seq_along(paths)) {
+    d <- points[points$path == paths[i], ]
     d <- d[order(d$eta0_fixed), ]
-    lines(d$eta0_fixed, d$elbo, col=colors[path], lwd=2)
+    lines(d$eta0_fixed, d$elbo, col=c("#D55E00", "#0072B2")[i], lwd=2)
   }
   lines(envelope$eta0_fixed, envelope$elbo, lty=2, lwd=2)
   cold <- subset(coarse, path == "cold")
   points(cold$eta0_fixed, cold$elbo, pch=21, bg="white", col="grey40")
-  failed <- fits[!fits$converged, ]
+  failed <- subset(all_fits, !converged)
   points(failed$eta0_fixed, failed$elbo, pch=4, col="red", lwd=2)
 }
-draw_profile(coarse, profile, c(100, 10000), range(fits$elbo),
+par(mfrow=c(1, 2), mar=c(4.2, 4.5, 2.5, 1))
+draw_profile(coarse, best_found(all_fits), c(100, 10000), range(all_fits$elbo),
              "Requested range")
 legend("bottomleft",
        c("Low to high", "High to low", "Best converged", "Independent", "Not converged"),
-       col=c(colors, "black", "grey40", "red"),
-       lty=c(1, 1, 2, NA, NA), pch=c(NA, NA, NA, 1, 4),
-       lwd=c(2, 2, 2, NA, 2), bty="n", cex=0.8)
-draw_profile(fine, fine_profile, c(200, 600), c(9870, 9886),
-             "Near the peak")
-par(oldpar)
+       col=c("#D55E00", "#0072B2", "black", "grey40", "red"),
+       lty=c(1, 1, 2, NA, NA), pch=c(NA, NA, NA, 1, 4), bty="n", cex=0.8)
+draw_profile(fine, best_found(fine), c(200, 600), c(9870, 9886), "Near the peak")
+par(mfrow=c(1, 1))
 ```
 
-All 63 coarse-grid fits converged. One of the 51 refinement fits reached the
-iteration cap: the ascending fit at $\eta_0=455.90$. It is marked red and
-excluded from the best-converged envelope. Its neighbors show the eventual
-switch to the higher branch.
-
-To connect these branches to fine-mapping, we recovered 95% credible sets
-from the saved posteriors, using exact minimum absolute correlation at least
-0.5 in $R_0$ and the usual deduplication. The lower branch has one retained
-CS; the higher branch has two.
-
-```{r}
-branch_cs <- read.csv("data/iw-eta-profile/branch_cs_summary.csv")
-branch_cs <- subset(branch_cs, checkpoint %in% c("ascending_10", "descending_13"))
-stopifnot(all(branch_cs$converged),
-          identical(branch_cs$n_cs, c(1L, 2L)),
-          all(branch_cs$would_trigger_fallback == (branch_cs$n_cs <= 1)))
-knitr::kable(data.frame(
-  Solution=branch_cs$solution,
-  eta0=branch_cs$eta0,
-  ELBO=branch_cs$elbo,
-  CSs=branch_cs$n_cs,
-  `CS sizes`=branch_cs$cs_sizes,
-  `Would trigger SER fallback`=ifelse(branch_cs$would_trigger_fallback, "Yes", "No"),
-  check.names=FALSE
-), digits=3, row.names=FALSE)
-```
-
-Strictly speaking, IW does not converge *to* the SER fallback. It optimizes
-the IW model first. If zero or one credible set survives filtering, the
-postprocessing rule substitutes an SER fit. Fallback was disabled in this
-diagnostic, so the table records whether each saved IW posterior would
-trigger it if enabled. The displayed ELBOs belong to the original IW fits,
-not to substituted SER fits.
-
-### Independent initializations with eta0 free
-
-We now start four fresh fits at $\eta_0\in\{10,100,1000,10000\}$ on the
-same $R_0$ and $v$. Both $\eta_0$ and $\lambda$ are learned. All other
-initialization and model settings are identical, with $L=10$, relative
-tolerance $10^{-8}$ and at most 3,000 iterations. Restarts are disabled;
-none of these fits uses a warm start from the fixed grid. We use the native
-`susie_iw()` function and enable its usual SER fallback, with partitioning
-disabled. The ELBO and trajectories below are from the original IW fit,
-before any fallback.
-
-```{r}
-starts <- read.csv("data/iw-eta-profile/initialization_summary.csv")
-trajectories <- read.csv("data/iw-eta-profile/initialization_trajectories.csv")
-stopifnot(nrow(starts) == 4, all(starts$converged),
-          all(starts$core_converged), all(starts$optimizer_converged),
-          all(starts$relative_change < 1e-8),
-          all(starts$fallback == (starts$raw_n_cs <= 1)))
-knitr::kable(data.frame(
-  `Initial eta0`=starts$initial_eta0,
-  `Learned eta0`=starts$eta0,
-  `IW ELBO`=starts$core_elbo,
-  Iterations=starts$iterations,
-  `IW CSs`=starts$raw_n_cs,
-  `SER fallback`=ifelse(starts$fallback, "Yes", "No"),
-  Converged=starts$converged, check.names=FALSE
-), digits=3, row.names=FALSE)
-```
-
-All four fits converge. Starts at 10, 100 and 1,000 reach the lower branch
-near learned $\eta_0=300$, retain one CS and trigger SER fallback. The
-10,000 start reaches the higher branch near learned $\eta_0=351$, retains
-two CSs and does not trigger fallback. Its core ELBO is about 4.51 higher.
-The retained CS sizes are 2 for the lower solutions and 1 and 2 for the
-higher solution.
-
-```{r initialization-trajectories, fig.width=11, fig.height=4.8}
-oldpar <- par(mfrow=c(1, 2), mar=c(4.2, 4.5, 2.5, 1))
-start_colors <- c("#777777", "#E69F00", "#D55E00", "#0072B2")
-xlim <- range(trajectories$iteration)
-plot(NA, xlim=xlim, ylim=range(trajectories$eta0),
-     xlab="Iteration", ylab=expression("Learned " * eta[0]),
-     main="Eta0 after each update", las=1)
-for (i in seq_len(nrow(starts))) {
-  d <- subset(trajectories, initial_eta0 == starts$initial_eta0[i])
-  lines(d$iteration, d$eta0, col=start_colors[i], lwd=2, lty=i)
-  points(tail(d$iteration, 1), tail(d$eta0, 1), col=start_colors[i], pch=19)
-}
-legend("bottomright", paste("Initial eta0 =", starts$initial_eta0),
-       col=start_colors, lty=seq_len(nrow(starts)), lwd=2, bty="n", cex=0.8)
-plot(NA, xlim=xlim, ylim=c(9878, 9886),
-     xlab="Iteration", ylab="Core IW ELBO",
-     main="ELBO near the endpoints", las=1)
-for (i in seq_len(nrow(starts))) {
-  d <- subset(trajectories, initial_eta0 == starts$initial_eta0[i])
-  lines(d$iteration, d$elbo, col=start_colors[i], lwd=2, lty=i)
-  points(tail(d$iteration, 1), tail(d$elbo, 1), col=start_colors[i], pch=19)
-}
-par(oldpar)
-```
-
-The left panel starts after the first update, so its first plotted eta0
-values differ from the supplied initial values. The right panel zooms in
-on the final ELBO range; earlier lower values are outside the plotting
-window. Points mark each fit's stopping iteration.
-
-This gives two distinct groups of numerically converged endpoints on the
-same dataset. The three lower endpoints differ slightly because convergence
-uses a finite ELBO-change tolerance. These are not proofs of exact stationary
-points or global optima. In particular, the learned concentrations are fairly
-close even though the initial values differ greatly: initialization affects
-which posterior solution is reached, not just the final concentration.
-
-The earlier optional 10,000-start run at tolerance $10^{-10}$ was stopped;
-the new comparison above is complete and uses the same $10^{-8}$ tolerance
-for all four starts. All traces and endpoint diagnostics are saved. The
-fitting script is `code/iw-eta-profile/initializations.R`; it runs from the
-original local experiment directory, where the LD matrices and pinned R
-libraries are retained.
-
-## 3. One peak in the best-found profile
-
-The ideal profiled ELBO is
-$$
-F(\eta_0)=\max_{q,\lambda,V}\mathcal{L}(q,\lambda,V;\eta_0),
-$$
-where $q$ is the variational distribution and $V$ denotes the effect prior
-variances. Profiling takes the best solution over these other quantities at
-each $\eta_0$. A lower optimization branch can therefore disappear from the
-profile wherever another branch has higher ELBO.
-
-The black envelope approximates this maximization using the converged fits
-we found. On the refined grid it has one local maximum, near $\eta_0=346$:
-
-```{r}
-peaks <- local_peaks(fine_profile)
-stopifnot(nrow(peaks) == 1)
-knitr::kable(peaks[, c("eta0_fixed", "elbo")], digits=3, row.names=FALSE)
-```
-
-Thus initialization sensitivity does not by itself imply two local maxima
-of the profiled ELBO. This example supports the concern about different
-optimization branches, but does not establish two profile maxima. The
-envelope is the best found, not a certified global optimum; a finite grid
-cannot exclude narrower or undiscovered peaks. One locus also does not tell
-us how frequently this occurs.
-
-The saved settings and simulation seeds are in
-`data/iw-eta-profile/settings.json` and `data/iw-eta-profile/metadata.json`.
+There are two optimization branches, but one peak in the best-found profile.
+Profiling takes the best solution over the other parameters at each
+$\eta_0$, so the lower branch can disappear from the envelope. The red cross
+marks the one nonconverged fit, which is excluded from that envelope.
+This is the best profile found, not a certified global optimum.
