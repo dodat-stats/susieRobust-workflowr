@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>IW initialization and the eta0 profile</title>
+
+<script src="site_libs/header-attrs-2.32/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">susieRobust-workflowr</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/dodat-stats/susieRobust-workflowr">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">IW initialization and the eta0 profile</h1>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-11-01
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>susieRobust-workflowr/</code>
+<span class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.2). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20261018code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20261018)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20261018code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20261018)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtreea119dcded3a3acf9805faf001a990618e03ebd41targetblanka119dcda">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/a119dcded3a3acf9805faf001a990618e03ebd41" target="_blank">a119dcd</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtreea119dcded3a3acf9805faf001a990618e03ebd41targetblanka119dcda"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/a119dcded3a3acf9805faf001a990618e03ebd41" target="_blank">a119dcd</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/.DS_Store
+    Ignored:    analysis/.RData
+    Ignored:    analysis/.Rhistory
+
+Unstaged changes:
+    Modified:   analysis/01-get-started.Rmd
+    Modified:   analysis/index.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/04-IW-eta-profile.Rmd</code>) and
+HTML (<code>docs/04-IW-eta-profile.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/a119dcded3a3acf9805faf001a990618e03ebd41/analysis/04-IW-eta-profile.Rmd" target="_blank">a119dcd</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-11-01
+</td>
+<td>
+Document IW optimization branches and the fixed-eta ELBO profile
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="simulation-and-fixed-eta0-fits" class="section level2">
+<h2>1. Simulation and fixed-eta0 fits</h2>
+<p>Does sensitivity to the initial <span
+class="math inline">\(\eta_0\)</span> imply that the profiled IW ELBO
+has multiple local maxima? We examine one new simulated locus, using the
+shared European-like growth model from the v5 simulations.</p>
+<p>The locus is 1 Mb, with 200,000 study individuals and 5,000 reference
+individuals. The populations split <span
+class="math inline">\(T=200\)</span> generations ago. Recombination is
+<span class="math inline">\(10^{-8}\)</span> per base per generation,
+and mutation is <span class="math inline">\(2.36\times10^{-8}\)</span>.
+We use DTWF ancestry for the first 100 generations backward in time,
+followed by Hudson ancestry, retaining the specified demographic
+history. We keep all shared variable biallelic SNPs with study MAF at
+least 1%. This gives 1,752 SNPs and relative LD distance <span
+class="math inline">\(\lVert R_0-R\rVert_F/\lVert
+R\rVert_F=0.2625\)</span>.</p>
+<p>We sample <span class="math inline">\(L_{\mathrm{true}}=3\)</span>
+causal variants without a correlation cutoff, draw independent normal
+effects, and rescale them so that <span class="math inline">\(\beta^\top
+R\beta=h^2/(1-h^2)\)</span> with <span
+class="math inline">\(h^2=1\%\)</span>. Then <span
+class="math display">\[
+v=R\beta+\epsilon,\qquad \epsilon\sim N(0,R/N).
+\]</span> The master seed is 20261101. This locus was not selected based
+on its fitting results. One of its three sampled effects is weak.</p>
+<p>We fit IW with <span class="math inline">\(L=10\)</span>, fixing
+<span class="math inline">\(\eta_0\)</span> at 21 log-spaced values from
+100 to 10,000. Lambda and effect prior variances remain free; lambda is
+bounded by <span class="math inline">\([10^{-5},0.2]\)</span>, and prior
+variances start at 0.2. SER fallback is disabled. We use independent
+fits and warm starts along the grid in both directions. The coarse fits
+use relative tolerance <span class="math inline">\(10^{-8}\)</span> and
+at most 1,000 iterations. We then refine the range 200–600 with 25
+log-spaced points, tolerance <span
+class="math inline">\(10^{-10}\)</span>, and at most 2,000 iterations,
+plus an independent fit at the best refined grid point.</p>
+<p>The fits used susieRobust 0.0.0.9002 and susieR 0.14.2. A local copy
+of the internal fitter supplied continuation and a cached reference
+spectrum; a regression check confirmed that cached cold fits match the
+native fitter. This page reads the saved numerical results and
+regenerates the figure; it does not rerun the simulations or fits.</p>
+<pre class="r"><code>coarse &lt;- read.csv(&quot;data/iw-eta-profile/profile_results.csv&quot;)
+fine &lt;- read.csv(&quot;data/iw-eta-profile/refined_results.csv&quot;)
+cols &lt;- c(&quot;path&quot;, &quot;eta0_fixed&quot;, &quot;elbo&quot;, &quot;converged&quot;)
+fits &lt;- rbind(coarse[, cols], fine[, cols])
+stopifnot(nrow(coarse) == 63, nrow(fine) == 51,
+          all(coarse$converged), sum(!fine$converged) == 1)
+
+# Highest converged ELBO found at each fixed eta0.
+best_found &lt;- function(x) {
+  x &lt;- x[x$converged, ]
+  x &lt;- x[order(-x$elbo), ]
+  x &lt;- x[!duplicated(round(x$eta0_fixed, 8)), ]
+  x[order(x$eta0_fixed), ]
+}
+profile &lt;- best_found(fits)
+fine_profile &lt;- best_found(fine)</code></pre>
+</div>
+<div id="two-optimization-branches" class="section level2">
+<h2>2. Two optimization branches</h2>
+<p>The two continuation paths find different ELBO values at the same
+fixed <span class="math inline">\(\eta_0\)</span>. The lower branch
+peaks near 302, while the higher branch peaks near 346. Their peak ELBO
+values differ by about 4.51. The ascending path eventually leaves the
+lower branch and joins the higher one. This is evidence of sensitivity
+to the optimization path, consistent with distinct local solutions of
+the joint variational optimization.</p>
+<pre class="r"><code>local_peaks &lt;- function(x) {
+  x &lt;- x[order(x$eta0_fixed), ]
+  y &lt;- x$elbo
+  i &lt;- which(y[2:(length(y)-1)] &gt; y[1:(length(y)-2)] &amp;
+             y[2:(length(y)-1)] &gt; y[3:length(y)]) + 1L
+  x[i, ]
+}
+lower &lt;- local_peaks(subset(fine, path == &quot;ascending&quot; &amp; converged))[1, ]
+higher &lt;- fine_profile[which.max(fine_profile$elbo), ]
+knitr::kable(data.frame(
+  branch=c(&quot;Lower branch&quot;, &quot;Higher branch&quot;),
+  eta0=c(lower$eta0_fixed, higher$eta0_fixed),
+  ELBO=c(lower$elbo, higher$elbo)
+), digits=3, row.names=FALSE)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">branch</th>
+<th align="right">eta0</th>
+<th align="right">ELBO</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Lower branch</td>
+<td align="right">301.961</td>
+<td align="right">9880.245</td>
+</tr>
+<tr class="even">
+<td align="left">Higher branch</td>
+<td align="right">346.410</td>
+<td align="right">9884.756</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>oldpar &lt;- par(mfrow=c(1, 2), mar=c(4.2, 4.5, 2.5, 1))
+colors &lt;- c(ascending=&quot;#D55E00&quot;, descending=&quot;#0072B2&quot;)
+draw_profile &lt;- function(points, envelope, xlim, ylim, title) {
+  plot(envelope$eta0_fixed, envelope$elbo, type=&quot;n&quot;, log=&quot;x&quot;,
+       xlim=xlim, ylim=ylim, xlab=expression(&quot;Fixed &quot; * eta[0]),
+       ylab=&quot;IW ELBO&quot;, main=title, las=1)
+  for (path in names(colors)) {
+    d &lt;- points[points$path == path, ]
+    d &lt;- d[order(d$eta0_fixed), ]
+    lines(d$eta0_fixed, d$elbo, col=colors[path], lwd=2)
+  }
+  lines(envelope$eta0_fixed, envelope$elbo, lty=2, lwd=2)
+  cold &lt;- subset(coarse, path == &quot;cold&quot;)
+  points(cold$eta0_fixed, cold$elbo, pch=21, bg=&quot;white&quot;, col=&quot;grey40&quot;)
+  failed &lt;- fits[!fits$converged, ]
+  points(failed$eta0_fixed, failed$elbo, pch=4, col=&quot;red&quot;, lwd=2)
+}
+draw_profile(coarse, profile, c(100, 10000), range(fits$elbo),
+             &quot;Requested range&quot;)
+legend(&quot;bottomleft&quot;,
+       c(&quot;Low to high&quot;, &quot;High to low&quot;, &quot;Best converged&quot;, &quot;Independent&quot;, &quot;Not converged&quot;),
+       col=c(colors, &quot;black&quot;, &quot;grey40&quot;, &quot;red&quot;),
+       lty=c(1, 1, 2, NA, NA), pch=c(NA, NA, NA, 1, 4),
+       lwd=c(2, 2, 2, NA, 2), bty=&quot;n&quot;, cex=0.8)
+draw_profile(fine, fine_profile, c(200, 600), c(9870, 9886),
+             &quot;Near the peak&quot;)</code></pre>
+<p><img src="figure/04-IW-eta-profile.Rmd/eta-profile-1.png" alt="" width="1056" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>par(oldpar)</code></pre>
+<p>All 63 coarse-grid fits converged. One of the 51 refinement fits
+reached the iteration cap: the ascending fit at <span
+class="math inline">\(\eta_0=455.90\)</span>. It is marked red and
+excluded from the best-converged envelope. Its neighbors show the
+eventual switch to the higher branch.</p>
+</div>
+<div id="one-peak-in-the-best-found-profile" class="section level2">
+<h2>3. One peak in the best-found profile</h2>
+<p>The ideal profiled ELBO is <span class="math display">\[
+F(\eta_0)=\max_{q,\lambda,V}\mathcal{L}(q,\lambda,V;\eta_0),
+\]</span> where <span class="math inline">\(q\)</span> is the
+variational distribution and <span class="math inline">\(V\)</span>
+denotes the effect prior variances. Profiling takes the best solution
+over these other quantities at each <span
+class="math inline">\(\eta_0\)</span>. A lower optimization branch can
+therefore disappear from the profile wherever another branch has higher
+ELBO.</p>
+<p>The black envelope approximates this maximization using the converged
+fits we found. On the refined grid it has one local maximum, near <span
+class="math inline">\(\eta_0=346\)</span>:</p>
+<pre class="r"><code>peaks &lt;- local_peaks(fine_profile)
+stopifnot(nrow(peaks) == 1)
+knitr::kable(peaks[, c(&quot;eta0_fixed&quot;, &quot;elbo&quot;)], digits=3, row.names=FALSE)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">eta0_fixed</th>
+<th align="right">elbo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">346.41</td>
+<td align="right">9884.756</td>
+</tr>
+</tbody>
+</table>
+<p>Thus initialization sensitivity does not by itself imply two local
+maxima of the profiled ELBO. This example supports the concern about
+different optimization branches, but does not establish two profile
+maxima. The envelope is the best found, not a certified global optimum;
+a finite grid cannot exclude narrower or undiscovered peaks. One locus
+also does not tell us how frequently this occurs.</p>
+<p>The saved settings and simulation seeds are in
+<code>data/iw-eta-profile/settings.json</code> and
+<code>data/iw-eta-profile/metadata.json</code>.</p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.6.1 (2026-06-24)
+Platform: aarch64-apple-darwin23
+Running under: macOS Golden Gate 27.2
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] C.UTF-8/C.UTF-8/C.UTF-8/C/C.UTF-8/C.UTF-8
+
+time zone: America/New_York
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] workflowr_1.7.2
+
+loaded via a namespace (and not attached):
+ [1] vctrs_0.7.3       httr_1.4.9        cli_3.6.6         knitr_1.51       
+ [5] rlang_1.3.0       xfun_0.60         stringi_1.8.9     otel_0.2.0       
+ [9] processx_3.9.0    promises_1.5.0    jsonlite_2.0.0    glue_1.8.1       
+[13] rprojroot_2.1.1   git2r_0.36.2      htmltools_0.5.9   httpuv_1.6.17    
+[17] sass_0.4.10       rmarkdown_2.32    jquerylib_0.1.4   tibble_3.3.1     
+[21] evaluate_1.0.5    fastmap_1.2.0     yaml_2.3.12       lifecycle_1.0.5  
+[25] whisker_0.4.1     stringr_1.6.0     compiler_4.6.1    fs_2.1.0         
+[29] pkgconfig_2.0.3   Rcpp_1.1.2        rstudioapi_0.19.0 later_1.4.8      
+[33] digest_0.6.39     R6_2.6.1          pillar_1.11.1     callr_3.8.0      
+[37] magrittr_2.0.5    bslib_0.12.0      tools_4.6.1       cachem_1.1.0     
+[41] getPass_0.2-4    </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
