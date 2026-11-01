@@ -1,0 +1,4 @@
+"solution","checkpoint","eta0","elbo","converged","n_cs","cs_sizes","would_trigger_fallback","coverage","min_abs_corr","purity_matrix"
+"Lower branch peak","ascending_10",301.960729695421,9880.24477676139,TRUE,1,"2",TRUE,0.95,0.5,"R0"
+"Higher branch peak","descending_13",346.410161513775,9884.75601806148,TRUE,2,"1, 2",FALSE,0.95,0.5,"R0"
+"Free eta0, initialized at 100","free_100",299.875011347906,9880.2453592222,TRUE,1,"2",TRUE,0.95,0.5,"R0"

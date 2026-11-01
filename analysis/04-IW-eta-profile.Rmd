@@ -66,7 +66,14 @@ profile <- best_found(fits)
 fine_profile <- best_found(fine)
 ```
 
-## 2. Two optimization branches
+## 2. Initialization, multiple CSs, and SER fallback
+
+Our initialization experiments suggest a tendency: small initial $\eta_0$
+can lead IW to a lower-ELBO solution with one retained credible set, which
+then triggers SER fallback. Starting larger tends to help IW reach a
+higher-ELBO solution with multiple credible sets and avoid fallback. This
+is not a guarantee: large starts can also produce one set, and small starts
+can find a good multiple-set solution.
 
 The two continuation paths find different ELBO values at the same fixed
 $\eta_0$. The lower branch peaks near 302, while the higher branch peaks
@@ -126,6 +133,45 @@ All 63 coarse-grid fits converged. One of the 51 refinement fits reached the
 iteration cap: the ascending fit at $\eta_0=455.90$. It is marked red and
 excluded from the best-converged envelope. Its neighbors show the eventual
 switch to the higher branch.
+
+To connect these branches to fine-mapping, we recovered 95% credible sets
+from the saved posteriors, using exact minimum absolute correlation at least
+0.5 in $R_0$ and the usual deduplication. The lower branch has one retained
+CS; the higher branch has two. An additional fit initialized at
+$\eta_0=100$, with $\eta_0$ free to be learned, converged to the lower branch
+at $\eta_0\approx300$ and also retained one CS.
+
+```{r}
+branch_cs <- read.csv("data/iw-eta-profile/branch_cs_summary.csv")
+stopifnot(all(branch_cs$converged),
+          identical(branch_cs$n_cs, c(1L, 2L, 1L)),
+          all(branch_cs$would_trigger_fallback == (branch_cs$n_cs <= 1)))
+knitr::kable(data.frame(
+  Solution=branch_cs$solution,
+  eta0=branch_cs$eta0,
+  ELBO=branch_cs$elbo,
+  CSs=branch_cs$n_cs,
+  `CS sizes`=branch_cs$cs_sizes,
+  `Would trigger SER fallback`=ifelse(branch_cs$would_trigger_fallback, "Yes", "No"),
+  check.names=FALSE
+), digits=3, row.names=FALSE)
+```
+
+Strictly speaking, IW does not converge *to* the SER fallback. It optimizes
+the IW model first. If zero or one credible set survives filtering, the
+postprocessing rule substitutes an SER fit. Fallback was disabled in this
+diagnostic, so the table records whether each saved IW posterior would
+trigger it if enabled. The displayed ELBOs belong to the original IW fits,
+not to substituted SER fits.
+
+For this particular locus, the higher branch was reached by continuation
+from large fixed $\eta_0$, rather than by a completed free-$\eta_0$ fit
+initialized at 10,000; that optional control was stopped before completion.
+Thus the example connects the two branches to one versus multiple CSs,
+but is not a complete comparison of small and large free-parameter starts.
+The branch peaks are also close in $\eta_0$ (about 302 versus 346): the
+initial value can affect which posterior solution is reached even when
+the eventual concentration values are similar.
 
 ## 3. One peak in the best-found profile
 

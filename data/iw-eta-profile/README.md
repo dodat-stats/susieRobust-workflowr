@@ -9,10 +9,16 @@ these results and regenerates the figure without refitting.
 - `settings.json`: coarse fitting settings and original fitter/data hashes.
 - `metadata.json`: simulation parameters, seeds, causal indices (zero-based),
   effects, SNP count, and relative Frobenius distance.
+- `branch_cs_summary.csv`: credible sets recovered from the saved lower-peak,
+  higher-peak, and free-eta initialized-at-100 posteriors with susieR 0.14.2.
+  Uses 95% coverage, exact minimum absolute correlation >= 0.5 in R0, and
+  default deduplication. Fallback is a hypothetical trigger (retained CS
+  count <= 1); these diagnostics did not apply fallback or refit IW.
 
 Refinement uses 25 log-spaced eta0 values from 200 to 600, two continuation
 directions, and one independent fit at the best grid point; maximum 2000
 iterations and relative tolerance 1e-10. All fixed-eta fits disable SER
-fallback. The slower supplementary free-eta controls are not included in
-this report. Large LD matrices and fit checkpoints remain in the local
+fallback. The completed free-eta initialized-at-100 control is summarized
+in the CS table; the unfinished initialized-at-10000 control is excluded.
+Large LD matrices and fit checkpoints remain in the local
 experiment directory and are not needed to render the page.
