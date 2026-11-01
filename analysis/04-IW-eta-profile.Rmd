@@ -26,6 +26,17 @@ N <- example$N; causal <- example$causal
 L_max <- 10L
 ```
 
+```{r marginal-association, fig.width=10, fig.height=4}
+z <- sqrt(N)*v  # Working Gaussian association z-scores.
+neg_log10p <- -(log(2) + pnorm(-abs(z), log.p=TRUE))/log(10)
+plot(seq_along(v), neg_log10p, pch=16, cex=0.5,
+     xlab="Variant index", ylab="-log10(P)", main="Marginal association")
+points(causal, neg_log10p[causal], pch=16, cex=0.8, col="firebrick")
+abline(v=causal, col="firebrick", lty=3)
+```
+
+Red points and vertical lines mark the true causal variants.
+
 ## 2. Fit IW from different initial values
 
 Fit the same data from five initial values of $\eta_0$. Both $\eta_0$ and
@@ -94,6 +105,20 @@ The ELBO panel zooms in on the endpoints. Small starts tend to reach the
 lower-ELBO, one-CS solution and trigger SER fallback; larger starts can
 reach a higher-ELBO solution with multiple CSs. This is a numerical example,
 not a guarantee for other loci.
+
+Compare the two IW posteriors **before SER fallback**, using starts 100 and
+5,000. Circles mark retained credible sets; red points mark causal variants.
+
+```{r solution-pips, fig.width=11, fig.height=4.8}
+low <- fits[["100"]]
+high <- fits[["5000"]]
+par(mfrow=c(1, 2))
+plot_pip(low$raw_fit, sets=low$raw_sets, causal=causal, R=R0,
+         main="Lower ELBO: initial eta0 = 100")
+plot_pip(high$raw_fit, sets=high$raw_sets, causal=causal, R=R0,
+         main="Higher ELBO: initial eta0 = 5000")
+par(mfrow=c(1, 1))
+```
 
 ## 3. Profile ELBO
 
