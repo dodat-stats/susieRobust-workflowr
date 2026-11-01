@@ -441,15 +441,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtreea119dcded3a3acf9805faf001a990618e03ebd41targetblanka119dcda">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtree8931d5ddf0a9e4b4497dc12a6bab1a6aa052289atargetblank8931d5da">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/a119dcded3a3acf9805faf001a990618e03ebd41" target="_blank">a119dcd</a>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/8931d5ddf0a9e4b4497dc12a6bab1a6aa052289a" target="_blank">8931d5d</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtreea119dcded3a3acf9805faf001a990618e03ebd41targetblanka119dcda"
+id="strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtree8931d5ddf0a9e4b4497dc12a6bab1a6aa052289atargetblank8931d5da"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -459,7 +459,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/a119dcded3a3acf9805faf001a990618e03ebd41" target="_blank">a119dcd</a>.
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/8931d5ddf0a9e4b4497dc12a6bab1a6aa052289a" target="_blank">8931d5d</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -528,6 +528,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/8931d5ddf0a9e4b4497dc12a6bab1a6aa052289a/analysis/04-IW-eta-profile.Rmd" target="_blank">8931d5d</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-11-01
+</td>
+<td>
+Connect IW initialization branches to credible sets and SER fallback
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/dodat-stats/susieRobust-workflowr/582661387028d7a06c83c9f88046040c6ef3ef3e/docs/04-IW-eta-profile.html" target="_blank">5826613</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-11-01
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -611,8 +645,16 @@ best_found &lt;- function(x) {
 profile &lt;- best_found(fits)
 fine_profile &lt;- best_found(fine)</code></pre>
 </div>
-<div id="two-optimization-branches" class="section level2">
-<h2>2. Two optimization branches</h2>
+<div id="initialization-multiple-css-and-ser-fallback"
+class="section level2">
+<h2>2. Initialization, multiple CSs, and SER fallback</h2>
+<p>Our initialization experiments suggest a tendency: small initial
+<span class="math inline">\(\eta_0\)</span> can lead IW to a lower-ELBO
+solution with one retained credible set, which then triggers SER
+fallback. Starting larger tends to help IW reach a higher-ELBO solution
+with multiple credible sets and avoid fallback. This is not a guarantee:
+large starts can also produce one set, and small starts can find a good
+multiple-set solution.</p>
 <p>The two continuation paths find different ELBO values at the same
 fixed <span class="math inline">\(\eta_0\)</span>. The lower branch
 peaks near 302, while the higher branch peaks near 346. Their peak ELBO
@@ -682,12 +724,135 @@ legend(&quot;bottomleft&quot;,
 draw_profile(fine, fine_profile, c(200, 600), c(9870, 9886),
              &quot;Near the peak&quot;)</code></pre>
 <p><img src="figure/04-IW-eta-profile.Rmd/eta-profile-1.png" alt="" width="1056" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-eta-profile-1">
+Past versions of eta-profile-1.png
+</button>
+</p>
+<div id="fig-eta-profile-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/582661387028d7a06c83c9f88046040c6ef3ef3e/docs/figure/04-IW-eta-profile.Rmd/eta-profile-1.png" target="_blank">5826613</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-11-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>par(oldpar)</code></pre>
 <p>All 63 coarse-grid fits converged. One of the 51 refinement fits
 reached the iteration cap: the ascending fit at <span
 class="math inline">\(\eta_0=455.90\)</span>. It is marked red and
 excluded from the best-converged envelope. Its neighbors show the
 eventual switch to the higher branch.</p>
+<p>To connect these branches to fine-mapping, we recovered 95% credible
+sets from the saved posteriors, using exact minimum absolute correlation
+at least 0.5 in <span class="math inline">\(R_0\)</span> and the usual
+deduplication. The lower branch has one retained CS; the higher branch
+has two. An additional fit initialized at <span
+class="math inline">\(\eta_0=100\)</span>, with <span
+class="math inline">\(\eta_0\)</span> free to be learned, converged to
+the lower branch at <span
+class="math inline">\(\eta_0\approx300\)</span> and also retained one
+CS.</p>
+<pre class="r"><code>branch_cs &lt;- read.csv(&quot;data/iw-eta-profile/branch_cs_summary.csv&quot;)
+stopifnot(all(branch_cs$converged),
+          identical(branch_cs$n_cs, c(1L, 2L, 1L)),
+          all(branch_cs$would_trigger_fallback == (branch_cs$n_cs &lt;= 1)))
+knitr::kable(data.frame(
+  Solution=branch_cs$solution,
+  eta0=branch_cs$eta0,
+  ELBO=branch_cs$elbo,
+  CSs=branch_cs$n_cs,
+  `CS sizes`=branch_cs$cs_sizes,
+  `Would trigger SER fallback`=ifelse(branch_cs$would_trigger_fallback, &quot;Yes&quot;, &quot;No&quot;),
+  check.names=FALSE
+), digits=3, row.names=FALSE)</code></pre>
+<table>
+<colgroup>
+<col width="34%" />
+<col width="9%" />
+<col width="10%" />
+<col width="4%" />
+<col width="10%" />
+<col width="31%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Solution</th>
+<th align="right">eta0</th>
+<th align="right">ELBO</th>
+<th align="right">CSs</th>
+<th align="left">CS sizes</th>
+<th align="left">Would trigger SER fallback</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Lower branch peak</td>
+<td align="right">301.961</td>
+<td align="right">9880.245</td>
+<td align="right">1</td>
+<td align="left">2</td>
+<td align="left">Yes</td>
+</tr>
+<tr class="even">
+<td align="left">Higher branch peak</td>
+<td align="right">346.410</td>
+<td align="right">9884.756</td>
+<td align="right">2</td>
+<td align="left">1, 2</td>
+<td align="left">No</td>
+</tr>
+<tr class="odd">
+<td align="left">Free eta0, initialized at 100</td>
+<td align="right">299.875</td>
+<td align="right">9880.245</td>
+<td align="right">1</td>
+<td align="left">2</td>
+<td align="left">Yes</td>
+</tr>
+</tbody>
+</table>
+<p>Strictly speaking, IW does not converge <em>to</em> the SER fallback.
+It optimizes the IW model first. If zero or one credible set survives
+filtering, the postprocessing rule substitutes an SER fit. Fallback was
+disabled in this diagnostic, so the table records whether each saved IW
+posterior would trigger it if enabled. The displayed ELBOs belong to the
+original IW fits, not to substituted SER fits.</p>
+<p>For this particular locus, the higher branch was reached by
+continuation from large fixed <span
+class="math inline">\(\eta_0\)</span>, rather than by a completed
+free-<span class="math inline">\(\eta_0\)</span> fit initialized at
+10,000; that optional control was stopped before completion. Thus the
+example connects the two branches to one versus multiple CSs, but is not
+a complete comparison of small and large free-parameter starts. The
+branch peaks are also close in <span
+class="math inline">\(\eta_0\)</span> (about 302 versus 346): the
+initial value can affect which posterior solution is reached even when
+the eventual concentration values are similar.</p>
 </div>
 <div id="one-peak-in-the-best-found-profile" class="section level2">
 <h2>3. One peak in the best-found profile</h2>
