@@ -14,11 +14,18 @@ these results and regenerates the figure without refitting.
   Uses 95% coverage, exact minimum absolute correlation >= 0.5 in R0, and
   default deduplication. Fallback is a hypothetical trigger (retained CS
   count <= 1); these diagnostics did not apply fallback or refit IW.
+- `initialization_summary.csv`, `initialization_trajectories.csv`, and
+  `initialization_settings.json`: four new independent native susie_iw fits
+  with free eta0 and lambda, initial eta0 in {10,100,1000,10000}, relative
+  tolerance 1e-8, maximum 3000 iterations, no restart, and actual SER fallback
+  enabled. All four converged. ELBOs and traces describe the IW core before
+  fallback. The script is `code/iw-eta-profile/initializations.R`.
 
 Refinement uses 25 log-spaced eta0 values from 200 to 600, two continuation
 directions, and one independent fit at the best grid point; maximum 2000
 iterations and relative tolerance 1e-10. All fixed-eta fits disable SER
-fallback. The completed free-eta initialized-at-100 control is summarized
-in the CS table; the unfinished initialized-at-10000 control is excluded.
+fallback. The original completed free-eta initialized-at-100 control is retained
+in branch_cs_summary.csv; the unfinished original initialized-at-10000 control
+is excluded. The new four-start comparison is complete and includes 10000.
 Large LD matrices and fit checkpoints remain in the local
 experiment directory and are not needed to render the page.

@@ -71,9 +71,11 @@ fine_profile <- best_found(fine)
 Our initialization experiments suggest a tendency: small initial $\eta_0$
 can lead IW to a lower-ELBO solution with one retained credible set, which
 then triggers SER fallback. Starting larger tends to help IW reach a
-higher-ELBO solution with multiple credible sets and avoid fallback. This
-is not a guarantee: large starts can also produce one set, and small starts
-can find a good multiple-set solution.
+higher-ELBO solution with multiple credible sets and avoid fallback. Below,
+independent free-$\eta_0$ fits confirm this pattern on this locus. It is not
+a guarantee for other datasets, nor an estimate of how often it happens.
+
+### Fixed-eta0 branches
 
 The two continuation paths find different ELBO values at the same fixed
 $\eta_0$. The lower branch peaks near 302, while the higher branch peaks
@@ -137,14 +139,13 @@ switch to the higher branch.
 To connect these branches to fine-mapping, we recovered 95% credible sets
 from the saved posteriors, using exact minimum absolute correlation at least
 0.5 in $R_0$ and the usual deduplication. The lower branch has one retained
-CS; the higher branch has two. An additional fit initialized at
-$\eta_0=100$, with $\eta_0$ free to be learned, converged to the lower branch
-at $\eta_0\approx300$ and also retained one CS.
+CS; the higher branch has two.
 
 ```{r}
 branch_cs <- read.csv("data/iw-eta-profile/branch_cs_summary.csv")
+branch_cs <- subset(branch_cs, checkpoint %in% c("ascending_10", "descending_13"))
 stopifnot(all(branch_cs$converged),
-          identical(branch_cs$n_cs, c(1L, 2L, 1L)),
+          identical(branch_cs$n_cs, c(1L, 2L)),
           all(branch_cs$would_trigger_fallback == (branch_cs$n_cs <= 1)))
 knitr::kable(data.frame(
   Solution=branch_cs$solution,
@@ -164,14 +165,85 @@ diagnostic, so the table records whether each saved IW posterior would
 trigger it if enabled. The displayed ELBOs belong to the original IW fits,
 not to substituted SER fits.
 
-For this particular locus, the higher branch was reached by continuation
-from large fixed $\eta_0$, rather than by a completed free-$\eta_0$ fit
-initialized at 10,000; that optional control was stopped before completion.
-Thus the example connects the two branches to one versus multiple CSs,
-but is not a complete comparison of small and large free-parameter starts.
-The branch peaks are also close in $\eta_0$ (about 302 versus 346): the
-initial value can affect which posterior solution is reached even when
-the eventual concentration values are similar.
+### Independent initializations with eta0 free
+
+We now start four fresh fits at $\eta_0\in\{10,100,1000,10000\}$ on the
+same $R_0$ and $v$. Both $\eta_0$ and $\lambda$ are learned. All other
+initialization and model settings are identical, with $L=10$, relative
+tolerance $10^{-8}$ and at most 3,000 iterations. Restarts are disabled;
+none of these fits uses a warm start from the fixed grid. We use the native
+`susie_iw()` function and enable its usual SER fallback, with partitioning
+disabled. The ELBO and trajectories below are from the original IW fit,
+before any fallback.
+
+```{r}
+starts <- read.csv("data/iw-eta-profile/initialization_summary.csv")
+trajectories <- read.csv("data/iw-eta-profile/initialization_trajectories.csv")
+stopifnot(nrow(starts) == 4, all(starts$converged),
+          all(starts$core_converged), all(starts$optimizer_converged),
+          all(starts$relative_change < 1e-8),
+          all(starts$fallback == (starts$raw_n_cs <= 1)))
+knitr::kable(data.frame(
+  `Initial eta0`=starts$initial_eta0,
+  `Learned eta0`=starts$eta0,
+  `IW ELBO`=starts$core_elbo,
+  Iterations=starts$iterations,
+  `IW CSs`=starts$raw_n_cs,
+  `SER fallback`=ifelse(starts$fallback, "Yes", "No"),
+  Converged=starts$converged, check.names=FALSE
+), digits=3, row.names=FALSE)
+```
+
+All four fits converge. Starts at 10, 100 and 1,000 reach the lower branch
+near learned $\eta_0=300$, retain one CS and trigger SER fallback. The
+10,000 start reaches the higher branch near learned $\eta_0=351$, retains
+two CSs and does not trigger fallback. Its core ELBO is about 4.51 higher.
+The retained CS sizes are 2 for the lower solutions and 1 and 2 for the
+higher solution.
+
+```{r initialization-trajectories, fig.width=11, fig.height=4.8}
+oldpar <- par(mfrow=c(1, 2), mar=c(4.2, 4.5, 2.5, 1))
+start_colors <- c("#777777", "#E69F00", "#D55E00", "#0072B2")
+xlim <- range(trajectories$iteration)
+plot(NA, xlim=xlim, ylim=range(trajectories$eta0),
+     xlab="Iteration", ylab=expression("Learned " * eta[0]),
+     main="Eta0 after each update", las=1)
+for (i in seq_len(nrow(starts))) {
+  d <- subset(trajectories, initial_eta0 == starts$initial_eta0[i])
+  lines(d$iteration, d$eta0, col=start_colors[i], lwd=2, lty=i)
+  points(tail(d$iteration, 1), tail(d$eta0, 1), col=start_colors[i], pch=19)
+}
+legend("bottomright", paste("Initial eta0 =", starts$initial_eta0),
+       col=start_colors, lty=seq_len(nrow(starts)), lwd=2, bty="n", cex=0.8)
+plot(NA, xlim=xlim, ylim=c(9878, 9886),
+     xlab="Iteration", ylab="Core IW ELBO",
+     main="ELBO near the endpoints", las=1)
+for (i in seq_len(nrow(starts))) {
+  d <- subset(trajectories, initial_eta0 == starts$initial_eta0[i])
+  lines(d$iteration, d$elbo, col=start_colors[i], lwd=2, lty=i)
+  points(tail(d$iteration, 1), tail(d$elbo, 1), col=start_colors[i], pch=19)
+}
+par(oldpar)
+```
+
+The left panel starts after the first update, so its first plotted eta0
+values differ from the supplied initial values. The right panel zooms in
+on the final ELBO range; earlier lower values are outside the plotting
+window. Points mark each fit's stopping iteration.
+
+This gives two distinct groups of numerically converged endpoints on the
+same dataset. The three lower endpoints differ slightly because convergence
+uses a finite ELBO-change tolerance. These are not proofs of exact stationary
+points or global optima. In particular, the learned concentrations are fairly
+close even though the initial values differ greatly: initialization affects
+which posterior solution is reached, not just the final concentration.
+
+The earlier optional 10,000-start run at tolerance $10^{-10}$ was stopped;
+the new comparison above is complete and uses the same $10^{-8}$ tolerance
+for all four starts. All traces and endpoint diagnostics are saved. The
+fitting script is `code/iw-eta-profile/initializations.R`; it runs from the
+original local experiment directory, where the LD matrices and pinned R
+libraries are retained.
 
 ## 3. One peak in the best-found profile
 

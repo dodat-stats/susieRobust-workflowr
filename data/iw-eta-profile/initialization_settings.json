@@ -1,0 +1,22 @@
+{
+  "eta0_init": [10, 100, 1000, 10000],
+  "L_fit": 10,
+  "max_iter": 3000,
+  "relative_tol": 1e-08,
+  "lambda_bounds": [1.0000000000000001e-05, 0.20000000000000001],
+  "prior_variance_init": 0.20000000000000001,
+  "estimate_prior_variance": true,
+  "restart_on_nonconvergence": false,
+  "ser_fallback": true,
+  "partition_ser": false,
+  "coverage": 0.94999999999999996,
+  "min_abs_corr": 0.5,
+  "purity_matrix": "R0",
+  "optimizer_starts": 3,
+  "eta0_bounds": [1, 100000000],
+  "susieRobust": "0.0.0.9002",
+  "susieR": "0.14.2",
+  "master_seed": 20261101,
+  "all_fits_converged": true,
+  "checkpoints_reused": false
+}
