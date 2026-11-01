@@ -1,0 +1,158 @@
+---
+title: "IW initialization and the eta0 profile"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    toc: false
+editor_options:
+  chunk_output_type: inline
+---
+
+## 1. Simulation and fixed-eta0 fits
+
+Does sensitivity to the initial $\eta_0$ imply that the profiled IW ELBO has
+multiple local maxima? We examine one new simulated locus, using the shared
+European-like growth model from the v5 simulations.
+
+The locus is 1 Mb, with 200,000 study individuals and 5,000 reference
+individuals. The populations split $T=200$ generations ago. Recombination is
+$10^{-8}$ per base per generation, and mutation is $2.36\times10^{-8}$.
+We use DTWF ancestry for the first 100 generations backward in time, followed
+by Hudson ancestry, retaining the specified demographic history.
+We keep all shared variable biallelic SNPs with study MAF at least 1%.
+This gives 1,752 SNPs and relative LD distance
+$\lVert R_0-R\rVert_F/\lVert R\rVert_F=0.2625$.
+
+We sample $L_{\mathrm{true}}=3$ causal variants without a correlation cutoff,
+draw independent normal effects, and rescale them so that
+$\beta^\top R\beta=h^2/(1-h^2)$ with $h^2=1\%$. Then
+$$
+v=R\beta+\epsilon,\qquad \epsilon\sim N(0,R/N).
+$$
+The master seed is 20261101. This locus was not selected based on its fitting
+results. One of its three sampled effects is weak.
+
+We fit IW with $L=10$, fixing $\eta_0$ at 21 log-spaced values from 100 to
+10,000. Lambda and effect prior variances remain free; lambda is bounded by
+$[10^{-5},0.2]$, and prior variances start at 0.2. SER fallback is disabled.
+We use independent fits and warm starts along the grid in both directions.
+The coarse fits use relative tolerance $10^{-8}$ and at most 1,000 iterations.
+We then refine the range 200--600 with 25 log-spaced points, tolerance
+$10^{-10}$, and at most 2,000 iterations, plus an independent fit at the best
+refined grid point.
+
+The fits used susieRobust 0.0.0.9002 and susieR 0.14.2. A local copy of the
+internal fitter supplied continuation and a cached reference spectrum;
+a regression check confirmed that cached cold fits match the native fitter.
+This page reads the saved numerical results and regenerates the figure; it
+does not rerun the simulations or fits.
+
+```{r}
+coarse <- read.csv("data/iw-eta-profile/profile_results.csv")
+fine <- read.csv("data/iw-eta-profile/refined_results.csv")
+cols <- c("path", "eta0_fixed", "elbo", "converged")
+fits <- rbind(coarse[, cols], fine[, cols])
+stopifnot(nrow(coarse) == 63, nrow(fine) == 51,
+          all(coarse$converged), sum(!fine$converged) == 1)
+
+# Highest converged ELBO found at each fixed eta0.
+best_found <- function(x) {
+  x <- x[x$converged, ]
+  x <- x[order(-x$elbo), ]
+  x <- x[!duplicated(round(x$eta0_fixed, 8)), ]
+  x[order(x$eta0_fixed), ]
+}
+profile <- best_found(fits)
+fine_profile <- best_found(fine)
+```
+
+## 2. Two optimization branches
+
+The two continuation paths find different ELBO values at the same fixed
+$\eta_0$. The lower branch peaks near 302, while the higher branch peaks
+near 346. Their peak ELBO values differ by about 4.51.
+The ascending path eventually leaves the lower branch and joins the higher
+one. This is evidence of sensitivity to the optimization path, consistent
+with distinct local solutions of the joint variational optimization.
+
+```{r}
+local_peaks <- function(x) {
+  x <- x[order(x$eta0_fixed), ]
+  y <- x$elbo
+  i <- which(y[2:(length(y)-1)] > y[1:(length(y)-2)] &
+             y[2:(length(y)-1)] > y[3:length(y)]) + 1L
+  x[i, ]
+}
+lower <- local_peaks(subset(fine, path == "ascending" & converged))[1, ]
+higher <- fine_profile[which.max(fine_profile$elbo), ]
+knitr::kable(data.frame(
+  branch=c("Lower branch", "Higher branch"),
+  eta0=c(lower$eta0_fixed, higher$eta0_fixed),
+  ELBO=c(lower$elbo, higher$elbo)
+), digits=3, row.names=FALSE)
+```
+
+```{r eta-profile, fig.width=11, fig.height=4.8}
+oldpar <- par(mfrow=c(1, 2), mar=c(4.2, 4.5, 2.5, 1))
+colors <- c(ascending="#D55E00", descending="#0072B2")
+draw_profile <- function(points, envelope, xlim, ylim, title) {
+  plot(envelope$eta0_fixed, envelope$elbo, type="n", log="x",
+       xlim=xlim, ylim=ylim, xlab=expression("Fixed " * eta[0]),
+       ylab="IW ELBO", main=title, las=1)
+  for (path in names(colors)) {
+    d <- points[points$path == path, ]
+    d <- d[order(d$eta0_fixed), ]
+    lines(d$eta0_fixed, d$elbo, col=colors[path], lwd=2)
+  }
+  lines(envelope$eta0_fixed, envelope$elbo, lty=2, lwd=2)
+  cold <- subset(coarse, path == "cold")
+  points(cold$eta0_fixed, cold$elbo, pch=21, bg="white", col="grey40")
+  failed <- fits[!fits$converged, ]
+  points(failed$eta0_fixed, failed$elbo, pch=4, col="red", lwd=2)
+}
+draw_profile(coarse, profile, c(100, 10000), range(fits$elbo),
+             "Requested range")
+legend("bottomleft",
+       c("Low to high", "High to low", "Best converged", "Independent", "Not converged"),
+       col=c(colors, "black", "grey40", "red"),
+       lty=c(1, 1, 2, NA, NA), pch=c(NA, NA, NA, 1, 4),
+       lwd=c(2, 2, 2, NA, 2), bty="n", cex=0.8)
+draw_profile(fine, fine_profile, c(200, 600), c(9870, 9886),
+             "Near the peak")
+par(oldpar)
+```
+
+All 63 coarse-grid fits converged. One of the 51 refinement fits reached the
+iteration cap: the ascending fit at $\eta_0=455.90$. It is marked red and
+excluded from the best-converged envelope. Its neighbors show the eventual
+switch to the higher branch.
+
+## 3. One peak in the best-found profile
+
+The ideal profiled ELBO is
+$$
+F(\eta_0)=\max_{q,\lambda,V}\mathcal{L}(q,\lambda,V;\eta_0),
+$$
+where $q$ is the variational distribution and $V$ denotes the effect prior
+variances. Profiling takes the best solution over these other quantities at
+each $\eta_0$. A lower optimization branch can therefore disappear from the
+profile wherever another branch has higher ELBO.
+
+The black envelope approximates this maximization using the converged fits
+we found. On the refined grid it has one local maximum, near $\eta_0=346$:
+
+```{r}
+peaks <- local_peaks(fine_profile)
+stopifnot(nrow(peaks) == 1)
+knitr::kable(peaks[, c("eta0_fixed", "elbo")], digits=3, row.names=FALSE)
+```
+
+Thus initialization sensitivity does not by itself imply two local maxima
+of the profiled ELBO. This example supports the concern about different
+optimization branches, but does not establish two profile maxima. The
+envelope is the best found, not a certified global optimum; a finite grid
+cannot exclude narrower or undiscovered peaks. One locus also does not tell
+us how frequently this occurs.
+
+The saved settings and simulation seeds are in
+`data/iw-eta-profile/settings.json` and `data/iw-eta-profile/metadata.json`.

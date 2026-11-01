@@ -1,0 +1,56 @@
+{
+  "master_seed": 20261101,
+  "sequence_length": 1000000,
+  "N": 200000,
+  "N0": 5000,
+  "T": 200,
+  "L_true": 3,
+  "h2": 0.01,
+  "recombination_rate": 1e-08,
+  "mutation_rate": 2.36e-08,
+  "maf_min": 0.01,
+  "dtwf_generations": 100,
+  "p": 1752,
+  "relative_frobenius": 0.26250439191186264,
+  "causal_zero_based": [
+    9,
+    720,
+    385
+  ],
+  "normal_effects": [
+    0.6205178847414397,
+    -0.023103435382679404,
+    0.18209353155847
+  ],
+  "causal_correlation": [
+    [
+      0.9999999999999951,
+      -0.028803760171693702,
+      0.06802777850987325
+    ],
+    [
+      -0.028803760171693702,
+      1.0000000000000007,
+      0.050434352029471066
+    ],
+    [
+      0.06802777850987325,
+      0.050434352029471066,
+      1.0000000000000002
+    ]
+  ],
+  "generation_seconds": 41.17541604100552,
+  "seeds": {
+    "ancestry": 2098927838,
+    "mutations": 767319061,
+    "split": 541618285,
+    "association": 1573413280
+  },
+  "n_study_common_candidates": 1753,
+  "n_shared_snps": 1752,
+  "fixed_counts": {
+    "study": 0,
+    "B_200": 1
+  },
+  "thinning_applied": false
+}
