@@ -441,15 +441,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtree49e9d6f71ab0ce0d24308f8ee142de1477baa25dtargetblank49e9d6fa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtreeb336346b205be42a9f1fb99cb110df93b2dc7431targetblankb336346a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/49e9d6f71ab0ce0d24308f8ee142de1477baa25d" target="_blank">49e9d6f</a>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/b336346b205be42a9f1fb99cb110df93b2dc7431" target="_blank">b336346</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtree49e9d6f71ab0ce0d24308f8ee142de1477baa25dtargetblank49e9d6fa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtreeb336346b205be42a9f1fb99cb110df93b2dc7431targetblankb336346a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -459,7 +459,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/49e9d6f71ab0ce0d24308f8ee142de1477baa25d" target="_blank">49e9d6f</a>.
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/b336346b205be42a9f1fb99cb110df93b2dc7431" target="_blank">b336346</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -528,6 +528,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/b336346b205be42a9f1fb99cb110df93b2dc7431/analysis/04-IW-eta-profile.Rmd" target="_blank">b336346</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-11-01
+</td>
+<td>
+Simplify IW tutorial and directly fit five initializations
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/dodat-stats/susieRobust-workflowr/9403ff0e078edae470e189dadb79dbbc980c38c9/docs/04-IW-eta-profile.html" target="_blank">9403ff0</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-11-01
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -620,146 +654,229 @@ Document IW optimization branches and the fixed-eta ELBO profile
 </div>
 </div>
 </div>
-<div id="simulation-and-fixed-eta0-fits" class="section level2">
-<h2>1. Simulation and fixed-eta0 fits</h2>
-<p>Does sensitivity to the initial <span
-class="math inline">\(\eta_0\)</span> imply that the profiled IW ELBO
-has multiple local maxima? We examine one new simulated locus, using the
-shared European-like growth model from the v5 simulations.</p>
-<p>The locus is 1 Mb, with 200,000 study individuals and 5,000 reference
-individuals. The populations split <span
-class="math inline">\(T=200\)</span> generations ago. Recombination is
-<span class="math inline">\(10^{-8}\)</span> per base per generation,
-and mutation is <span class="math inline">\(2.36\times10^{-8}\)</span>.
-We use DTWF ancestry for the first 100 generations backward in time,
-followed by Hudson ancestry, retaining the specified demographic
-history. We keep all shared variable biallelic SNPs with study MAF at
-least 1%. This gives 1,752 SNPs and relative LD distance <span
-class="math inline">\(\lVert R_0-R\rVert_F/\lVert
-R\rVert_F=0.2625\)</span>.</p>
-<p>We sample <span class="math inline">\(L_{\mathrm{true}}=3\)</span>
-causal variants without a correlation cutoff, draw independent normal
-effects, and rescale them so that <span class="math inline">\(\beta^\top
-R\beta=h^2/(1-h^2)\)</span> with <span
-class="math inline">\(h^2=1\%\)</span>. Then <span
-class="math display">\[
-v=R\beta+\epsilon,\qquad \epsilon\sim N(0,R/N).
-\]</span> The master seed is 20261101. This locus was not selected based
-on its fitting results. One of its three sampled effects is weak.</p>
-<p>We fit IW with <span class="math inline">\(L=10\)</span>, fixing
-<span class="math inline">\(\eta_0\)</span> at 21 log-spaced values from
-100 to 10,000. Lambda and effect prior variances remain free; lambda is
-bounded by <span class="math inline">\([10^{-5},0.2]\)</span>, and prior
-variances start at 0.2. SER fallback is disabled. We use independent
-fits and warm starts along the grid in both directions. The coarse fits
-use relative tolerance <span class="math inline">\(10^{-8}\)</span> and
-at most 1,000 iterations. We then refine the range 200–600 with 25
-log-spaced points, tolerance <span
-class="math inline">\(10^{-10}\)</span>, and at most 2,000 iterations,
-plus an independent fit at the best refined grid point.</p>
-<p>The fits used susieRobust 0.0.0.9002 and susieR 0.14.2. A local copy
-of the internal fitter supplied continuation and a cached reference
-spectrum; a regression check confirmed that cached cold fits match the
-native fitter. This page reads the saved numerical results and
-regenerates the figure; it does not rerun the simulations or fits.</p>
+<div id="load-the-simulated-data" class="section level2">
+<h2>1. Load the simulated data</h2>
+<p>This 1 Mb locus has 1,752 SNPs, <span
+class="math inline">\(N=200{,}000\)</span>, <span
+class="math inline">\(N_0=5{,}000\)</span>, <span
+class="math inline">\(T=200\)</span>, <span
+class="math inline">\(L_{\mathrm{true}}=3\)</span> and <span
+class="math inline">\(h^2=1\%\)</span>. We use shared European-like
+growth, recombination <span class="math inline">\(10^{-8}\)</span>, and
+random normal causal effects. The saved file contains the original study
+LD, reference LD and association statistics.</p>
+<pre class="r"><code>library(susieRobust)
+library(susieR)
+# This analysis uses susieRobust 0.0.0.9002 and susieR 0.14.2.
+
+example &lt;- readRDS(&quot;data/iw-eta-profile/example.rds&quot;)
+R &lt;- example$R; R0 &lt;- example$R0; v &lt;- example$v
+N &lt;- example$N; causal &lt;- example$causal
+L_max &lt;- 10L</code></pre>
+</div>
+<div id="fit-iw-from-different-initial-values" class="section level2">
+<h2>2. Fit IW from different initial values</h2>
+<p>Fit the same data from five initial values of <span
+class="math inline">\(\eta_0\)</span>. Both <span
+class="math inline">\(\eta_0\)</span> and <span
+class="math inline">\(\lambda\)</span> are learned. Restarts are
+disabled; SER fallback is enabled.</p>
+<pre class="r"><code>eta0_init &lt;- c(10, 100, 1000, 5000, 10000)
+fits &lt;- lapply(eta0_init, function(initial) {
+  susie_iw(v=v, R0=R0, N=N, L=L_max, eta0_init=initial,
+           lambda_min=1e-5, lambda_max=0.2,
+           scaled_prior_variance=0.2, estimate_prior_variance=TRUE,
+           max_iter=3000, tol=1e-8, optimizer_starts=3,
+           restart_on_nonconvergence=FALSE,
+           ser_fallback=TRUE, partition_ser=FALSE,
+           coverage=0.95, min_abs_corr=0.5, purity_matrix=&quot;R0&quot;,
+           track_fit=TRUE)
+})
+names(fits) &lt;- eta0_init</code></pre>
+<p>Report the IW ELBO and CS count <strong>before fallback</strong>.
+Fallback is applied after fitting if zero or one CS remains after purity
+filtering and deduplication.</p>
+<pre class="r"><code>results &lt;- do.call(rbind, lapply(seq_along(fits), function(i) {
+  f &lt;- fits[[i]]
+  data.frame(Start=eta0_init[i], eta0=f$eta0,
+             ELBO=tail(f$raw_fit$elbo, 1),
+             Iterations=length(f$raw_fit$elbo), CSs=length(f$raw_sets),
+             SER=f$postprocess$fallback_used, Converged=f$converged)
+}))
+knitr::kable(results, digits=3, row.names=FALSE)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">Start</th>
+<th align="right">eta0</th>
+<th align="right">ELBO</th>
+<th align="right">Iterations</th>
+<th align="right">CSs</th>
+<th align="left">SER</th>
+<th align="left">Converged</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">10</td>
+<td align="right">299.955</td>
+<td align="right">9880.241</td>
+<td align="right">103</td>
+<td align="right">1</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="right">100</td>
+<td align="right">300.065</td>
+<td align="right">9880.236</td>
+<td align="right">88</td>
+<td align="right">1</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="right">1000</td>
+<td align="right">300.288</td>
+<td align="right">9880.226</td>
+<td align="right">107</td>
+<td align="right">1</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="right">5000</td>
+<td align="right">351.032</td>
+<td align="right">9884.745</td>
+<td align="right">191</td>
+<td align="right">2</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="right">10000</td>
+<td align="right">351.031</td>
+<td align="right">9884.745</td>
+<td align="right">196</td>
+<td align="right">2</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>traces &lt;- lapply(fits, function(f) f$iw$optimization_trace)
+colors &lt;- c(&quot;grey50&quot;, &quot;#E69F00&quot;, &quot;#D55E00&quot;, &quot;#009E73&quot;, &quot;#0072B2&quot;)
+xlim &lt;- c(1, max(results$Iterations))
+par(mfrow=c(1, 2), mar=c(4.2, 4.5, 2.5, 1))
+
+plot(NA, xlim=xlim, ylim=range(unlist(lapply(traces, `[[`, &quot;eta0&quot;))),
+     xlab=&quot;Iteration&quot;, ylab=expression(eta[0]),
+     main=&quot;Eta0 after each update&quot;, las=1)
+for (i in seq_along(traces)) {
+  d &lt;- traces[[i]]
+  lines(d$iteration, d$eta0, col=colors[i], lty=i, lwd=2)
+  points(tail(d$iteration, 1), tail(d$eta0, 1), col=colors[i], pch=19)
+}
+legend(&quot;bottomright&quot;, paste(&quot;Initial eta0 =&quot;, eta0_init),
+       col=colors, lty=seq_along(fits), lwd=2, bty=&quot;n&quot;, cex=0.8)
+
+plot(NA, xlim=xlim, ylim=c(9878, 9886),
+     xlab=&quot;Iteration&quot;, ylab=&quot;Core IW ELBO&quot;,
+     main=&quot;ELBO near the endpoints&quot;, las=1)
+for (i in seq_along(traces)) {
+  d &lt;- traces[[i]]
+  lines(d$iteration, d$elbo, col=colors[i], lty=i, lwd=2)
+  points(tail(d$iteration, 1), tail(d$elbo, 1), col=colors[i], pch=19)
+}</code></pre>
+<p><img src="figure/04-IW-eta-profile.Rmd/initialization-trajectories-1.png" alt="" width="1056" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-initialization-trajectories-1">
+Past versions of initialization-trajectories-1.png
+</button>
+</p>
+<div id="fig-initialization-trajectories-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/9403ff0e078edae470e189dadb79dbbc980c38c9/docs/figure/04-IW-eta-profile.Rmd/initialization-trajectories-1.png" target="_blank">9403ff0</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-11-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>par(mfrow=c(1, 1))</code></pre>
+<p>The curves start after the first update; points mark the stopping
+iterations. The ELBO panel zooms in on the endpoints. Small starts tend
+to reach the lower-ELBO, one-CS solution and trigger SER fallback;
+larger starts can reach a higher-ELBO solution with multiple CSs. This
+is a numerical example, not a guarantee for other loci.</p>
+</div>
+<div id="profile-elbo" class="section level2">
+<h2>3. Profile ELBO</h2>
+<p>For comparison, load the earlier fixed-<span
+class="math inline">\(\eta_0\)</span> fits. These used independent fits
+and continuation in both directions, with fallback disabled. The coarse
+grid has 21 log-spaced values from 100 to 10,000 (<span
+class="math inline">\(10^{-8}\)</span> tolerance, at most 1,000
+iterations); the refined grid has 25 values from 200 to 600 (<span
+class="math inline">\(10^{-10}\)</span> tolerance, at most 2,000
+iterations).</p>
 <pre class="r"><code>coarse &lt;- read.csv(&quot;data/iw-eta-profile/profile_results.csv&quot;)
 fine &lt;- read.csv(&quot;data/iw-eta-profile/refined_results.csv&quot;)
 cols &lt;- c(&quot;path&quot;, &quot;eta0_fixed&quot;, &quot;elbo&quot;, &quot;converged&quot;)
-fits &lt;- rbind(coarse[, cols], fine[, cols])
-stopifnot(nrow(coarse) == 63, nrow(fine) == 51,
-          all(coarse$converged), sum(!fine$converged) == 1)
-
-# Highest converged ELBO found at each fixed eta0.
+all_fits &lt;- rbind(coarse[, cols], fine[, cols])
 best_found &lt;- function(x) {
   x &lt;- x[x$converged, ]
   x &lt;- x[order(-x$elbo), ]
   x &lt;- x[!duplicated(round(x$eta0_fixed, 8)), ]
   x[order(x$eta0_fixed), ]
-}
-profile &lt;- best_found(fits)
-fine_profile &lt;- best_found(fine)</code></pre>
-</div>
-<div id="initialization-multiple-css-and-ser-fallback"
-class="section level2">
-<h2>2. Initialization, multiple CSs, and SER fallback</h2>
-<p>Our initialization experiments suggest a tendency: small initial
-<span class="math inline">\(\eta_0\)</span> can lead IW to a lower-ELBO
-solution with one retained credible set, which then triggers SER
-fallback. Starting larger tends to help IW reach a higher-ELBO solution
-with multiple credible sets and avoid fallback. Below, independent
-free-<span class="math inline">\(\eta_0\)</span> fits confirm this
-pattern on this locus. It is not a guarantee for other datasets, nor an
-estimate of how often it happens.</p>
-<div id="fixed-eta0-branches" class="section level3">
-<h3>Fixed-eta0 branches</h3>
-<p>The two continuation paths find different ELBO values at the same
-fixed <span class="math inline">\(\eta_0\)</span>. The lower branch
-peaks near 302, while the higher branch peaks near 346. Their peak ELBO
-values differ by about 4.51. The ascending path eventually leaves the
-lower branch and joins the higher one. This is evidence of sensitivity
-to the optimization path, consistent with distinct local solutions of
-the joint variational optimization.</p>
-<pre class="r"><code>local_peaks &lt;- function(x) {
-  x &lt;- x[order(x$eta0_fixed), ]
-  y &lt;- x$elbo
-  i &lt;- which(y[2:(length(y)-1)] &gt; y[1:(length(y)-2)] &amp;
-             y[2:(length(y)-1)] &gt; y[3:length(y)]) + 1L
-  x[i, ]
-}
-lower &lt;- local_peaks(subset(fine, path == &quot;ascending&quot; &amp; converged))[1, ]
-higher &lt;- fine_profile[which.max(fine_profile$elbo), ]
-knitr::kable(data.frame(
-  branch=c(&quot;Lower branch&quot;, &quot;Higher branch&quot;),
-  eta0=c(lower$eta0_fixed, higher$eta0_fixed),
-  ELBO=c(lower$elbo, higher$elbo)
-), digits=3, row.names=FALSE)</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="left">branch</th>
-<th align="right">eta0</th>
-<th align="right">ELBO</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">Lower branch</td>
-<td align="right">301.961</td>
-<td align="right">9880.245</td>
-</tr>
-<tr class="even">
-<td align="left">Higher branch</td>
-<td align="right">346.410</td>
-<td align="right">9884.756</td>
-</tr>
-</tbody>
-</table>
-<pre class="r"><code>oldpar &lt;- par(mfrow=c(1, 2), mar=c(4.2, 4.5, 2.5, 1))
-colors &lt;- c(ascending=&quot;#D55E00&quot;, descending=&quot;#0072B2&quot;)
-draw_profile &lt;- function(points, envelope, xlim, ylim, title) {
+}</code></pre>
+<pre class="r"><code>draw_profile &lt;- function(points, envelope, xlim, ylim, title) {
   plot(envelope$eta0_fixed, envelope$elbo, type=&quot;n&quot;, log=&quot;x&quot;,
        xlim=xlim, ylim=ylim, xlab=expression(&quot;Fixed &quot; * eta[0]),
        ylab=&quot;IW ELBO&quot;, main=title, las=1)
-  for (path in names(colors)) {
-    d &lt;- points[points$path == path, ]
+  paths &lt;- c(&quot;ascending&quot;, &quot;descending&quot;)
+  for (i in seq_along(paths)) {
+    d &lt;- points[points$path == paths[i], ]
     d &lt;- d[order(d$eta0_fixed), ]
-    lines(d$eta0_fixed, d$elbo, col=colors[path], lwd=2)
+    lines(d$eta0_fixed, d$elbo, col=c(&quot;#D55E00&quot;, &quot;#0072B2&quot;)[i], lwd=2)
   }
   lines(envelope$eta0_fixed, envelope$elbo, lty=2, lwd=2)
   cold &lt;- subset(coarse, path == &quot;cold&quot;)
   points(cold$eta0_fixed, cold$elbo, pch=21, bg=&quot;white&quot;, col=&quot;grey40&quot;)
-  failed &lt;- fits[!fits$converged, ]
+  failed &lt;- subset(all_fits, !converged)
   points(failed$eta0_fixed, failed$elbo, pch=4, col=&quot;red&quot;, lwd=2)
 }
-draw_profile(coarse, profile, c(100, 10000), range(fits$elbo),
+par(mfrow=c(1, 2), mar=c(4.2, 4.5, 2.5, 1))
+draw_profile(coarse, best_found(all_fits), c(100, 10000), range(all_fits$elbo),
              &quot;Requested range&quot;)
 legend(&quot;bottomleft&quot;,
        c(&quot;Low to high&quot;, &quot;High to low&quot;, &quot;Best converged&quot;, &quot;Independent&quot;, &quot;Not converged&quot;),
-       col=c(colors, &quot;black&quot;, &quot;grey40&quot;, &quot;red&quot;),
-       lty=c(1, 1, 2, NA, NA), pch=c(NA, NA, NA, 1, 4),
-       lwd=c(2, 2, 2, NA, 2), bty=&quot;n&quot;, cex=0.8)
-draw_profile(fine, fine_profile, c(200, 600), c(9870, 9886),
-             &quot;Near the peak&quot;)</code></pre>
+       col=c(&quot;#D55E00&quot;, &quot;#0072B2&quot;, &quot;black&quot;, &quot;grey40&quot;, &quot;red&quot;),
+       lty=c(1, 1, 2, NA, NA), pch=c(NA, NA, NA, 1, 4), bty=&quot;n&quot;, cex=0.8)
+draw_profile(fine, best_found(fine), c(200, 600), c(9870, 9886), &quot;Near the peak&quot;)</code></pre>
 <p><img src="figure/04-IW-eta-profile.Rmd/eta-profile-1.png" alt="" width="1056" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-eta-profile-1">
@@ -798,260 +915,13 @@ dodat-stats
 </table>
 </div>
 </div>
-<pre class="r"><code>par(oldpar)</code></pre>
-<p>All 63 coarse-grid fits converged. One of the 51 refinement fits
-reached the iteration cap: the ascending fit at <span
-class="math inline">\(\eta_0=455.90\)</span>. It is marked red and
-excluded from the best-converged envelope. Its neighbors show the
-eventual switch to the higher branch.</p>
-<p>To connect these branches to fine-mapping, we recovered 95% credible
-sets from the saved posteriors, using exact minimum absolute correlation
-at least 0.5 in <span class="math inline">\(R_0\)</span> and the usual
-deduplication. The lower branch has one retained CS; the higher branch
-has two.</p>
-<pre class="r"><code>branch_cs &lt;- read.csv(&quot;data/iw-eta-profile/branch_cs_summary.csv&quot;)
-branch_cs &lt;- subset(branch_cs, checkpoint %in% c(&quot;ascending_10&quot;, &quot;descending_13&quot;))
-stopifnot(all(branch_cs$converged),
-          identical(branch_cs$n_cs, c(1L, 2L)),
-          all(branch_cs$would_trigger_fallback == (branch_cs$n_cs &lt;= 1)))
-knitr::kable(data.frame(
-  Solution=branch_cs$solution,
-  eta0=branch_cs$eta0,
-  ELBO=branch_cs$elbo,
-  CSs=branch_cs$n_cs,
-  `CS sizes`=branch_cs$cs_sizes,
-  `Would trigger SER fallback`=ifelse(branch_cs$would_trigger_fallback, &quot;Yes&quot;, &quot;No&quot;),
-  check.names=FALSE
-), digits=3, row.names=FALSE)</code></pre>
-<table>
-<colgroup>
-<col width="25%" />
-<col width="10%" />
-<col width="11%" />
-<col width="5%" />
-<col width="11%" />
-<col width="35%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th align="left">Solution</th>
-<th align="right">eta0</th>
-<th align="right">ELBO</th>
-<th align="right">CSs</th>
-<th align="left">CS sizes</th>
-<th align="left">Would trigger SER fallback</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">Lower branch peak</td>
-<td align="right">301.961</td>
-<td align="right">9880.245</td>
-<td align="right">1</td>
-<td align="left">2</td>
-<td align="left">Yes</td>
-</tr>
-<tr class="even">
-<td align="left">Higher branch peak</td>
-<td align="right">346.410</td>
-<td align="right">9884.756</td>
-<td align="right">2</td>
-<td align="left">1, 2</td>
-<td align="left">No</td>
-</tr>
-</tbody>
-</table>
-<p>Strictly speaking, IW does not converge <em>to</em> the SER fallback.
-It optimizes the IW model first. If zero or one credible set survives
-filtering, the postprocessing rule substitutes an SER fit. Fallback was
-disabled in this diagnostic, so the table records whether each saved IW
-posterior would trigger it if enabled. The displayed ELBOs belong to the
-original IW fits, not to substituted SER fits.</p>
-</div>
-<div id="independent-initializations-with-eta0-free"
-class="section level3">
-<h3>Independent initializations with eta0 free</h3>
-<p>We now start four fresh fits at <span
-class="math inline">\(\eta_0\in\{10,100,1000,10000\}\)</span> on the
-same <span class="math inline">\(R_0\)</span> and <span
-class="math inline">\(v\)</span>. Both <span
-class="math inline">\(\eta_0\)</span> and <span
-class="math inline">\(\lambda\)</span> are learned. All other
-initialization and model settings are identical, with <span
-class="math inline">\(L=10\)</span>, relative tolerance <span
-class="math inline">\(10^{-8}\)</span> and at most 3,000 iterations.
-Restarts are disabled; none of these fits uses a warm start from the
-fixed grid. We use the native <code>susie_iw()</code> function and
-enable its usual SER fallback, with partitioning disabled. The ELBO and
-trajectories below are from the original IW fit, before any
-fallback.</p>
-<pre class="r"><code>starts &lt;- read.csv(&quot;data/iw-eta-profile/initialization_summary.csv&quot;)
-trajectories &lt;- read.csv(&quot;data/iw-eta-profile/initialization_trajectories.csv&quot;)
-stopifnot(nrow(starts) == 4, all(starts$converged),
-          all(starts$core_converged), all(starts$optimizer_converged),
-          all(starts$relative_change &lt; 1e-8),
-          all(starts$fallback == (starts$raw_n_cs &lt;= 1)))
-knitr::kable(data.frame(
-  `Initial eta0`=starts$initial_eta0,
-  `Learned eta0`=starts$eta0,
-  `IW ELBO`=starts$core_elbo,
-  Iterations=starts$iterations,
-  `IW CSs`=starts$raw_n_cs,
-  `SER fallback`=ifelse(starts$fallback, &quot;Yes&quot;, &quot;No&quot;),
-  Converged=starts$converged, check.names=FALSE
-), digits=3, row.names=FALSE)</code></pre>
-<table style="width:100%;">
-<colgroup>
-<col width="17%" />
-<col width="17%" />
-<col width="11%" />
-<col width="14%" />
-<col width="9%" />
-<col width="17%" />
-<col width="13%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th align="right">Initial eta0</th>
-<th align="right">Learned eta0</th>
-<th align="right">IW ELBO</th>
-<th align="right">Iterations</th>
-<th align="right">IW CSs</th>
-<th align="left">SER fallback</th>
-<th align="left">Converged</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="right">10</td>
-<td align="right">299.955</td>
-<td align="right">9880.241</td>
-<td align="right">103</td>
-<td align="right">1</td>
-<td align="left">Yes</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="even">
-<td align="right">100</td>
-<td align="right">300.065</td>
-<td align="right">9880.236</td>
-<td align="right">88</td>
-<td align="right">1</td>
-<td align="left">Yes</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="odd">
-<td align="right">1000</td>
-<td align="right">300.288</td>
-<td align="right">9880.226</td>
-<td align="right">107</td>
-<td align="right">1</td>
-<td align="left">Yes</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="even">
-<td align="right">10000</td>
-<td align="right">351.031</td>
-<td align="right">9884.745</td>
-<td align="right">196</td>
-<td align="right">2</td>
-<td align="left">No</td>
-<td align="left">TRUE</td>
-</tr>
-</tbody>
-</table>
-<p>All four fits converge. Starts at 10, 100 and 1,000 reach the lower
-branch near learned <span class="math inline">\(\eta_0=300\)</span>,
-retain one CS and trigger SER fallback. The 10,000 start reaches the
-higher branch near learned <span
-class="math inline">\(\eta_0=351\)</span>, retains two CSs and does not
-trigger fallback. Its core ELBO is about 4.51 higher. The retained CS
-sizes are 2 for the lower solutions and 1 and 2 for the higher
-solution.</p>
-<pre class="r"><code>oldpar &lt;- par(mfrow=c(1, 2), mar=c(4.2, 4.5, 2.5, 1))
-start_colors &lt;- c(&quot;#777777&quot;, &quot;#E69F00&quot;, &quot;#D55E00&quot;, &quot;#0072B2&quot;)
-xlim &lt;- range(trajectories$iteration)
-plot(NA, xlim=xlim, ylim=range(trajectories$eta0),
-     xlab=&quot;Iteration&quot;, ylab=expression(&quot;Learned &quot; * eta[0]),
-     main=&quot;Eta0 after each update&quot;, las=1)
-for (i in seq_len(nrow(starts))) {
-  d &lt;- subset(trajectories, initial_eta0 == starts$initial_eta0[i])
-  lines(d$iteration, d$eta0, col=start_colors[i], lwd=2, lty=i)
-  points(tail(d$iteration, 1), tail(d$eta0, 1), col=start_colors[i], pch=19)
-}
-legend(&quot;bottomright&quot;, paste(&quot;Initial eta0 =&quot;, starts$initial_eta0),
-       col=start_colors, lty=seq_len(nrow(starts)), lwd=2, bty=&quot;n&quot;, cex=0.8)
-plot(NA, xlim=xlim, ylim=c(9878, 9886),
-     xlab=&quot;Iteration&quot;, ylab=&quot;Core IW ELBO&quot;,
-     main=&quot;ELBO near the endpoints&quot;, las=1)
-for (i in seq_len(nrow(starts))) {
-  d &lt;- subset(trajectories, initial_eta0 == starts$initial_eta0[i])
-  lines(d$iteration, d$elbo, col=start_colors[i], lwd=2, lty=i)
-  points(tail(d$iteration, 1), tail(d$elbo, 1), col=start_colors[i], pch=19)
-}</code></pre>
-<p><img src="figure/04-IW-eta-profile.Rmd/initialization-trajectories-1.png" alt="" width="1056" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>par(oldpar)</code></pre>
-<p>The left panel starts after the first update, so its first plotted
-eta0 values differ from the supplied initial values. The right panel
-zooms in on the final ELBO range; earlier lower values are outside the
-plotting window. Points mark each fit’s stopping iteration.</p>
-<p>This gives two distinct groups of numerically converged endpoints on
-the same dataset. The three lower endpoints differ slightly because
-convergence uses a finite ELBO-change tolerance. These are not proofs of
-exact stationary points or global optima. In particular, the learned
-concentrations are fairly close even though the initial values differ
-greatly: initialization affects which posterior solution is reached, not
-just the final concentration.</p>
-<p>The earlier optional 10,000-start run at tolerance <span
-class="math inline">\(10^{-10}\)</span> was stopped; the new comparison
-above is complete and uses the same <span
-class="math inline">\(10^{-8}\)</span> tolerance for all four starts.
-All traces and endpoint diagnostics are saved. The fitting script is
-<code>code/iw-eta-profile/initializations.R</code>; it runs from the
-original local experiment directory, where the LD matrices and pinned R
-libraries are retained.</p>
-</div>
-</div>
-<div id="one-peak-in-the-best-found-profile" class="section level2">
-<h2>3. One peak in the best-found profile</h2>
-<p>The ideal profiled ELBO is <span class="math display">\[
-F(\eta_0)=\max_{q,\lambda,V}\mathcal{L}(q,\lambda,V;\eta_0),
-\]</span> where <span class="math inline">\(q\)</span> is the
-variational distribution and <span class="math inline">\(V\)</span>
-denotes the effect prior variances. Profiling takes the best solution
-over these other quantities at each <span
-class="math inline">\(\eta_0\)</span>. A lower optimization branch can
-therefore disappear from the profile wherever another branch has higher
-ELBO.</p>
-<p>The black envelope approximates this maximization using the converged
-fits we found. On the refined grid it has one local maximum, near <span
-class="math inline">\(\eta_0=346\)</span>:</p>
-<pre class="r"><code>peaks &lt;- local_peaks(fine_profile)
-stopifnot(nrow(peaks) == 1)
-knitr::kable(peaks[, c(&quot;eta0_fixed&quot;, &quot;elbo&quot;)], digits=3, row.names=FALSE)</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="right">eta0_fixed</th>
-<th align="right">elbo</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="right">346.41</td>
-<td align="right">9884.756</td>
-</tr>
-</tbody>
-</table>
-<p>Thus initialization sensitivity does not by itself imply two local
-maxima of the profiled ELBO. This example supports the concern about
-different optimization branches, but does not establish two profile
-maxima. The envelope is the best found, not a certified global optimum;
-a finite grid cannot exclude narrower or undiscovered peaks. One locus
-also does not tell us how frequently this occurs.</p>
-<p>The saved settings and simulation seeds are in
-<code>data/iw-eta-profile/settings.json</code> and
-<code>data/iw-eta-profile/metadata.json</code>.</p>
+<pre class="r"><code>par(mfrow=c(1, 1))</code></pre>
+<p>There are two optimization branches, but one peak in the best-found
+profile. Profiling takes the best solution over the other parameters at
+each <span class="math inline">\(\eta_0\)</span>, so the lower branch
+can disappear from the envelope. The red cross marks the one
+nonconverged fit, which is excluded from that envelope. This is the best
+profile found, not a certified global optimum.</p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1079,20 +949,25 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] workflowr_1.7.2
+[1] susieR_0.14.2          susieRobust_0.0.0.9002 workflowr_1.7.2       
 
 loaded via a namespace (and not attached):
- [1] vctrs_0.7.3       httr_1.4.9        cli_3.6.6         knitr_1.51       
- [5] rlang_1.3.0       xfun_0.60         stringi_1.8.9     otel_0.2.0       
- [9] processx_3.9.0    promises_1.5.0    jsonlite_2.0.0    glue_1.8.1       
-[13] rprojroot_2.1.1   git2r_0.36.2      htmltools_0.5.9   httpuv_1.6.17    
-[17] sass_0.4.10       rmarkdown_2.32    jquerylib_0.1.4   tibble_3.3.1     
-[21] evaluate_1.0.5    fastmap_1.2.0     yaml_2.3.12       lifecycle_1.0.5  
-[25] whisker_0.4.1     stringr_1.6.0     compiler_4.6.1    fs_2.1.0         
-[29] pkgconfig_2.0.3   Rcpp_1.1.2        rstudioapi_0.19.0 later_1.4.8      
-[33] digest_0.6.39     R6_2.6.1          pillar_1.11.1     callr_3.8.0      
-[37] magrittr_2.0.5    bslib_0.12.0      tools_4.6.1       cachem_1.1.0     
-[41] getPass_0.2-4    </code></pre>
+ [1] sass_0.4.10        generics_0.1.4     stringi_1.8.9      lattice_0.22-9    
+ [5] digest_0.6.39      magrittr_2.0.5     evaluate_1.0.5     grid_4.6.1        
+ [9] RColorBrewer_1.1-3 fastmap_1.2.0      plyr_1.8.9         rprojroot_2.1.1   
+[13] jsonlite_2.0.0     Matrix_1.7-5       processx_3.9.0     whisker_0.4.1     
+[17] reshape_0.8.10     mixsqp_0.3-54      promises_1.5.0     httr_1.4.9        
+[21] scales_1.4.0       jquerylib_0.1.4    cli_3.6.6          zigg_0.0.2        
+[25] rlang_1.3.0        crayon_1.5.3       cachem_1.1.0       yaml_2.3.12       
+[29] otel_0.2.0         tools_4.6.1        dplyr_1.2.1        ggplot2_4.0.3     
+[33] httpuv_1.6.17      Rfast_2.1.5.2      vctrs_0.7.3        R6_2.6.1          
+[37] matrixStats_1.5.0  lifecycle_1.0.5    git2r_0.36.2       stringr_1.6.0     
+[41] fs_2.1.0           irlba_2.3.7        pkgconfig_2.0.3    callr_3.8.0       
+[45] RcppParallel_6.2.1 pillar_1.11.1      bslib_0.12.0       later_1.4.8       
+[49] gtable_0.3.6       glue_1.8.1         Rcpp_1.1.2         xfun_0.60         
+[53] tibble_3.3.1       tidyselect_1.2.1   rstudioapi_0.19.0  knitr_1.51        
+[57] farver_2.1.2       htmltools_0.5.9    rmarkdown_2.32     compiler_4.6.1    
+[61] getPass_0.2-4      S7_0.2.2          </code></pre>
 </div>
 </div>
 </div>
