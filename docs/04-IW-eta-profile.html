@@ -441,15 +441,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtreeb336346b205be42a9f1fb99cb110df93b2dc7431targetblankb336346a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtree08f617bc25ed6e3f564a35d6f8be8cb74f412ab0targetblank08f617ba">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/b336346b205be42a9f1fb99cb110df93b2dc7431" target="_blank">b336346</a>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/08f617bc25ed6e3f564a35d6f8be8cb74f412ab0" target="_blank">08f617b</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtreeb336346b205be42a9f1fb99cb110df93b2dc7431targetblankb336346a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtree08f617bc25ed6e3f564a35d6f8be8cb74f412ab0targetblank08f617ba"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -459,7 +459,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/b336346b205be42a9f1fb99cb110df93b2dc7431" target="_blank">b336346</a>.
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/08f617bc25ed6e3f564a35d6f8be8cb74f412ab0" target="_blank">08f617b</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -528,6 +528,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/08f617bc25ed6e3f564a35d6f8be8cb74f412ab0/analysis/04-IW-eta-profile.Rmd" target="_blank">08f617b</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-11-01
+</td>
+<td>
+Add marginal associations and PIPs for the two IW solutions
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/dodat-stats/susieRobust-workflowr/a0ef11a9f995de0f31bb6f6b3c0088a5c2915c41/docs/04-IW-eta-profile.html" target="_blank">a0ef11a</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-11-01
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -673,6 +707,14 @@ example &lt;- readRDS(&quot;data/iw-eta-profile/example.rds&quot;)
 R &lt;- example$R; R0 &lt;- example$R0; v &lt;- example$v
 N &lt;- example$N; causal &lt;- example$causal
 L_max &lt;- 10L</code></pre>
+<pre class="r"><code>z &lt;- sqrt(N)*v  # Working Gaussian association z-scores.
+neg_log10p &lt;- -(log(2) + pnorm(-abs(z), log.p=TRUE))/log(10)
+plot(seq_along(v), neg_log10p, pch=16, cex=0.5,
+     xlab=&quot;Variant index&quot;, ylab=&quot;-log10(P)&quot;, main=&quot;Marginal association&quot;)
+points(causal, neg_log10p[causal], pch=16, cex=0.8, col=&quot;firebrick&quot;)
+abline(v=causal, col=&quot;firebrick&quot;, lty=3)</code></pre>
+<p><img src="figure/04-IW-eta-profile.Rmd/marginal-association-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>Red points and vertical lines mark the true causal variants.</p>
 </div>
 <div id="fit-iw-from-different-initial-values" class="section level2">
 <h2>2. Fit IW from different initial values</h2>
@@ -813,6 +855,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/a0ef11a9f995de0f31bb6f6b3c0088a5c2915c41/docs/figure/04-IW-eta-profile.Rmd/initialization-trajectories-1.png" target="_blank">a0ef11a</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-11-01
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/9403ff0e078edae470e189dadb79dbbc980c38c9/docs/figure/04-IW-eta-profile.Rmd/initialization-trajectories-1.png" target="_blank">9403ff0</a>
 </td>
 <td>
@@ -832,6 +885,18 @@ iterations. The ELBO panel zooms in on the endpoints. Small starts tend
 to reach the lower-ELBO, one-CS solution and trigger SER fallback;
 larger starts can reach a higher-ELBO solution with multiple CSs. This
 is a numerical example, not a guarantee for other loci.</p>
+<p>Compare the two IW posteriors <strong>before SER fallback</strong>,
+using starts 100 and 5,000. Circles mark retained credible sets; red
+points mark causal variants.</p>
+<pre class="r"><code>low &lt;- fits[[&quot;100&quot;]]
+high &lt;- fits[[&quot;5000&quot;]]
+par(mfrow=c(1, 2))
+plot_pip(low$raw_fit, sets=low$raw_sets, causal=causal, R=R0,
+         main=&quot;Lower ELBO: initial eta0 = 100&quot;)
+plot_pip(high$raw_fit, sets=high$raw_sets, causal=causal, R=R0,
+         main=&quot;Higher ELBO: initial eta0 = 5000&quot;)</code></pre>
+<p><img src="figure/04-IW-eta-profile.Rmd/solution-pips-1.png" alt="" width="1056" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>par(mfrow=c(1, 1))</code></pre>
 </div>
 <div id="profile-elbo" class="section level2">
 <h2>3. Profile ELBO</h2>
@@ -900,6 +965,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/a0ef11a9f995de0f31bb6f6b3c0088a5c2915c41/docs/figure/04-IW-eta-profile.Rmd/eta-profile-1.png" target="_blank">a0ef11a</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-11-01
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/582661387028d7a06c83c9f88046040c6ef3ef3e/docs/figure/04-IW-eta-profile.Rmd/eta-profile-1.png" target="_blank">5826613</a>
