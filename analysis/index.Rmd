@@ -19,6 +19,10 @@ reference LD differs from the study LD.
 
 3. [A problematic simulation example](03-problematic-simulation.html): inspect a
    linearly dependent SNP configuration and compare AIW under two iteration caps.
+4. [IW initialization and the eta0 profile](04-IW-eta-profile.html): compare
+   initializations, their ELBO trajectories, and the fixed-eta0 profile.
+5. [SuSiE-IW with multiple starts](05-susie-iw.html): simulate new associations,
+   inspect multiple-start selection, and compare IW and reference-LD RSS PIPs.
 
 The tutorials use saved LD matrices, so Python and stdpopsim are optional.
 The [source code and example data](https://github.com/dodat-stats/susieRobust-workflowr)
