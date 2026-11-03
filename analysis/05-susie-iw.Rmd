@@ -90,7 +90,7 @@ par(mfrow=c(1, 1))
 ```
 
 Curves begin after the first update; points mark stopping iterations.
-Here the selected start is **`r multi$selected_initial_eta0`**, with learned
+Here the selected start is **`r format(multi$selected_initial_eta0, scientific=FALSE, big.mark=",")`**, with learned
 $\eta_0 =$ `r round(fit$eta0, 3)` and
 $\lambda =$ `r signif(fit$selected_lambda, 4)`.
 
