@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>SuSiE-IW with multiple starts</title>
+
+<script src="site_libs/header-attrs-2.32/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">susieRobust-workflowr</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/dodat-stats/susieRobust-workflowr">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">SuSiE-IW with multiple starts</h1>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-11-03
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>susieRobust-workflowr/</code>
+<span class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.2). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20261018code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20261018)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20261018code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20261018)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtree598dec285e8897e8685d02a8c7ca8390df9bd35ftargetblank598dec2a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/598dec285e8897e8685d02a8c7ca8390df9bd35f" target="_blank">598dec2</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtree598dec285e8897e8685d02a8c7ca8390df9bd35ftargetblank598dec2a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/598dec285e8897e8685d02a8c7ca8390df9bd35f" target="_blank">598dec2</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/.DS_Store
+    Ignored:    analysis/.RData
+    Ignored:    analysis/.Rhistory
+
+Unstaged changes:
+    Modified:   analysis/01-get-started.Rmd
+    Modified:   analysis/index.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/05-susie-iw.Rmd</code>) and HTML
+(<code>docs/05-susie-iw.html</code>) files. If you’ve configured a
+remote Git repository (see <code>?wflow_git_remote</code>), click on the
+hyperlinks in the table below to view the files as they were in that
+past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/598dec285e8897e8685d02a8c7ca8390df9bd35f/analysis/05-susie-iw.Rmd" target="_blank">598dec2</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-11-03
+</td>
+<td>
+Add tutorial for current multiple-start SuSiE-IW
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<p>The updated <code>susie_iw()</code> fits four independent
+initializations, then selects the converged fit with the highest IW
+ELBO. The reference eigendecomposition is computed once and shared
+across starts.</p>
+<div id="load-the-example" class="section level2">
+<h2>1. Load the example</h2>
+<p>Use the same data as the <a
+href="04-IW-eta-profile.html">initialization example</a>: 1,752 SNPs,
+<span class="math inline">\(N=200{,}000\)</span>, <span
+class="math inline">\(N_0=5{,}000\)</span>, <span
+class="math inline">\(T=200\)</span>, three causal variants, and <span
+class="math inline">\(h^2=1\%\)</span>.</p>
+<pre class="r"><code>library(susieRobust)
+packageVersion(&quot;susieRobust&quot;)</code></pre>
+<pre><code>[1] &#39;0.0.0.9004&#39;</code></pre>
+<pre class="r"><code>packageVersion(&quot;susieR&quot;)</code></pre>
+<pre><code>[1] &#39;0.14.2&#39;</code></pre>
+<pre class="r"><code>stopifnot(packageVersion(&quot;susieRobust&quot;) &gt;= &quot;0.0.0.9004&quot;)
+
+example &lt;- readRDS(&quot;data/iw-eta-profile/example.rds&quot;)
+R0 &lt;- example$R0; v &lt;- example$v; N &lt;- example$N
+causal &lt;- example$causal</code></pre>
+</div>
+<div id="fit-with-the-new-defaults" class="section level2">
+<h2>2. Fit with the new defaults</h2>
+<p>The default starts are <span
+class="math inline">\(\eta_0\in\{100,1000,5000,10000\}\)</span>, with at
+most 200 iterations per start and relative ELBO tolerance <span
+class="math inline">\(10^{-4}\)</span>. Both <span
+class="math inline">\(\eta_0\)</span> and <span
+class="math inline">\(\lambda\)</span> are estimated.
+<code>L = 10</code> is the number of fitted components, not the number
+of reported credible sets.</p>
+<pre class="r"><code>elapsed &lt;- system.time({
+  fit &lt;- susie_iw(v=v, R0=R0, N=N, L=10,
+                  verbose=TRUE, track_fit=TRUE)
+})[&quot;elapsed&quot;]</code></pre>
+<pre><code>IW initialization 1/4: eta0_init=100</code></pre>
+<pre><code>iteration=1 elbo=9785.645108 eta0=25.972 lambda=0.0017904 E(1/omega)=0.0088252 top=(14,223,223,223,223,223,223,223,223,223)</code></pre>
+<pre><code>iteration=10 elbo=9809.309353 eta0=82.379 lambda=0.0019612 E(1/omega)=0.0028912 top=(14,680,680,680,680,680,680,680,680,680)</code></pre>
+<pre><code>iteration=20 elbo=9851.042539 eta0=202.24 lambda=0.0023569 E(1/omega)=0.0010878 top=(14,386,386,386,386,386,386,386,386,386)</code></pre>
+<pre><code>iteration=30 elbo=9873.882929 eta0=277.33 lambda=0.002627 E(1/omega)=0.00066867 top=(14,386,386,386,386,386,386,386,386,386)</code></pre>
+<pre><code>IW initialization 2/4: eta0_init=1000</code></pre>
+<pre><code>iteration=1 elbo=9838.140743 eta0=193.08 lambda=0.0023251 E(1/omega)=0.0012004 top=(14,386,210,210,210,210,210,210,210,210)</code></pre>
+<pre><code>iteration=10 elbo=9869.525995 eta0=263.03 lambda=0.0025743 E(1/omega)=0.00074175 top=(14,386,386,386,386,386,386,386,386,386)</code></pre>
+<pre><code>IW initialization 3/4: eta0_init=5000</code></pre>
+<pre><code>iteration=1 elbo=9864.925902 eta0=353.73 lambda=0.0029185 E(1/omega)=0.00054797 top=(14,386,665,210,710,710,710,710,236,1308)</code></pre>
+<pre><code>IW initialization 4/4: eta0_init=10000</code></pre>
+<pre><code>iteration=1 elbo=9861.198841 eta0=382.94 lambda=0.0030344 E(1/omega)=0.00046783 top=(14,386,119,210,119,710,710,1308,1308,1308)</code></pre>
+<p><code>verbose = TRUE</code> prints a heading for each start, then
+iteration 1 and every 10th iteration. Each line contains the IW ELBO,
+<span class="math inline">\(\eta_0\)</span>, <span
+class="math inline">\(\lambda\)</span>, <span
+class="math inline">\(E(1/\omega)\)</span>, and <code>top</code>: the
+highest-posterior-probability SNP index in each single-effect component.
+These indices can repeat; they are not credible sets. The last iteration
+need not be printed.</p>
+<p><code>verbose</code> only controls messages.
+<code>track_fit = TRUE</code> retains every iteration in
+<code>fit$diagnostics$multistart$traces</code>. The candidate summary is
+always saved:</p>
+<pre class="r"><code>multi &lt;- fit$diagnostics$multistart
+history &lt;- multi$history
+knitr::kable(data.frame(
+  Start=history$initial_eta0, eta0=history$final_eta0,
+  ELBO=history$elbo, Iterations=history$iterations,
+  Converged=history$converged, Selected=history$selected
+), digits=3, row.names=FALSE)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">Start</th>
+<th align="right">eta0</th>
+<th align="right">ELBO</th>
+<th align="right">Iterations</th>
+<th align="left">Converged</th>
+<th align="left">Selected</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">100</td>
+<td align="right">280.815</td>
+<td align="right">9874.865</td>
+<td align="right">31</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="right">1000</td>
+<td align="right">284.107</td>
+<td align="right">9875.577</td>
+<td align="right">15</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="right">5000</td>
+<td align="right">338.789</td>
+<td align="right">9880.982</td>
+<td align="right">4</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="right">10000</td>
+<td align="right">348.709</td>
+<td align="right">9883.043</td>
+<td align="right">4</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+</tr>
+</tbody>
+</table>
+<p>Selection requires both the relative ELBO stopping criterion and
+final parameter stationarity. If no start converges, the highest
+finite-ELBO fit is returned with a warning and
+<code>converged = FALSE</code>. Exact ties use the first start.
+Convergence does not establish a global optimum.</p>
+<pre class="r"><code>traces &lt;- multi$traces
+colors &lt;- c(&quot;grey45&quot;, &quot;#E69F00&quot;, &quot;#009E73&quot;, &quot;#0072B2&quot;)
+par(mfrow=c(1, 2), mar=c(4.2, 4.5, 2.5, 1))
+for (parameter in c(&quot;eta0&quot;, &quot;elbo&quot;)) {
+  values &lt;- unlist(lapply(traces, `[[`, parameter))
+  plot(NA, xlim=c(1, max(history$iterations)), ylim=range(values),
+       xlab=&quot;Iteration&quot;, ylab=if (parameter == &quot;eta0&quot;) expression(eta[0]) else &quot;IW ELBO&quot;,
+       main=if (parameter == &quot;eta0&quot;) &quot;Eta0 after each update&quot; else &quot;ELBO trajectory&quot;)
+  for (i in seq_along(traces)) {
+    d &lt;- traces[[i]]
+    lines(d$iteration, d[[parameter]], col=colors[i], lty=i, lwd=2)
+    points(tail(d$iteration, 1), tail(d[[parameter]], 1), col=colors[i], pch=19)
+  }
+  if (parameter == &quot;eta0&quot;) {
+    legend(&quot;topright&quot;, paste(&quot;Start&quot;, history$initial_eta0),
+           col=colors, lty=seq_along(traces), lwd=2, bty=&quot;n&quot;, cex=0.8)
+  }
+}</code></pre>
+<p><img src="figure/05-susie-iw.Rmd/trajectories-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>par(mfrow=c(1, 1))</code></pre>
+<p>Curves begin after the first update; points mark stopping iterations.
+Here the selected start is <strong>10^{4}</strong>, with learned <span
+class="math inline">\(\eta_0 =\)</span> 348.709 and <span
+class="math inline">\(\lambda =\)</span> 0.002899.</p>
+</div>
+<div id="inspect-the-reported-result" class="section level2">
+<h2>3. Inspect the reported result</h2>
+<p>Printing the returned object gives the final parameter, convergence,
+and credible-set summary:</p>
+<pre class="r"><code>fit</code></pre>
+<pre><code>SuSiE-IW (collapsed-R) fit
+  lambda: 0.00289908 
+  eta0: 348.7088 
+  reported CS: 2  SER fallback: FALSE 
+  purity matrix: R0 
+  parameter status: lambda interior ; eta0 interior 
+  converged: TRUE </code></pre>
+<p>After selecting the IW fit, 95% credible sets are filtered using
+reference LD (minimum pairwise <span
+class="math inline">\(|r|\geq0.5\)</span>) and deduplicated. If at most
+one set remains, the default SER fallback replaces the reported
+posterior with a single-effect RSS fit. The original IW posterior
+remains in <code>raw_fit</code> and <code>raw_pip</code>. Fallback sets
+are also purity-filtered, so zero reported sets is possible.</p>
+<pre class="r"><code>plot_pip(fit, causal=causal, R=R0, main=&quot;Selected SuSiE-IW: reported PIPs&quot;)</code></pre>
+<p><img src="figure/05-susie-iw.Rmd/reported-pips-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>Circles mark reported credible sets; red points mark the true causal
+SNPs. This example reports <strong>2 credible sets</strong>; SER
+fallback is <strong>not used</strong>.</p>
+</div>
+<div id="runtime-and-a-single-start" class="section level2">
+<h2>4. Runtime and a single start</h2>
+<pre class="r"><code>knitr::kable(data.frame(
+  Step=c(&quot;Shared eigendecomposition&quot;, &quot;Four IW fits&quot;, &quot;Complete function call&quot;),
+  Seconds=c(multi$spectrum_elapsed_seconds,
+            sum(history$elapsed_seconds), unname(elapsed))
+), digits=3, row.names=FALSE)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Step</th>
+<th align="right">Seconds</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Shared eigendecomposition</td>
+<td align="right">3.482</td>
+</tr>
+<tr class="even">
+<td align="left">Four IW fits</td>
+<td align="right">4.822</td>
+</tr>
+<tr class="odd">
+<td align="left">Complete function call</td>
+<td align="right">9.192</td>
+</tr>
+</tbody>
+</table>
+<p>The complete call also includes validation, selection, credible-set
+reporting, and any fallback. Sharing the decomposition changes
+computation time, not the fitted results for the same starts. On five
+local examples it reduced median runtime by 17–72%; see the <a
+href="https://github.com/stephenslab/susieRobust/blob/e63485e6e9a7dc280cdfa49e03d72e723d4a2358/validation/iw-spectrum-cache/README.md">benchmark
+report</a>.</p>
+<p>Supply one number to run one initialization:</p>
+<pre class="r"><code>fit_single &lt;- susie_iw(v=v, R0=R0, N=N, L=10, eta0_init=1000)</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.6.1 (2026-06-24)
+Platform: aarch64-apple-darwin23
+Running under: macOS Golden Gate 27.2
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] C.UTF-8/C.UTF-8/C.UTF-8/C/C.UTF-8/C.UTF-8
+
+time zone: America/New_York
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] susieRobust_0.0.0.9004 workflowr_1.7.2       
+
+loaded via a namespace (and not attached):
+ [1] sass_0.4.10        generics_0.1.4     stringi_1.8.9      lattice_0.22-9    
+ [5] digest_0.6.39      magrittr_2.0.5     evaluate_1.0.5     grid_4.6.1        
+ [9] RColorBrewer_1.1-3 fastmap_1.2.0      plyr_1.8.9         rprojroot_2.1.1   
+[13] jsonlite_2.0.0     Matrix_1.7-5       processx_3.9.0     whisker_0.4.1     
+[17] reshape_0.8.10     mixsqp_0.3-54      promises_1.5.0     httr_1.4.9        
+[21] scales_1.4.0       jquerylib_0.1.4    cli_3.6.6          zigg_0.0.2        
+[25] rlang_1.3.0        crayon_1.5.3       susieR_0.14.2      cachem_1.1.0      
+[29] yaml_2.3.12        otel_0.2.0         tools_4.6.1        dplyr_1.2.1       
+[33] ggplot2_4.0.3      httpuv_1.6.17      Rfast_2.1.5.2      vctrs_0.7.3       
+[37] R6_2.6.1           matrixStats_1.5.0  lifecycle_1.0.5    git2r_0.36.2      
+[41] stringr_1.6.0      fs_2.1.0           irlba_2.3.7        pkgconfig_2.0.3   
+[45] callr_3.8.0        RcppParallel_6.2.1 pillar_1.11.1      bslib_0.12.0      
+[49] later_1.4.8        gtable_0.3.6       glue_1.8.1         Rcpp_1.1.2        
+[53] xfun_0.60          tibble_3.3.1       tidyselect_1.2.1   rstudioapi_0.19.0 
+[57] knitr_1.51         farver_2.1.2       htmltools_0.5.9    rmarkdown_2.32    
+[61] compiler_4.6.1     getPass_0.2-4      S7_0.2.2          </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
