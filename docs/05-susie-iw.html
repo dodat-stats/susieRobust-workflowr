@@ -441,15 +441,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtree6bdbb17d10e518926393ac81a5d1ec126742d77ctargetblank6bdbb17a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtree3997d3f9504b5a89208c46bf63843a905c4a250ftargetblank3997d3fa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/6bdbb17d10e518926393ac81a5d1ec126742d77c" target="_blank">6bdbb17</a>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/3997d3f9504b5a89208c46bf63843a905c4a250f" target="_blank">3997d3f</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtree6bdbb17d10e518926393ac81a5d1ec126742d77ctargetblank6bdbb17a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtree3997d3f9504b5a89208c46bf63843a905c4a250ftargetblank3997d3fa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -459,7 +459,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/6bdbb17d10e518926393ac81a5d1ec126742d77c" target="_blank">6bdbb17</a>.
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/3997d3f9504b5a89208c46bf63843a905c4a250f" target="_blank">3997d3f</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -528,6 +528,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/3997d3f9504b5a89208c46bf63843a905c4a250f/analysis/05-susie-iw.Rmd" target="_blank">3997d3f</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-11-03
+</td>
+<td>
+Use the SuSiE-R credible-set palette in the IW tutorial
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/dodat-stats/susieRobust-workflowr/b0dc9a11914074fae6b4bf231e9f8c835e610fa3/docs/05-susie-iw.html" target="_blank">b0dc9a1</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-11-03
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -633,10 +667,10 @@ class="math inline">\(N_0=5{,}000\)</span>, and <span
 class="math inline">\(T=200\)</span>.</p>
 <pre class="r"><code>library(susieRobust)
 packageVersion(&quot;susieRobust&quot;)</code></pre>
-<pre><code>[1] &#39;0.0.0.9004&#39;</code></pre>
+<pre><code>[1] &#39;0.0.0.9005&#39;</code></pre>
 <pre class="r"><code>packageVersion(&quot;susieR&quot;)</code></pre>
 <pre><code>[1] &#39;0.14.2&#39;</code></pre>
-<pre class="r"><code>stopifnot(packageVersion(&quot;susieRobust&quot;) &gt;= &quot;0.0.0.9004&quot;)
+<pre class="r"><code>stopifnot(packageVersion(&quot;susieRobust&quot;) &gt;= &quot;0.0.0.9005&quot;)
 
 example &lt;- readRDS(&quot;data/iw-eta-profile/example.rds&quot;)
 R &lt;- example$R; R0 &lt;- example$R0; v &lt;- example$v; N &lt;- example$N
@@ -849,6 +883,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/b0dc9a11914074fae6b4bf231e9f8c835e610fa3/docs/figure/05-susie-iw.Rmd/trajectories-1.png" target="_blank">b0dc9a1</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-11-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/aee9b1fc2eba5f21331e87ec5fdcccd7374bbc13/docs/figure/05-susie-iw.Rmd/trajectories-1.png" target="_blank">aee9b1f</a>
 </td>
 <td>
@@ -891,8 +936,8 @@ are also purity-filtered, so zero reported sets is possible.</p>
 sufficient-statistic interface uses <span
 class="math inline">\(X^TX=NR_0\)</span> and <span
 class="math inline">\(X^Ty=Nv\)</span>, matching the Gaussian scale
-above. Residual variance is fixed at one; the iteration limit is 1,000
-and the absolute ELBO tolerance is <span
+above. Residual variance is fixed at one; the iteration limit is 100 and
+the absolute ELBO tolerance is <span
 class="math inline">\(10^{-4}\)</span>. Both methods use 95% credible
 sets and minimum purity 0.5.</p>
 <pre class="r"><code># The sufficient-statistic function was renamed in susieR 0.16.6.
@@ -904,9 +949,9 @@ rss_ss &lt;- if (&quot;susie_ss&quot; %in% getNamespaceExports(&quot;susieR&quot
 fit_rss &lt;- rss_ss(
   XtX=N * R0, Xty=N * v, yty=N, n=N, L=10,
   residual_variance=1, estimate_residual_variance=FALSE,
-  standardize=FALSE, max_iter=1000, tol=1e-4,
+  standardize=FALSE, max_iter=100, tol=1e-4,
   coverage=0.95, min_abs_corr=0.5, n_purity=J)</code></pre>
-<pre><code>Warning in rss_ss(XtX = N * R0, Xty = N * v, yty = N, n = N, L = 10, residual_variance = 1, : IBSS algorithm did not converge in 1000 iterations!
+<pre><code>Warning in rss_ss(XtX = N * R0, Xty = N * v, yty = N, n = N, L = 10, residual_variance = 1, : IBSS algorithm did not converge in 100 iterations!
                   Please check consistency between summary statistics and LD matrix.
                   See https://stephenslab.github.io/susieR/articles/susierss_diagnostic.html</code></pre>
 <pre class="r"><code>knitr::kable(data.frame(
@@ -965,6 +1010,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/b0dc9a11914074fae6b4bf231e9f8c835e610fa3/docs/figure/05-susie-iw.Rmd/reported-pips-1.png" target="_blank">b0dc9a1</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-11-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/aee9b1fc2eba5f21331e87ec5fdcccd7374bbc13/docs/figure/05-susie-iw.Rmd/reported-pips-1.png" target="_blank">aee9b1f</a>
 </td>
 <td>
@@ -979,8 +1035,9 @@ dodat-stats
 </div>
 </div>
 <pre class="r"><code>par(mfrow=c(1, 1))</code></pre>
-<p>Circles mark reported credible sets; red points mark the true causal
-SNPs. IW reports <strong>2 credible sets</strong> and RSS reports
+<p>Circles mark reported credible sets using the 23-color palette from
+<code>susieR::susie_plot()</code>; red points mark the true causal SNPs.
+IW reports <strong>2 credible sets</strong> and RSS reports
 <strong>10</strong>. IW SER fallback is <strong>not used</strong>. RSS
 reached the iteration limit; its PIP panel shows the final iterate, not
 a converged solution.</p>
@@ -1002,15 +1059,15 @@ a converged solution.</p>
 <tbody>
 <tr class="odd">
 <td align="left">Shared eigendecomposition</td>
-<td align="right">3.722</td>
+<td align="right">3.546</td>
 </tr>
 <tr class="even">
 <td align="left">Four IW fits</td>
-<td align="right">7.552</td>
+<td align="right">7.217</td>
 </tr>
 <tr class="odd">
 <td align="left">Complete function call</td>
-<td align="right">11.923</td>
+<td align="right">11.313</td>
 </tr>
 </tbody>
 </table>
@@ -1049,7 +1106,7 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] susieRobust_0.0.0.9004 workflowr_1.7.2       
+[1] susieRobust_0.0.0.9005 workflowr_1.7.2       
 
 loaded via a namespace (and not attached):
  [1] sass_0.4.10        generics_0.1.4     stringi_1.8.9      lattice_0.22-9    
