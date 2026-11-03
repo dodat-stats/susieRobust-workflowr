@@ -289,7 +289,7 @@ $(document).ready(function () {
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+workflowr <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -300,8 +300,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> </a>
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -310,13 +310,13 @@ aria-hidden="true"></span> </a>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-10-27
+<strong>Last updated:</strong> 2026-11-03
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 1
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 1
+aria-hidden="true"></span> 0
 </p>
 <p>
 <strong>Knit directory:</strong> <code>susieRobust-workflowr/</code>
@@ -339,36 +339,33 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
-<span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
-changes </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguncommittedchanges"
+<div id="strongRMarkdownfilestronguptodate"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown file has unstaged changes. To know which version of
-the R Markdown file created these results, you’ll want to first commit
-it to the Git repo. If you’re still working on the analysis, you can
-ignore this warning. When you’re finished, you can run
-<code>wflow_publish</code> to commit the R Markdown file and build the
-HTML.</p>
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtreeecc8061827339e5a4f773221afc6b8265e2aa259targetblankecc8061a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtree69c7ccb0c3c292e68907e5f055cad3b12ba71aaetargetblank69c7ccba">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/ecc8061827339e5a4f773221afc6b8265e2aa259" target="_blank">ecc8061</a>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/69c7ccb0c3c292e68907e5f055cad3b12ba71aae" target="_blank">69c7ccb</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtreeecc8061827339e5a4f773221afc6b8265e2aa259targetblankecc8061a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtree69c7ccb0c3c292e68907e5f055cad3b12ba71aaetargetblank69c7ccba"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -378,7 +375,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/ecc8061827339e5a4f773221afc6b8265e2aa259" target="_blank">ecc8061</a>.
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/69c7ccb0c3c292e68907e5f055cad3b12ba71aae" target="_blank">69c7ccb</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -400,13 +397,9 @@ Ignored files:
     Ignored:    analysis/.RData
     Ignored:    analysis/.Rhistory
 
-Untracked files:
-    Untracked:  analysis/03-problematic-simulation.Rmd
-    Untracked:  data/problematic-simulation/
-
 Unstaged changes:
     Modified:   analysis/01-get-started.Rmd
-    Modified:   analysis/index.Rmd
+    Modified:   analysis/05-susie-iw.Rmd
 
 </code></pre>
 <p>
@@ -450,6 +443,57 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/69c7ccb0c3c292e68907e5f055cad3b12ba71aae/analysis/index.Rmd" target="_blank">69c7ccb</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-11-03
+</td>
+<td>
+Link IW profile and multiple-start tutorials from home page
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/465f3c943fab1d11446de1929e98e1c3faddb18e/analysis/index.Rmd" target="_blank">465f3c9</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-10-27
+</td>
+<td>
+Add problematic simulation example and AIW iteration-cap comparison
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/dodat-stats/susieRobust-workflowr/465f3c943fab1d11446de1929e98e1c3faddb18e/docs/index.html" target="_blank">465f3c9</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-10-27
+</td>
+<td>
+Add problematic simulation example and AIW iteration-cap comparison
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -538,6 +582,12 @@ value.</p></li>
 <li><p><a href="03-problematic-simulation.html">A problematic simulation
 example</a>: inspect a linearly dependent SNP configuration and compare
 AIW under two iteration caps.</p></li>
+<li><p><a href="04-IW-eta-profile.html">IW initialization and the eta0
+profile</a>: compare initializations, their ELBO trajectories, and the
+fixed-eta0 profile.</p></li>
+<li><p><a href="05-susie-iw.html">SuSiE-IW with multiple starts</a>:
+simulate new associations, inspect multiple-start selection, and compare
+IW and reference-LD RSS PIPs.</p></li>
 </ol>
 <p>The tutorials use saved LD matrices, so Python and stdpopsim are
 optional. The <a
