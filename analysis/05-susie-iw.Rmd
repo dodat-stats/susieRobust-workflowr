@@ -90,6 +90,7 @@ in `fit$diagnostics$multistart$traces`. The candidate summary is always saved:
 
 ```{r}
 multi <- fit$diagnostics$multistart
+
 history <- multi$history
 knitr::kable(data.frame(
   Start=history$initial_eta0, eta0=history$final_eta0,
@@ -202,39 +203,14 @@ plot_pip(insample_RSS, causal=causal, R=R0,
 par(mfrow=c(1, 1))
 ```
 
-Circles mark reported credible sets using the 23-color palette from
-`susieR::susie_plot()`; red points mark the true causal SNPs.
-IW reports **`r fit$reported_L` credible sets** and RSS reports
-**`r length(fit_rss$sets$cs)`**. IW SER fallback is
-**`r if (fit$postprocess$fallback_used) "used" else "not used"`**.
-`r if (!fit_rss$converged) "RSS reached the iteration limit; its PIP panel shows the final iterate, not a converged solution." else "RSS converged."`
+In this example, both IW and IW-selected RSS capture three true causal variants, with IW-selected RSS having smaller CS (therefore improve resolution).
 
-## 4. Runtime and a single start
 
-```{r}
-knitr::kable(data.frame(
-  Step=c("Shared eigendecomposition", "Four IW fits", "Complete function call"),
-  Seconds=c(multi$spectrum_elapsed_seconds,
-            sum(history$elapsed_seconds), unname(elapsed))
-), digits=3, row.names=FALSE)
-```
+## 4. Other examples
+Here are two examples that IW-selected RSS misses a true causal variant that IW captures in its bigger CS.
 
-The complete call also includes validation, selection, credible-set reporting,
-and any fallback. Sharing the decomposition changes computation time, not the
-fitted results for the same starts. On five local examples it reduced median
-runtime by 17--72%; see the
-[benchmark report](https://github.com/stephenslab/susieRobust/blob/e63485e6e9a7dc280cdfa49e03d72e723d4a2358/validation/iw-spectrum-cache/README.md).
+## 4.1.
 
-Supply one number to run one initialization:
-
-```{r, eval=FALSE}
-fit_single <- susie_iw(v=v, R0=R0, N=N, L=10, eta0_init=1000)
-```
-
-## 5. Other examples
-Two other examples that show some other behavior of those methods.
-
-## 5.1.
 
 ```{r}
 L_true <- 3L
@@ -262,8 +238,33 @@ points(causal, v[causal], pch = 16, col = "red") # true
 ```
 
 ```{r}
-fit_iw <- susie_iw(v = v, R0 = R0, N = N, L = 10, tol = 1e-5)
+fit_iw <- susie_iw(v = v, R0 = R0, N = N, L = 10, tol = 1e-5, track_fit=TRUE)
 
+multi <- fit_iw$diagnostics$multistart
+history <- multi$history
+traces <- multi$traces
+colors <- c("grey45", "#E69F00", "#009E73", "#0072B2")
+par(mfrow=c(1, 2), mar=c(4.2, 4.5, 2.5, 1))
+for (parameter in c("elbo", "eta0")) {
+  values <- unlist(lapply(traces, `[[`, parameter))
+  plot(NA, xlim=c(1, max(history$iterations)), ylim=range(values),
+       xlab="Iteration", ylab=if (parameter == "eta0") expression(eta[0]) else "IW ELBO",
+       main=if (parameter == "eta0") "Eta0 after each update" else "ELBO trajectory")
+  for (i in seq_along(traces)) {
+    d <- traces[[i]]
+    lines(d$iteration, d[[parameter]], col=colors[i], lty=i, lwd=2)
+    points(tail(d$iteration, 1), tail(d[[parameter]], 1), col=colors[i], pch=19)
+  }
+  if (parameter == "eta0") {
+    legend("topright", paste("Start", history$initial_eta0),
+           col=colors, lty=seq_along(traces), lwd=2, bty="n", cex=0.8)
+  }
+}
+par(mfrow=c(1, 1))
+
+```
+
+```{r}
 fit_rss <- rss_ss(
   XtX=N * R0, Xty=N * v, yty=N, n=N, L=10,
   residual_variance=1, estimate_residual_variance=FALSE,
@@ -302,12 +303,15 @@ par(mfrow=c(1, 1))
 ```
 
 
-## 5.2.
+## 4.2.
+
+
 
 ```{r}
+
 L_true <- 3L
 h2 <- 0.01
-association_seed <- 2L
+association_seed <- 5L
 stopifnot(L_true >= 1, L_true <= J, L_true == as.integer(L_true),
           h2 > 0, h2 < 1, identical(dim(R), dim(R0)))
 
@@ -330,7 +334,33 @@ points(causal, v[causal], pch = 16, col = "red") # true
 ```
 
 ```{r}
-fit_iw <- susie_iw(v = v, R0 = R0, N = N, L = 10, tol = 1e-5)
+fit_iw <- susie_iw(v = v, R0 = R0, N = N, L = 10, tol = 1e-5, track_fit=TRUE)
+
+multi <- fit_iw$diagnostics$multistart
+history <- multi$history
+traces <- multi$traces
+colors <- c("grey45", "#E69F00", "#009E73", "#0072B2")
+par(mfrow=c(1, 2), mar=c(4.2, 4.5, 2.5, 1))
+for (parameter in c("elbo", "eta0")) {
+  values <- unlist(lapply(traces, `[[`, parameter))
+  plot(NA, xlim=c(1, max(history$iterations)), ylim=range(values),
+       xlab="Iteration", ylab=if (parameter == "eta0") expression(eta[0]) else "IW ELBO",
+       main=if (parameter == "eta0") "Eta0 after each update" else "ELBO trajectory")
+  for (i in seq_along(traces)) {
+    d <- traces[[i]]
+    lines(d$iteration, d[[parameter]], col=colors[i], lty=i, lwd=2)
+    points(tail(d$iteration, 1), tail(d[[parameter]], 1), col=colors[i], pch=19)
+  }
+  if (parameter == "eta0") {
+    legend("topright", paste("Start", history$initial_eta0),
+           col=colors, lty=seq_along(traces), lwd=2, bty="n", cex=0.8)
+  }
+}
+par(mfrow=c(1, 1))
+
+```
+
+```{r}
 
 fit_rss <- rss_ss(
   XtX=N * R0, Xty=N * v, yty=N, n=N, L=10,
@@ -367,4 +397,27 @@ plot_pip(insample_RSS, causal=causal, R=R0,
          main=if (insample_RSS$converged) "In-sample RSS" else
            "In-sample RSS (not converged)")
 par(mfrow=c(1, 1))
+```
+
+## 5. Runtime and a single start
+
+```{r}
+knitr::kable(data.frame(
+  Step=c("Shared eigendecomposition", "Four IW fits", "Complete function call"),
+  Seconds=c(fit$diagnostics$multistart$spectrum_elapsed_seconds,
+            sum(fit$diagnostics$multistart$history$elapsed_seconds),
+            unname(elapsed))
+), digits=3, row.names=FALSE)
+```
+
+The complete call also includes validation, selection, credible-set reporting,
+and any fallback. Sharing the decomposition changes computation time, not the
+fitted results for the same starts. On five local examples it reduced median
+runtime by 17--72%; see the
+[benchmark report](https://github.com/stephenslab/susieRobust/blob/e63485e6e9a7dc280cdfa49e03d72e723d4a2358/validation/iw-spectrum-cache/README.md).
+
+Supply one number to run one initialization:
+
+```{r, eval=FALSE}
+fit_single <- susie_iw(v=v, R0=R0, N=N, L=10, eta0_init=1000)
 ```
