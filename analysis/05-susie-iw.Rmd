@@ -21,7 +21,7 @@ Use the same LD matrices as the [initialization example](04-IW-eta-profile.html)
 library(susieRobust)
 packageVersion("susieRobust")
 packageVersion("susieR")
-stopifnot(packageVersion("susieRobust") >= "0.0.0.9004")
+stopifnot(packageVersion("susieRobust") >= "0.0.0.9005")
 
 example <- readRDS("data/iw-eta-profile/example.rds")
 R <- example$R; R0 <- example$R0; v <- example$v; N <- example$N
@@ -149,7 +149,7 @@ Fallback sets are also purity-filtered, so zero reported sets is possible.
 
 Fit SuSiE-RSS to the same `v` using reference LD. The sufficient-statistic
 interface uses $X^TX=NR_0$ and $X^Ty=Nv$, matching the Gaussian scale above.
-Residual variance is fixed at one; the iteration limit is 1,000 and the
+Residual variance is fixed at one; the iteration limit is 100 and the
 absolute ELBO tolerance is $10^{-4}$. Both methods use 95% credible sets
 and minimum purity 0.5.
 
@@ -163,7 +163,7 @@ rss_ss <- if ("susie_ss" %in% getNamespaceExports("susieR")) {
 fit_rss <- rss_ss(
   XtX=N * R0, Xty=N * v, yty=N, n=N, L=10,
   residual_variance=1, estimate_residual_variance=FALSE,
-  standardize=FALSE, max_iter=1000, tol=1e-4,
+  standardize=FALSE, max_iter=100, tol=1e-4,
   coverage=0.95, min_abs_corr=0.5, n_purity=J)
 
 knitr::kable(data.frame(
@@ -182,7 +182,8 @@ plot_pip(fit_rss, causal=causal, R=R0,
 par(mfrow=c(1, 1))
 ```
 
-Circles mark reported credible sets; red points mark the true causal SNPs.
+Circles mark reported credible sets using the 23-color palette from
+`susieR::susie_plot()`; red points mark the true causal SNPs.
 IW reports **`r fit$reported_L` credible sets** and RSS reports
 **`r length(fit_rss$sets$cs)`**. IW SER fallback is
 **`r if (fit$postprocess$fallback_used) "used" else "not used"`**.
