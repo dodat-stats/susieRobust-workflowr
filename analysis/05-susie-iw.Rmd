@@ -14,9 +14,8 @@ is computed once and shared across starts.
 
 ## 1. Load the example
 
-Use the same data as the [initialization example](04-IW-eta-profile.html):
-1,752 SNPs, $N=200{,}000$, $N_0=5{,}000$, $T=200$, three causal variants,
-and $h^2=1\%$.
+Use the same LD matrices as the [initialization example](04-IW-eta-profile.html):
+1,752 SNPs, $N=200{,}000$, $N_0=5{,}000$, and $T=200$.
 
 ```{r}
 library(susieRobust)
@@ -25,20 +24,59 @@ packageVersion("susieR")
 stopifnot(packageVersion("susieRobust") >= "0.0.0.9004")
 
 example <- readRDS("data/iw-eta-profile/example.rds")
-R0 <- example$R0; v <- example$v; N <- example$N
+R <- example$R; R0 <- example$R0; v <- example$v; N <- example$N
 causal <- example$causal
+J <- ncol(R)
 ```
 
-## 2. Fit with the new defaults
+### Simulate new associations
+
+Change `L_true`, `h2`, and `association_seed`, then rerun this chunk and the
+fits below. Here `h2 = 0.003` means 0.3% and `h2 = 0.01` means 1%.
+The LD matrices stay fixed; causal SNPs are sampled uniformly without a
+correlation restriction. Normal effects are jointly rescaled so that
+$\beta^T R\beta=h^2/(1-h^2)$, with residual variance one. Then
+$v\sim N(R\beta,R/N)$; $R_0$ is used for fitting.
+
+```{r simulate-associations}
+L_true <- 3L
+h2 <- 0.01
+association_seed <- 1L
+stopifnot(L_true >= 1, L_true <= J, L_true == as.integer(L_true),
+          h2 > 0, h2 < 1, identical(dim(R), dim(R0)))
+
+set.seed(association_seed)
+causal <- sort(sample.int(J, L_true))
+beta <- numeric(J)
+beta[causal] <- rnorm(L_true)
+genetic_variance <- drop(crossprod(beta, R %*% beta))
+stopifnot(genetic_variance > 0)
+beta <- beta * sqrt(h2 / ((1 - h2) * genetic_variance))
+
+eig_R <- eigen(R, symmetric=TRUE)
+stopifnot(min(eig_R$values) > -1e-8)
+noise <- drop(eig_R$vectors %*%
+                (sqrt(pmax(eig_R$values, 0) / N) * rnorm(J)))
+v <- drop(R %*% beta) + noise
+
+knitr::kable(data.frame(SNP=causal, Effect=beta[causal]),
+             digits=4, row.names=FALSE)
+```
+
+This page now uses **`r L_true` causal SNPs**, **`r 100*h2`% heritability**,
+and association seed **`r association_seed`**. The saved data file is unchanged.
+
+## 2. Fit IW with multiple starts
 
 The default starts are $\eta_0\in\{100,1000,5000,10000\}$, with at most
 200 iterations per start and relative ELBO tolerance $10^{-4}$.
-Both $\eta_0$ and $\lambda$ are estimated. `L = 10` is the number of fitted
-components, not the number of reported credible sets.
+Both $\eta_0$ and $\lambda$ are estimated. This example keeps the stricter
+`tol = 1e-5` override below. `L = 10` is the number of fitted components,
+not the number of reported credible sets.
 
 ```{r fit-iw}
 elapsed <- system.time({
-  fit <- susie_iw(v=v, R0=R0, N=N, L=10,
+  fit <- susie_iw(v=v, R0=R0, N=N, L=10, tol = 1e-5,
                   verbose=TRUE, track_fit=TRUE)
 })["elapsed"]
 ```
@@ -94,7 +132,7 @@ Here the selected start is **`r format(multi$selected_initial_eta0, scientific=F
 $\eta_0 =$ `r round(fit$eta0, 3)` and
 $\lambda =$ `r signif(fit$selected_lambda, 4)`.
 
-## 3. Inspect the reported result
+## 3. Compare IW and reference-LD RSS
 
 Printing the returned object gives the final parameter, convergence, and
 credible-set summary:
@@ -109,13 +147,46 @@ the default SER fallback replaces the reported posterior with a single-effect
 RSS fit. The original IW posterior remains in `raw_fit` and `raw_pip`.
 Fallback sets are also purity-filtered, so zero reported sets is possible.
 
-```{r reported-pips, fig.width=10, fig.height=4}
-plot_pip(fit, causal=causal, R=R0, main="Selected SuSiE-IW: reported PIPs")
+Fit SuSiE-RSS to the same `v` using reference LD. The sufficient-statistic
+interface uses $X^TX=NR_0$ and $X^Ty=Nv$, matching the Gaussian scale above.
+Residual variance is fixed at one; the iteration limit is 1,000 and the
+absolute ELBO tolerance is $10^{-4}$. Both methods use 95% credible sets
+and minimum purity 0.5.
+
+```{r fit-rss}
+# The sufficient-statistic function was renamed in susieR 0.16.6.
+rss_ss <- if ("susie_ss" %in% getNamespaceExports("susieR")) {
+  susieR::susie_ss
+} else {
+  susieR::susie_suff_stat
+}
+fit_rss <- rss_ss(
+  XtX=N * R0, Xty=N * v, yty=N, n=N, L=10,
+  residual_variance=1, estimate_residual_variance=FALSE,
+  standardize=FALSE, max_iter=1000, tol=1e-4,
+  coverage=0.95, min_abs_corr=0.5, n_purity=J)
+
+knitr::kable(data.frame(
+  Method=c("SuSiE-IW", "SuSiE-RSS"),
+  Converged=c(fit$converged, fit_rss$converged),
+  CSs=c(fit$reported_L, length(fit_rss$sets$cs))
+), row.names=FALSE)
+```
+
+```{r reported-pips, fig.width=11, fig.height=4.5}
+par(mfrow=c(1, 2))
+plot_pip(fit, causal=causal, R=R0, main="SuSiE-IW: reported PIPs")
+plot_pip(fit_rss, causal=causal, R=R0,
+         main=if (fit_rss$converged) "SuSiE-RSS: reference LD" else
+           "SuSiE-RSS: reference LD (not converged)")
+par(mfrow=c(1, 1))
 ```
 
 Circles mark reported credible sets; red points mark the true causal SNPs.
-This example reports **`r fit$reported_L` credible sets**;
-SER fallback is **`r if (fit$postprocess$fallback_used) "used" else "not used"`**.
+IW reports **`r fit$reported_L` credible sets** and RSS reports
+**`r length(fit_rss$sets$cs)`**. IW SER fallback is
+**`r if (fit$postprocess$fallback_used) "used" else "not used"`**.
+`r if (!fit_rss$converged) "RSS reached the iteration limit; its PIP panel shows the final iterate, not a converged solution." else "RSS converged."`
 
 ## 4. Runtime and a single start
 
