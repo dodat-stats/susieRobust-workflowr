@@ -29,11 +29,9 @@ causal <- example$causal
 J <- ncol(R)
 ```
 
-### Simulate new associations
+### Simulate associations
 
-Change `L_true`, `h2`, and `association_seed`, then rerun this chunk and the
-fits below. Here `h2 = 0.003` means 0.3% and `h2 = 0.01` means 1%.
-The LD matrices stay fixed; causal SNPs are sampled uniformly without a
+Causal SNPs are sampled uniformly without a
 correlation restriction. Normal effects are jointly rescaled so that
 $\beta^T R\beta=h^2/(1-h^2)$, with residual variance one. Then
 $v\sim N(R\beta,R/N)$; $R_0$ is used for fitting.
@@ -41,7 +39,7 @@ $v\sim N(R\beta,R/N)$; $R_0$ is used for fitting.
 ```{r simulate-associations}
 L_true <- 3L
 h2 <- 0.01
-association_seed <- 1L
+association_seed <- 3L
 stopifnot(L_true >= 1, L_true <= J, L_true == as.integer(L_true),
           h2 > 0, h2 < 1, identical(dim(R), dim(R0)))
 
@@ -59,8 +57,8 @@ noise <- drop(eig_R$vectors %*%
                 (sqrt(pmax(eig_R$values, 0) / N) * rnorm(J)))
 v <- drop(R %*% beta) + noise
 
-knitr::kable(data.frame(SNP=causal, Effect=beta[causal]),
-             digits=4, row.names=FALSE)
+plot(1:J, v, pch = 16)
+points(causal, v[causal], pch = 16, col = "red") # true
 ```
 
 This page now uses **`r L_true` causal SNPs**, **`r 100*h2`% heritability**,
@@ -109,7 +107,7 @@ start. Convergence does not establish a global optimum.
 traces <- multi$traces
 colors <- c("grey45", "#E69F00", "#009E73", "#0072B2")
 par(mfrow=c(1, 2), mar=c(4.2, 4.5, 2.5, 1))
-for (parameter in c("eta0", "elbo")) {
+for (parameter in c("elbo", "eta0")) {
   values <- unlist(lapply(traces, `[[`, parameter))
   plot(NA, xlim=c(1, max(history$iterations)), ylim=range(values),
        xlab="Iteration", ylab=if (parameter == "eta0") expression(eta[0]) else "IW ELBO",
@@ -173,12 +171,34 @@ knitr::kable(data.frame(
 ), row.names=FALSE)
 ```
 
-```{r reported-pips, fig.width=11, fig.height=4.5}
-par(mfrow=c(1, 2))
+```{r}
+IW_select_L = fit$reported_L
+
+iw_RSS <- rss_ss(
+  XtX=N * R0, Xty=N * v, yty=N, n=N, L=IW_select_L,
+  residual_variance=1, estimate_residual_variance=FALSE,
+  standardize=FALSE, max_iter=100, tol=1e-4,
+  coverage=0.95, min_abs_corr=0.5, n_purity=J)
+
+insample_RSS <- rss_ss(
+  XtX=N * R, Xty=N * v, yty=N, n=N, L=10,
+  residual_variance=1, estimate_residual_variance=FALSE,
+  standardize=FALSE, max_iter=100, tol=1e-4,
+  coverage=0.95, min_abs_corr=0.5, n_purity=J)
+```
+
+```{r reported-pips, fig.width=11, fig.height=8}
+par(mfrow=c(2, 2))
 plot_pip(fit, causal=causal, R=R0, main="SuSiE-IW: reported PIPs")
 plot_pip(fit_rss, causal=causal, R=R0,
          main=if (fit_rss$converged) "SuSiE-RSS: reference LD" else
            "SuSiE-RSS: reference LD (not converged)")
+plot_pip(iw_RSS, causal=causal, R=R0,
+         main=if (iw_RSS$converged) "IW-select RSS" else
+           "IW-select RSS")
+plot_pip(insample_RSS, causal=causal, R=R0,
+         main=if (insample_RSS$converged) "In-sample RSS" else
+           "In-sample RSS (not converged)")
 par(mfrow=c(1, 1))
 ```
 
@@ -209,4 +229,142 @@ Supply one number to run one initialization:
 
 ```{r, eval=FALSE}
 fit_single <- susie_iw(v=v, R0=R0, N=N, L=10, eta0_init=1000)
+```
+
+## 5. Other examples
+Two other examples that show some other behavior of those methods.
+
+## 5.1.
+
+```{r}
+L_true <- 3L
+h2 <- 0.01
+association_seed <- 1L
+stopifnot(L_true >= 1, L_true <= J, L_true == as.integer(L_true),
+          h2 > 0, h2 < 1, identical(dim(R), dim(R0)))
+
+set.seed(association_seed)
+causal <- sort(sample.int(J, L_true))
+beta <- numeric(J)
+beta[causal] <- rnorm(L_true)
+genetic_variance <- drop(crossprod(beta, R %*% beta))
+stopifnot(genetic_variance > 0)
+beta <- beta * sqrt(h2 / ((1 - h2) * genetic_variance))
+
+eig_R <- eigen(R, symmetric=TRUE)
+stopifnot(min(eig_R$values) > -1e-8)
+noise <- drop(eig_R$vectors %*%
+                (sqrt(pmax(eig_R$values, 0) / N) * rnorm(J)))
+v <- drop(R %*% beta) + noise
+
+plot(1:J, v, pch = 16)
+points(causal, v[causal], pch = 16, col = "red") # true
+```
+
+```{r}
+fit_iw <- susie_iw(v = v, R0 = R0, N = N, L = 10, tol = 1e-5)
+
+fit_rss <- rss_ss(
+  XtX=N * R0, Xty=N * v, yty=N, n=N, L=10,
+  residual_variance=1, estimate_residual_variance=FALSE,
+  standardize=FALSE, max_iter=100, tol=1e-4,
+  coverage=0.95, min_abs_corr=0.5, n_purity=J)
+
+IW_select_L = fit_iw$reported_L
+
+iw_RSS <- rss_ss(
+  XtX=N * R0, Xty=N * v, yty=N, n=N, L=IW_select_L,
+  residual_variance=1, estimate_residual_variance=FALSE,
+  standardize=FALSE, max_iter=100, tol=1e-4,
+  coverage=0.95, min_abs_corr=0.5, n_purity=J)
+
+insample_RSS <- rss_ss(
+  XtX=N * R, Xty=N * v, yty=N, n=N, L=10,
+  residual_variance=1, estimate_residual_variance=FALSE,
+  standardize=FALSE, max_iter=100, tol=1e-4,
+  coverage=0.95, min_abs_corr=0.5, n_purity=J)
+```
+
+
+```{r reported-pips-2, fig.width=11, fig.height=8}
+par(mfrow=c(2, 2))
+plot_pip(fit_iw, causal=causal, R=R0, main="SuSiE-IW: reported PIPs")
+plot_pip(fit_rss, causal=causal, R=R0,
+         main=if (fit_rss$converged) "SuSiE-RSS: reference LD" else
+           "SuSiE-RSS: reference LD (not converged)")
+plot_pip(iw_RSS, causal=causal, R=R0,
+         main=if (iw_RSS$converged) "IW-select RSS" else
+           "IW-select RSS")
+plot_pip(insample_RSS, causal=causal, R=R0,
+         main=if (insample_RSS$converged) "In-sample RSS" else
+           "In-sample RSS (not converged)")
+par(mfrow=c(1, 1))
+```
+
+
+## 5.2.
+
+```{r}
+L_true <- 3L
+h2 <- 0.01
+association_seed <- 2L
+stopifnot(L_true >= 1, L_true <= J, L_true == as.integer(L_true),
+          h2 > 0, h2 < 1, identical(dim(R), dim(R0)))
+
+set.seed(association_seed)
+causal <- sort(sample.int(J, L_true))
+beta <- numeric(J)
+beta[causal] <- rnorm(L_true)
+genetic_variance <- drop(crossprod(beta, R %*% beta))
+stopifnot(genetic_variance > 0)
+beta <- beta * sqrt(h2 / ((1 - h2) * genetic_variance))
+
+eig_R <- eigen(R, symmetric=TRUE)
+stopifnot(min(eig_R$values) > -1e-8)
+noise <- drop(eig_R$vectors %*%
+                (sqrt(pmax(eig_R$values, 0) / N) * rnorm(J)))
+v <- drop(R %*% beta) + noise
+
+plot(1:J, v, pch = 16)
+points(causal, v[causal], pch = 16, col = "red") # true
+```
+
+```{r}
+fit_iw <- susie_iw(v = v, R0 = R0, N = N, L = 10, tol = 1e-5)
+
+fit_rss <- rss_ss(
+  XtX=N * R0, Xty=N * v, yty=N, n=N, L=10,
+  residual_variance=1, estimate_residual_variance=FALSE,
+  standardize=FALSE, max_iter=100, tol=1e-4,
+  coverage=0.95, min_abs_corr=0.5, n_purity=J)
+
+IW_select_L = fit_iw$reported_L
+
+iw_RSS <- rss_ss(
+  XtX=N * R0, Xty=N * v, yty=N, n=N, L=IW_select_L,
+  residual_variance=1, estimate_residual_variance=FALSE,
+  standardize=FALSE, max_iter=100, tol=1e-4,
+  coverage=0.95, min_abs_corr=0.5, n_purity=J)
+
+insample_RSS <- rss_ss(
+  XtX=N * R, Xty=N * v, yty=N, n=N, L=10,
+  residual_variance=1, estimate_residual_variance=FALSE,
+  standardize=FALSE, max_iter=100, tol=1e-4,
+  coverage=0.95, min_abs_corr=0.5, n_purity=J)
+```
+
+
+```{r reported-pips-3, fig.width=11, fig.height=8}
+par(mfrow=c(2, 2))
+plot_pip(fit_iw, causal=causal, R=R0, main="SuSiE-IW: reported PIPs")
+plot_pip(fit_rss, causal=causal, R=R0,
+         main=if (fit_rss$converged) "SuSiE-RSS: reference LD" else
+           "SuSiE-RSS: reference LD (not converged)")
+plot_pip(iw_RSS, causal=causal, R=R0,
+         main=if (iw_RSS$converged) "IW-select RSS" else
+           "IW-select RSS")
+plot_pip(insample_RSS, causal=causal, R=R0,
+         main=if (insample_RSS$converged) "In-sample RSS" else
+           "In-sample RSS (not converged)")
+par(mfrow=c(1, 1))
 ```
