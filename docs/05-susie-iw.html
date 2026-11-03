@@ -441,15 +441,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtree3e0c7ec390012a1c6e46b5e0ecfa4adbb26e391dtargetblank3e0c7eca">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtreedb406b834ef745e595f1213101e2605ba01c5e63targetblankdb406b8a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/3e0c7ec390012a1c6e46b5e0ecfa4adbb26e391d" target="_blank">3e0c7ec</a>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/db406b834ef745e595f1213101e2605ba01c5e63" target="_blank">db406b8</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtree3e0c7ec390012a1c6e46b5e0ecfa4adbb26e391dtargetblank3e0c7eca"
+id="strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtreedb406b834ef745e595f1213101e2605ba01c5e63targetblankdb406b8a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -459,7 +459,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/3e0c7ec390012a1c6e46b5e0ecfa4adbb26e391d" target="_blank">3e0c7ec</a>.
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/db406b834ef745e595f1213101e2605ba01c5e63" target="_blank">db406b8</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -528,6 +528,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/db406b834ef745e595f1213101e2605ba01c5e63/analysis/05-susie-iw.Rmd" target="_blank">db406b8</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-11-03
+</td>
+<td>
+Publish revised IW examples and optimization trajectories
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/dodat-stats/susieRobust-workflowr/2c1e858b248f301dd173d3ec196a37935421dcb5/docs/05-susie-iw.html" target="_blank">2c1e858</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-11-03
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -741,6 +775,43 @@ v &lt;- drop(R %*% beta) + noise
 plot(1:J, v, pch = 16)
 points(causal, v[causal], pch = 16, col = &quot;red&quot;) # true</code></pre>
 <p><img src="figure/05-susie-iw.Rmd/simulate-associations-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-simulate-associations-1">
+Past versions of simulate-associations-1.png
+</button>
+</p>
+<div id="fig-simulate-associations-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/2c1e858b248f301dd173d3ec196a37935421dcb5/docs/figure/05-susie-iw.Rmd/simulate-associations-1.png" target="_blank">2c1e858</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-11-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>This page now uses <strong>3 causal SNPs</strong>, <strong>1%
 heritability</strong>, and association seed <strong>3</strong>. The
 saved data file is unchanged.</p>
@@ -789,6 +860,7 @@ need not be printed.</p>
 <code>fit$diagnostics$multistart$traces</code>. The candidate summary is
 always saved:</p>
 <pre class="r"><code>multi &lt;- fit$diagnostics$multistart
+
 history &lt;- multi$history
 knitr::kable(data.frame(
   Start=history$initial_eta0, eta0=history$final_eta0,
@@ -887,6 +959,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/2c1e858b248f301dd173d3ec196a37935421dcb5/docs/figure/05-susie-iw.Rmd/trajectories-1.png" target="_blank">2c1e858</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-11-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/b0dc9a11914074fae6b4bf231e9f8c835e610fa3/docs/figure/05-susie-iw.Rmd/trajectories-1.png" target="_blank">b0dc9a1</a>
@@ -1033,6 +1116,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/2c1e858b248f301dd173d3ec196a37935421dcb5/docs/figure/05-susie-iw.Rmd/reported-pips-1.png" target="_blank">2c1e858</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-11-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/dff0de3d5381ac0c8399e2a01d271f7d83398110/docs/figure/05-susie-iw.Rmd/reported-pips-1.png" target="_blank">dff0de3</a>
 </td>
 <td>
@@ -1069,57 +1163,17 @@ dodat-stats
 </div>
 </div>
 <pre class="r"><code>par(mfrow=c(1, 1))</code></pre>
-<p>Circles mark reported credible sets using the 23-color palette from
-<code>susieR::susie_plot()</code>; red points mark the true causal SNPs.
-IW reports <strong>3 credible sets</strong> and RSS reports
-<strong>9</strong>. IW SER fallback is <strong>not used</strong>. RSS
-converged.</p>
-</div>
-<div id="runtime-and-a-single-start" class="section level2">
-<h2>4. Runtime and a single start</h2>
-<pre class="r"><code>knitr::kable(data.frame(
-  Step=c(&quot;Shared eigendecomposition&quot;, &quot;Four IW fits&quot;, &quot;Complete function call&quot;),
-  Seconds=c(multi$spectrum_elapsed_seconds,
-            sum(history$elapsed_seconds), unname(elapsed))
-), digits=3, row.names=FALSE)</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="left">Step</th>
-<th align="right">Seconds</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">Shared eigendecomposition</td>
-<td align="right">3.808</td>
-</tr>
-<tr class="even">
-<td align="left">Four IW fits</td>
-<td align="right">6.381</td>
-</tr>
-<tr class="odd">
-<td align="left">Complete function call</td>
-<td align="right">10.919</td>
-</tr>
-</tbody>
-</table>
-<p>The complete call also includes validation, selection, credible-set
-reporting, and any fallback. Sharing the decomposition changes
-computation time, not the fitted results for the same starts. On five
-local examples it reduced median runtime by 17–72%; see the <a
-href="https://github.com/stephenslab/susieRobust/blob/e63485e6e9a7dc280cdfa49e03d72e723d4a2358/validation/iw-spectrum-cache/README.md">benchmark
-report</a>.</p>
-<p>Supply one number to run one initialization:</p>
-<pre class="r"><code>fit_single &lt;- susie_iw(v=v, R0=R0, N=N, L=10, eta0_init=1000)</code></pre>
+<p>In this example, both IW and IW-selected RSS capture three true
+causal variants, with IW-selected RSS having smaller CS (therefore
+improve resolution).</p>
 </div>
 <div id="other-examples" class="section level2">
-<h2>5. Other examples</h2>
-<p>Two other examples that show some other behavior of those
-methods.</p>
+<h2>4. Other examples</h2>
+<p>Here are two examples that IW-selected RSS misses a true causal
+variant that IW captures in its bigger CS.</p>
 </div>
 <div id="section" class="section level2">
-<h2>5.1.</h2>
+<h2>4.1.</h2>
 <pre class="r"><code>L_true &lt;- 3L
 h2 &lt;- 0.01
 association_seed &lt;- 1L
@@ -1142,10 +1196,32 @@ v &lt;- drop(R %*% beta) + noise
 
 plot(1:J, v, pch = 16)
 points(causal, v[causal], pch = 16, col = &quot;red&quot;) # true</code></pre>
-<p><img src="figure/05-susie-iw.Rmd/unnamed-chunk-7-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>fit_iw &lt;- susie_iw(v = v, R0 = R0, N = N, L = 10, tol = 1e-5)
+<p><img src="figure/05-susie-iw.Rmd/unnamed-chunk-5-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>fit_iw &lt;- susie_iw(v = v, R0 = R0, N = N, L = 10, tol = 1e-5, track_fit=TRUE)
 
-fit_rss &lt;- rss_ss(
+multi &lt;- fit_iw$diagnostics$multistart
+history &lt;- multi$history
+traces &lt;- multi$traces
+colors &lt;- c(&quot;grey45&quot;, &quot;#E69F00&quot;, &quot;#009E73&quot;, &quot;#0072B2&quot;)
+par(mfrow=c(1, 2), mar=c(4.2, 4.5, 2.5, 1))
+for (parameter in c(&quot;elbo&quot;, &quot;eta0&quot;)) {
+  values &lt;- unlist(lapply(traces, `[[`, parameter))
+  plot(NA, xlim=c(1, max(history$iterations)), ylim=range(values),
+       xlab=&quot;Iteration&quot;, ylab=if (parameter == &quot;eta0&quot;) expression(eta[0]) else &quot;IW ELBO&quot;,
+       main=if (parameter == &quot;eta0&quot;) &quot;Eta0 after each update&quot; else &quot;ELBO trajectory&quot;)
+  for (i in seq_along(traces)) {
+    d &lt;- traces[[i]]
+    lines(d$iteration, d[[parameter]], col=colors[i], lty=i, lwd=2)
+    points(tail(d$iteration, 1), tail(d[[parameter]], 1), col=colors[i], pch=19)
+  }
+  if (parameter == &quot;eta0&quot;) {
+    legend(&quot;topright&quot;, paste(&quot;Start&quot;, history$initial_eta0),
+           col=colors, lty=seq_along(traces), lwd=2, bty=&quot;n&quot;, cex=0.8)
+  }
+}</code></pre>
+<p><img src="figure/05-susie-iw.Rmd/unnamed-chunk-6-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>par(mfrow=c(1, 1))</code></pre>
+<pre class="r"><code>fit_rss &lt;- rss_ss(
   XtX=N * R0, Xty=N * v, yty=N, n=N, L=10,
   residual_variance=1, estimate_residual_variance=FALSE,
   standardize=FALSE, max_iter=100, tol=1e-4,
@@ -1178,13 +1254,50 @@ plot_pip(insample_RSS, causal=causal, R=R0,
          main=if (insample_RSS$converged) &quot;In-sample RSS&quot; else
            &quot;In-sample RSS (not converged)&quot;)</code></pre>
 <p><img src="figure/05-susie-iw.Rmd/reported-pips-2-1.png" alt="" width="1056" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-reported-pips-2-1">
+Past versions of reported-pips-2-1.png
+</button>
+</p>
+<div id="fig-reported-pips-2-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/2c1e858b248f301dd173d3ec196a37935421dcb5/docs/figure/05-susie-iw.Rmd/reported-pips-2-1.png" target="_blank">2c1e858</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-11-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>par(mfrow=c(1, 1))</code></pre>
 </div>
 <div id="section-1" class="section level2">
-<h2>5.2.</h2>
+<h2>4.2.</h2>
 <pre class="r"><code>L_true &lt;- 3L
 h2 &lt;- 0.01
-association_seed &lt;- 2L
+association_seed &lt;- 5L
 stopifnot(L_true &gt;= 1, L_true &lt;= J, L_true == as.integer(L_true),
           h2 &gt; 0, h2 &lt; 1, identical(dim(R), dim(R0)))
 
@@ -1204,10 +1317,69 @@ v &lt;- drop(R %*% beta) + noise
 
 plot(1:J, v, pch = 16)
 points(causal, v[causal], pch = 16, col = &quot;red&quot;) # true</code></pre>
-<p><img src="figure/05-susie-iw.Rmd/unnamed-chunk-9-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>fit_iw &lt;- susie_iw(v = v, R0 = R0, N = N, L = 10, tol = 1e-5)
+<p><img src="figure/05-susie-iw.Rmd/unnamed-chunk-8-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>fit_iw &lt;- susie_iw(v = v, R0 = R0, N = N, L = 10, tol = 1e-5, track_fit=TRUE)
 
-fit_rss &lt;- rss_ss(
+multi &lt;- fit_iw$diagnostics$multistart
+history &lt;- multi$history
+traces &lt;- multi$traces
+colors &lt;- c(&quot;grey45&quot;, &quot;#E69F00&quot;, &quot;#009E73&quot;, &quot;#0072B2&quot;)
+par(mfrow=c(1, 2), mar=c(4.2, 4.5, 2.5, 1))
+for (parameter in c(&quot;elbo&quot;, &quot;eta0&quot;)) {
+  values &lt;- unlist(lapply(traces, `[[`, parameter))
+  plot(NA, xlim=c(1, max(history$iterations)), ylim=range(values),
+       xlab=&quot;Iteration&quot;, ylab=if (parameter == &quot;eta0&quot;) expression(eta[0]) else &quot;IW ELBO&quot;,
+       main=if (parameter == &quot;eta0&quot;) &quot;Eta0 after each update&quot; else &quot;ELBO trajectory&quot;)
+  for (i in seq_along(traces)) {
+    d &lt;- traces[[i]]
+    lines(d$iteration, d[[parameter]], col=colors[i], lty=i, lwd=2)
+    points(tail(d$iteration, 1), tail(d[[parameter]], 1), col=colors[i], pch=19)
+  }
+  if (parameter == &quot;eta0&quot;) {
+    legend(&quot;topright&quot;, paste(&quot;Start&quot;, history$initial_eta0),
+           col=colors, lty=seq_along(traces), lwd=2, bty=&quot;n&quot;, cex=0.8)
+  }
+}</code></pre>
+<p><img src="figure/05-susie-iw.Rmd/unnamed-chunk-9-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-1">
+Past versions of unnamed-chunk-9-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/2c1e858b248f301dd173d3ec196a37935421dcb5/docs/figure/05-susie-iw.Rmd/unnamed-chunk-9-1.png" target="_blank">2c1e858</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-11-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>par(mfrow=c(1, 1))</code></pre>
+<pre class="r"><code>fit_rss &lt;- rss_ss(
   XtX=N * R0, Xty=N * v, yty=N, n=N, L=10,
   residual_variance=1, estimate_residual_variance=FALSE,
   standardize=FALSE, max_iter=100, tol=1e-4,
@@ -1238,7 +1410,83 @@ plot_pip(insample_RSS, causal=causal, R=R0,
          main=if (insample_RSS$converged) &quot;In-sample RSS&quot; else
            &quot;In-sample RSS (not converged)&quot;)</code></pre>
 <p><img src="figure/05-susie-iw.Rmd/reported-pips-3-1.png" alt="" width="1056" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-reported-pips-3-1">
+Past versions of reported-pips-3-1.png
+</button>
+</p>
+<div id="fig-reported-pips-3-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/2c1e858b248f301dd173d3ec196a37935421dcb5/docs/figure/05-susie-iw.Rmd/reported-pips-3-1.png" target="_blank">2c1e858</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-11-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>par(mfrow=c(1, 1))</code></pre>
+</div>
+<div id="runtime-and-a-single-start" class="section level2">
+<h2>5. Runtime and a single start</h2>
+<pre class="r"><code>knitr::kable(data.frame(
+  Step=c(&quot;Shared eigendecomposition&quot;, &quot;Four IW fits&quot;, &quot;Complete function call&quot;),
+  Seconds=c(fit$diagnostics$multistart$spectrum_elapsed_seconds,
+            sum(fit$diagnostics$multistart$history$elapsed_seconds),
+            unname(elapsed))
+), digits=3, row.names=FALSE)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Step</th>
+<th align="right">Seconds</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Shared eigendecomposition</td>
+<td align="right">3.495</td>
+</tr>
+<tr class="even">
+<td align="left">Four IW fits</td>
+<td align="right">6.019</td>
+</tr>
+<tr class="odd">
+<td align="left">Complete function call</td>
+<td align="right">10.221</td>
+</tr>
+</tbody>
+</table>
+<p>The complete call also includes validation, selection, credible-set
+reporting, and any fallback. Sharing the decomposition changes
+computation time, not the fitted results for the same starts. On five
+local examples it reduced median runtime by 17–72%; see the <a
+href="https://github.com/stephenslab/susieRobust/blob/e63485e6e9a7dc280cdfa49e03d72e723d4a2358/validation/iw-spectrum-cache/README.md">benchmark
+report</a>.</p>
+<p>Supply one number to run one initialization:</p>
+<pre class="r"><code>fit_single &lt;- susie_iw(v=v, R0=R0, N=N, L=10, eta0_init=1000)</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
