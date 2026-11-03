@@ -441,15 +441,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtree3997d3f9504b5a89208c46bf63843a905c4a250ftargetblank3997d3fa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtree3e0c7ec390012a1c6e46b5e0ecfa4adbb26e391dtargetblank3e0c7eca">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/3997d3f9504b5a89208c46bf63843a905c4a250f" target="_blank">3997d3f</a>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/3e0c7ec390012a1c6e46b5e0ecfa4adbb26e391d" target="_blank">3e0c7ec</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtree3997d3f9504b5a89208c46bf63843a905c4a250ftargetblank3997d3fa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomdodatstatssusieRobustworkflowrtree3e0c7ec390012a1c6e46b5e0ecfa4adbb26e391dtargetblank3e0c7eca"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -459,7 +459,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/3997d3f9504b5a89208c46bf63843a905c4a250f" target="_blank">3997d3f</a>.
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/tree/3e0c7ec390012a1c6e46b5e0ecfa4adbb26e391d" target="_blank">3e0c7ec</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -528,6 +528,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/3e0c7ec390012a1c6e46b5e0ecfa4adbb26e391d/analysis/05-susie-iw.Rmd" target="_blank">3e0c7ec</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-11-03
+</td>
+<td>
+Publish expanded IW tutorial with additional simulation examples
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/dodat-stats/susieRobust-workflowr/dff0de3d5381ac0c8399e2a01d271f7d83398110/docs/05-susie-iw.html" target="_blank">dff0de3</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-11-03
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -676,20 +710,17 @@ example &lt;- readRDS(&quot;data/iw-eta-profile/example.rds&quot;)
 R &lt;- example$R; R0 &lt;- example$R0; v &lt;- example$v; N &lt;- example$N
 causal &lt;- example$causal
 J &lt;- ncol(R)</code></pre>
-<div id="simulate-new-associations" class="section level3">
-<h3>Simulate new associations</h3>
-<p>Change <code>L_true</code>, <code>h2</code>, and
-<code>association_seed</code>, then rerun this chunk and the fits below.
-Here <code>h2 = 0.003</code> means 0.3% and <code>h2 = 0.01</code> means
-1%. The LD matrices stay fixed; causal SNPs are sampled uniformly
-without a correlation restriction. Normal effects are jointly rescaled
-so that <span class="math inline">\(\beta^T R\beta=h^2/(1-h^2)\)</span>,
-with residual variance one. Then <span class="math inline">\(v\sim
+<div id="simulate-associations" class="section level3">
+<h3>Simulate associations</h3>
+<p>Causal SNPs are sampled uniformly without a correlation restriction.
+Normal effects are jointly rescaled so that <span
+class="math inline">\(\beta^T R\beta=h^2/(1-h^2)\)</span>, with residual
+variance one. Then <span class="math inline">\(v\sim
 N(R\beta,R/N)\)</span>; <span class="math inline">\(R_0\)</span> is used
 for fitting.</p>
 <pre class="r"><code>L_true &lt;- 3L
 h2 &lt;- 0.01
-association_seed &lt;- 1L
+association_seed &lt;- 3L
 stopifnot(L_true &gt;= 1, L_true &lt;= J, L_true == as.integer(L_true),
           h2 &gt; 0, h2 &lt; 1, identical(dim(R), dim(R0)))
 
@@ -707,32 +738,11 @@ noise &lt;- drop(eig_R$vectors %*%
                 (sqrt(pmax(eig_R$values, 0) / N) * rnorm(J)))
 v &lt;- drop(R %*% beta) + noise
 
-knitr::kable(data.frame(SNP=causal, Effect=beta[causal]),
-             digits=4, row.names=FALSE)</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="right">SNP</th>
-<th align="right">Effect</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="right">129</td>
-<td align="right">-0.0443</td>
-</tr>
-<tr class="even">
-<td align="right">679</td>
-<td align="right">0.0846</td>
-</tr>
-<tr class="odd">
-<td align="right">1017</td>
-<td align="right">0.0175</td>
-</tr>
-</tbody>
-</table>
+plot(1:J, v, pch = 16)
+points(causal, v[causal], pch = 16, col = &quot;red&quot;) # true</code></pre>
+<p><img src="figure/05-susie-iw.Rmd/simulate-associations-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 <p>This page now uses <strong>3 causal SNPs</strong>, <strong>1%
-heritability</strong>, and association seed <strong>1</strong>. The
+heritability</strong>, and association seed <strong>3</strong>. The
 saved data file is unchanged.</p>
 </div>
 </div>
@@ -752,24 +762,20 @@ sets.</p>
                   verbose=TRUE, track_fit=TRUE)
 })[&quot;elapsed&quot;]</code></pre>
 <pre><code>IW initialization 1/4: eta0_init=100</code></pre>
-<pre><code>iteration=1 elbo=9347.264201 eta0=19.486 lambda=0.0028925 E(1/omega)=0.0089583 top=(679,312,312,312,1126,1126,1126,1126,1126,1126)</code></pre>
-<pre><code>iteration=10 elbo=9358.151759 eta0=42.092 lambda=0.0030293 E(1/omega)=0.0042911 top=(679,312,312,312,312,312,312,312,312,312)</code></pre>
-<pre><code>iteration=20 elbo=9377.774364 eta0=90.833 lambda=0.0033391 E(1/omega)=0.0019008 top=(679,146,146,146,146,146,146,146,146,146)</code></pre>
-<pre><code>iteration=30 elbo=9396.172310 eta0=141.57 lambda=0.0036827 E(1/omega)=0.0010844 top=(679,146,146,146,146,146,146,146,146,146)</code></pre>
-<pre><code>iteration=40 elbo=9405.778196 eta0=170.18 lambda=0.003886 E(1/omega)=0.00078876 top=(679,146,146,146,146,146,146,146,146,146)</code></pre>
-<pre><code>iteration=50 elbo=9409.247019 eta0=180.99 lambda=0.0039645 E(1/omega)=0.00066876 top=(679,146,146,146,146,146,146,146,146,146)</code></pre>
+<pre><code>iteration=1 elbo=9490.520771 eta0=28.147 lambda=0.0047884 E(1/omega)=0.0087245 top=(1719,812,813,735,1073,1073,1073,1073,1073,1073)</code></pre>
+<pre><code>iteration=10 elbo=9513.684517 eta0=85.967 lambda=0.005188 E(1/omega)=0.0028672 top=(1719,651,651,651,651,651,651,651,651,651)</code></pre>
+<pre><code>iteration=20 elbo=9538.967988 eta0=157.96 lambda=0.0057017 E(1/omega)=0.0013009 top=(1719,651,651,651,651,651,651,651,651,651)</code></pre>
+<pre><code>iteration=30 elbo=9566.656425 eta0=263.59 lambda=0.0064836 E(1/omega)=0.00077205 top=(1719,651,1703,1703,1703,1703,1703,1703,1703,1703)</code></pre>
+<pre><code>iteration=40 elbo=9594.915584 eta0=377.71 lambda=0.0073609 E(1/omega)=0.00049897 top=(1719,651,778,778,778,778,778,778,778,778)</code></pre>
 <pre><code>IW initialization 2/4: eta0_init=1000</code></pre>
-<pre><code>iteration=1 elbo=9385.160297 eta0=149.57 lambda=0.0037387 E(1/omega)=0.0011854 top=(679,146,1055,768,768,768,768,768,768,768)</code></pre>
-<pre><code>iteration=10 elbo=9414.703639 eta0=216.74 lambda=0.004231 E(1/omega)=0.00070821 top=(679,146,1017,1017,1017,1017,1017,1017,1017,1017)</code></pre>
-<pre><code>iteration=20 elbo=9424.576535 eta0=252.98 lambda=0.0045115 E(1/omega)=0.00053169 top=(679,146,1017,1017,1017,1017,1017,1017,1017,1017)</code></pre>
-<pre><code>iteration=30 elbo=9426.811906 eta0=261.75 lambda=0.0045809 E(1/omega)=0.00047206 top=(679,146,1017,1017,1017,1017,1017,1017,1017,1017)</code></pre>
+<pre><code>iteration=1 elbo=9539.022641 eta0=221.44 lambda=0.0061656 E(1/omega)=0.0011789 top=(1719,651,1703,778,1750,1750,1750,1750,1750,1750)</code></pre>
+<pre><code>iteration=10 elbo=9590.654633 eta0=356.89 lambda=0.0071987 E(1/omega)=0.00058086 top=(1719,651,778,778,778,778,778,778,778,778)</code></pre>
+<pre><code>iteration=20 elbo=9602.489317 eta0=434.48 lambda=0.0078085 E(1/omega)=0.00044197 top=(1719,651,778,1750,1750,1750,1750,1750,1750,1750)</code></pre>
 <pre><code>IW initialization 3/4: eta0_init=5000</code></pre>
-<pre><code>iteration=1 elbo=9403.671740 eta0=298.83 lambda=0.0048807 E(1/omega)=0.00050613 top=(679,146,1017,1051,570,768,834,834,834,834)</code></pre>
-<pre><code>iteration=10 elbo=9426.646499 eta0=267.27 lambda=0.004625 E(1/omega)=0.00047872 top=(679,146,1017,1017,1017,1017,1017,1017,1017,1017)</code></pre>
-<pre><code>iteration=20 elbo=9428.318000 eta0=282.71 lambda=0.0047491 E(1/omega)=0.00043406 top=(679,146,1017,1051,1051,1051,1051,1051,1051,1051)</code></pre>
+<pre><code>iteration=1 elbo=9578.835685 eta0=436.49 lambda=0.0078161 E(1/omega)=0.00053479 top=(1719,651,778,1750,1326,1738,1738,1738,1738,1738)</code></pre>
+<pre><code>iteration=10 elbo=9602.477829 eta0=434.92 lambda=0.007812 E(1/omega)=0.00043947 top=(1719,651,778,1750,1750,1750,1750,1750,1750,1750)</code></pre>
 <pre><code>IW initialization 4/4: eta0_init=10000</code></pre>
-<pre><code>iteration=1 elbo=9399.246315 eta0=335.26 lambda=0.0051871 E(1/omega)=0.00041913 top=(679,146,1017,834,570,623,1175,1175,902,902)</code></pre>
-<pre><code>iteration=10 elbo=9426.578215 eta0=309.25 lambda=0.0049713 E(1/omega)=0.0003927 top=(679,146,1017,834,1051,1051,1051,1051,1051,1051)</code></pre>
+<pre><code>iteration=1 elbo=9578.189211 eta0=477.48 lambda=0.008142 E(1/omega)=0.00046328 top=(1719,651,778,1750,1326,1738,10,10,10,10)</code></pre>
 <p><code>verbose = TRUE</code> prints a heading for each start, then
 iteration 1 and every 10th iteration. Each line contains the IW ELBO,
 <span class="math inline">\(\eta_0\)</span>, <span
@@ -803,33 +809,33 @@ knitr::kable(data.frame(
 <tbody>
 <tr class="odd">
 <td align="right">100</td>
-<td align="right">184.430</td>
-<td align="right">9410.264</td>
-<td align="right">58</td>
+<td align="right">436.269</td>
+<td align="right">9602.726</td>
+<td align="right">48</td>
 <td align="left">TRUE</td>
-<td align="left">FALSE</td>
+<td align="left">TRUE</td>
 </tr>
 <tr class="even">
 <td align="right">1000</td>
-<td align="right">262.108</td>
-<td align="right">9426.899</td>
-<td align="right">31</td>
+<td align="right">435.734</td>
+<td align="right">9602.692</td>
+<td align="right">22</td>
 <td align="left">TRUE</td>
 <td align="left">FALSE</td>
 </tr>
 <tr class="odd">
 <td align="right">5000</td>
-<td align="right">286.395</td>
-<td align="right">9428.609</td>
-<td align="right">23</td>
+<td align="right">435.871</td>
+<td align="right">9602.662</td>
+<td align="right">12</td>
 <td align="left">TRUE</td>
-<td align="left">TRUE</td>
+<td align="left">FALSE</td>
 </tr>
 <tr class="even">
 <td align="right">10000</td>
-<td align="right">309.253</td>
-<td align="right">9426.578</td>
-<td align="right">10</td>
+<td align="right">436.155</td>
+<td align="right">9602.605</td>
+<td align="right">9</td>
 <td align="left">TRUE</td>
 <td align="left">FALSE</td>
 </tr>
@@ -843,7 +849,7 @@ Convergence does not establish a global optimum.</p>
 <pre class="r"><code>traces &lt;- multi$traces
 colors &lt;- c(&quot;grey45&quot;, &quot;#E69F00&quot;, &quot;#009E73&quot;, &quot;#0072B2&quot;)
 par(mfrow=c(1, 2), mar=c(4.2, 4.5, 2.5, 1))
-for (parameter in c(&quot;eta0&quot;, &quot;elbo&quot;)) {
+for (parameter in c(&quot;elbo&quot;, &quot;eta0&quot;)) {
   values &lt;- unlist(lapply(traces, `[[`, parameter))
   plot(NA, xlim=c(1, max(history$iterations)), ylim=range(values),
        xlab=&quot;Iteration&quot;, ylab=if (parameter == &quot;eta0&quot;) expression(eta[0]) else &quot;IW ELBO&quot;,
@@ -909,9 +915,9 @@ dodat-stats
 </div>
 <pre class="r"><code>par(mfrow=c(1, 1))</code></pre>
 <p>Curves begin after the first update; points mark stopping iterations.
-Here the selected start is <strong>5,000</strong>, with learned <span
-class="math inline">\(\eta_0 =\)</span> 286.395 and <span
-class="math inline">\(\lambda =\)</span> 0.004779.</p>
+Here the selected start is <strong>100</strong>, with learned <span
+class="math inline">\(\eta_0 =\)</span> 436.269 and <span
+class="math inline">\(\lambda =\)</span> 0.007823.</p>
 </div>
 <div id="compare-iw-and-reference-ld-rss" class="section level2">
 <h2>3. Compare IW and reference-LD RSS</h2>
@@ -919,9 +925,9 @@ class="math inline">\(\lambda =\)</span> 0.004779.</p>
 and credible-set summary:</p>
 <pre class="r"><code>fit</code></pre>
 <pre><code>SuSiE-IW (collapsed-R) fit
-  lambda: 0.004779163 
-  eta0: 286.3946 
-  reported CS: 2  SER fallback: FALSE 
+  lambda: 0.0078227 
+  eta0: 436.2692 
+  reported CS: 3  SER fallback: FALSE 
   purity matrix: R0 
   parameter status: lambda interior ; eta0 interior 
   converged: TRUE </code></pre>
@@ -950,11 +956,9 @@ fit_rss &lt;- rss_ss(
   XtX=N * R0, Xty=N * v, yty=N, n=N, L=10,
   residual_variance=1, estimate_residual_variance=FALSE,
   standardize=FALSE, max_iter=100, tol=1e-4,
-  coverage=0.95, min_abs_corr=0.5, n_purity=J)</code></pre>
-<pre><code>Warning in rss_ss(XtX = N * R0, Xty = N * v, yty = N, n = N, L = 10, residual_variance = 1, : IBSS algorithm did not converge in 100 iterations!
-                  Please check consistency between summary statistics and LD matrix.
-                  See https://stephenslab.github.io/susieR/articles/susierss_diagnostic.html</code></pre>
-<pre class="r"><code>knitr::kable(data.frame(
+  coverage=0.95, min_abs_corr=0.5, n_purity=J)
+
+knitr::kable(data.frame(
   Method=c(&quot;SuSiE-IW&quot;, &quot;SuSiE-RSS&quot;),
   Converged=c(fit$converged, fit_rss$converged),
   CSs=c(fit$reported_L, length(fit_rss$sets$cs))
@@ -971,20 +975,39 @@ fit_rss &lt;- rss_ss(
 <tr class="odd">
 <td align="left">SuSiE-IW</td>
 <td align="left">TRUE</td>
-<td align="right">2</td>
+<td align="right">3</td>
 </tr>
 <tr class="even">
 <td align="left">SuSiE-RSS</td>
-<td align="left">FALSE</td>
-<td align="right">10</td>
+<td align="left">TRUE</td>
+<td align="right">9</td>
 </tr>
 </tbody>
 </table>
-<pre class="r"><code>par(mfrow=c(1, 2))
+<pre class="r"><code>IW_select_L = fit$reported_L
+
+iw_RSS &lt;- rss_ss(
+  XtX=N * R0, Xty=N * v, yty=N, n=N, L=IW_select_L,
+  residual_variance=1, estimate_residual_variance=FALSE,
+  standardize=FALSE, max_iter=100, tol=1e-4,
+  coverage=0.95, min_abs_corr=0.5, n_purity=J)
+
+insample_RSS &lt;- rss_ss(
+  XtX=N * R, Xty=N * v, yty=N, n=N, L=10,
+  residual_variance=1, estimate_residual_variance=FALSE,
+  standardize=FALSE, max_iter=100, tol=1e-4,
+  coverage=0.95, min_abs_corr=0.5, n_purity=J)</code></pre>
+<pre class="r"><code>par(mfrow=c(2, 2))
 plot_pip(fit, causal=causal, R=R0, main=&quot;SuSiE-IW: reported PIPs&quot;)
 plot_pip(fit_rss, causal=causal, R=R0,
          main=if (fit_rss$converged) &quot;SuSiE-RSS: reference LD&quot; else
-           &quot;SuSiE-RSS: reference LD (not converged)&quot;)</code></pre>
+           &quot;SuSiE-RSS: reference LD (not converged)&quot;)
+plot_pip(iw_RSS, causal=causal, R=R0,
+         main=if (iw_RSS$converged) &quot;IW-select RSS&quot; else
+           &quot;IW-select RSS&quot;)
+plot_pip(insample_RSS, causal=causal, R=R0,
+         main=if (insample_RSS$converged) &quot;In-sample RSS&quot; else
+           &quot;In-sample RSS (not converged)&quot;)</code></pre>
 <p><img src="figure/05-susie-iw.Rmd/reported-pips-1.png" alt="" width="1056" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-reported-pips-1">
@@ -1008,6 +1031,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/dff0de3d5381ac0c8399e2a01d271f7d83398110/docs/figure/05-susie-iw.Rmd/reported-pips-1.png" target="_blank">dff0de3</a>
+</td>
+<td>
+dodat-stats
+</td>
+<td>
+2026-11-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/dodat-stats/susieRobust-workflowr/blob/b0dc9a11914074fae6b4bf231e9f8c835e610fa3/docs/figure/05-susie-iw.Rmd/reported-pips-1.png" target="_blank">b0dc9a1</a>
@@ -1037,10 +1071,9 @@ dodat-stats
 <pre class="r"><code>par(mfrow=c(1, 1))</code></pre>
 <p>Circles mark reported credible sets using the 23-color palette from
 <code>susieR::susie_plot()</code>; red points mark the true causal SNPs.
-IW reports <strong>2 credible sets</strong> and RSS reports
-<strong>10</strong>. IW SER fallback is <strong>not used</strong>. RSS
-reached the iteration limit; its PIP panel shows the final iterate, not
-a converged solution.</p>
+IW reports <strong>3 credible sets</strong> and RSS reports
+<strong>9</strong>. IW SER fallback is <strong>not used</strong>. RSS
+converged.</p>
 </div>
 <div id="runtime-and-a-single-start" class="section level2">
 <h2>4. Runtime and a single start</h2>
@@ -1059,15 +1092,15 @@ a converged solution.</p>
 <tbody>
 <tr class="odd">
 <td align="left">Shared eigendecomposition</td>
-<td align="right">3.546</td>
+<td align="right">3.808</td>
 </tr>
 <tr class="even">
 <td align="left">Four IW fits</td>
-<td align="right">7.217</td>
+<td align="right">6.381</td>
 </tr>
 <tr class="odd">
 <td align="left">Complete function call</td>
-<td align="right">11.313</td>
+<td align="right">10.919</td>
 </tr>
 </tbody>
 </table>
@@ -1079,6 +1112,133 @@ href="https://github.com/stephenslab/susieRobust/blob/e63485e6e9a7dc280cdfa49e03
 report</a>.</p>
 <p>Supply one number to run one initialization:</p>
 <pre class="r"><code>fit_single &lt;- susie_iw(v=v, R0=R0, N=N, L=10, eta0_init=1000)</code></pre>
+</div>
+<div id="other-examples" class="section level2">
+<h2>5. Other examples</h2>
+<p>Two other examples that show some other behavior of those
+methods.</p>
+</div>
+<div id="section" class="section level2">
+<h2>5.1.</h2>
+<pre class="r"><code>L_true &lt;- 3L
+h2 &lt;- 0.01
+association_seed &lt;- 1L
+stopifnot(L_true &gt;= 1, L_true &lt;= J, L_true == as.integer(L_true),
+          h2 &gt; 0, h2 &lt; 1, identical(dim(R), dim(R0)))
+
+set.seed(association_seed)
+causal &lt;- sort(sample.int(J, L_true))
+beta &lt;- numeric(J)
+beta[causal] &lt;- rnorm(L_true)
+genetic_variance &lt;- drop(crossprod(beta, R %*% beta))
+stopifnot(genetic_variance &gt; 0)
+beta &lt;- beta * sqrt(h2 / ((1 - h2) * genetic_variance))
+
+eig_R &lt;- eigen(R, symmetric=TRUE)
+stopifnot(min(eig_R$values) &gt; -1e-8)
+noise &lt;- drop(eig_R$vectors %*%
+                (sqrt(pmax(eig_R$values, 0) / N) * rnorm(J)))
+v &lt;- drop(R %*% beta) + noise
+
+plot(1:J, v, pch = 16)
+points(causal, v[causal], pch = 16, col = &quot;red&quot;) # true</code></pre>
+<p><img src="figure/05-susie-iw.Rmd/unnamed-chunk-7-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>fit_iw &lt;- susie_iw(v = v, R0 = R0, N = N, L = 10, tol = 1e-5)
+
+fit_rss &lt;- rss_ss(
+  XtX=N * R0, Xty=N * v, yty=N, n=N, L=10,
+  residual_variance=1, estimate_residual_variance=FALSE,
+  standardize=FALSE, max_iter=100, tol=1e-4,
+  coverage=0.95, min_abs_corr=0.5, n_purity=J)</code></pre>
+<pre><code>Warning in rss_ss(XtX = N * R0, Xty = N * v, yty = N, n = N, L = 10, residual_variance = 1, : IBSS algorithm did not converge in 100 iterations!
+                  Please check consistency between summary statistics and LD matrix.
+                  See https://stephenslab.github.io/susieR/articles/susierss_diagnostic.html</code></pre>
+<pre class="r"><code>IW_select_L = fit_iw$reported_L
+
+iw_RSS &lt;- rss_ss(
+  XtX=N * R0, Xty=N * v, yty=N, n=N, L=IW_select_L,
+  residual_variance=1, estimate_residual_variance=FALSE,
+  standardize=FALSE, max_iter=100, tol=1e-4,
+  coverage=0.95, min_abs_corr=0.5, n_purity=J)
+
+insample_RSS &lt;- rss_ss(
+  XtX=N * R, Xty=N * v, yty=N, n=N, L=10,
+  residual_variance=1, estimate_residual_variance=FALSE,
+  standardize=FALSE, max_iter=100, tol=1e-4,
+  coverage=0.95, min_abs_corr=0.5, n_purity=J)</code></pre>
+<pre class="r"><code>par(mfrow=c(2, 2))
+plot_pip(fit_iw, causal=causal, R=R0, main=&quot;SuSiE-IW: reported PIPs&quot;)
+plot_pip(fit_rss, causal=causal, R=R0,
+         main=if (fit_rss$converged) &quot;SuSiE-RSS: reference LD&quot; else
+           &quot;SuSiE-RSS: reference LD (not converged)&quot;)
+plot_pip(iw_RSS, causal=causal, R=R0,
+         main=if (iw_RSS$converged) &quot;IW-select RSS&quot; else
+           &quot;IW-select RSS&quot;)
+plot_pip(insample_RSS, causal=causal, R=R0,
+         main=if (insample_RSS$converged) &quot;In-sample RSS&quot; else
+           &quot;In-sample RSS (not converged)&quot;)</code></pre>
+<p><img src="figure/05-susie-iw.Rmd/reported-pips-2-1.png" alt="" width="1056" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>par(mfrow=c(1, 1))</code></pre>
+</div>
+<div id="section-1" class="section level2">
+<h2>5.2.</h2>
+<pre class="r"><code>L_true &lt;- 3L
+h2 &lt;- 0.01
+association_seed &lt;- 2L
+stopifnot(L_true &gt;= 1, L_true &lt;= J, L_true == as.integer(L_true),
+          h2 &gt; 0, h2 &lt; 1, identical(dim(R), dim(R0)))
+
+set.seed(association_seed)
+causal &lt;- sort(sample.int(J, L_true))
+beta &lt;- numeric(J)
+beta[causal] &lt;- rnorm(L_true)
+genetic_variance &lt;- drop(crossprod(beta, R %*% beta))
+stopifnot(genetic_variance &gt; 0)
+beta &lt;- beta * sqrt(h2 / ((1 - h2) * genetic_variance))
+
+eig_R &lt;- eigen(R, symmetric=TRUE)
+stopifnot(min(eig_R$values) &gt; -1e-8)
+noise &lt;- drop(eig_R$vectors %*%
+                (sqrt(pmax(eig_R$values, 0) / N) * rnorm(J)))
+v &lt;- drop(R %*% beta) + noise
+
+plot(1:J, v, pch = 16)
+points(causal, v[causal], pch = 16, col = &quot;red&quot;) # true</code></pre>
+<p><img src="figure/05-susie-iw.Rmd/unnamed-chunk-9-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>fit_iw &lt;- susie_iw(v = v, R0 = R0, N = N, L = 10, tol = 1e-5)
+
+fit_rss &lt;- rss_ss(
+  XtX=N * R0, Xty=N * v, yty=N, n=N, L=10,
+  residual_variance=1, estimate_residual_variance=FALSE,
+  standardize=FALSE, max_iter=100, tol=1e-4,
+  coverage=0.95, min_abs_corr=0.5, n_purity=J)
+
+IW_select_L = fit_iw$reported_L
+
+iw_RSS &lt;- rss_ss(
+  XtX=N * R0, Xty=N * v, yty=N, n=N, L=IW_select_L,
+  residual_variance=1, estimate_residual_variance=FALSE,
+  standardize=FALSE, max_iter=100, tol=1e-4,
+  coverage=0.95, min_abs_corr=0.5, n_purity=J)
+
+insample_RSS &lt;- rss_ss(
+  XtX=N * R, Xty=N * v, yty=N, n=N, L=10,
+  residual_variance=1, estimate_residual_variance=FALSE,
+  standardize=FALSE, max_iter=100, tol=1e-4,
+  coverage=0.95, min_abs_corr=0.5, n_purity=J)</code></pre>
+<pre class="r"><code>par(mfrow=c(2, 2))
+plot_pip(fit_iw, causal=causal, R=R0, main=&quot;SuSiE-IW: reported PIPs&quot;)
+plot_pip(fit_rss, causal=causal, R=R0,
+         main=if (fit_rss$converged) &quot;SuSiE-RSS: reference LD&quot; else
+           &quot;SuSiE-RSS: reference LD (not converged)&quot;)
+plot_pip(iw_RSS, causal=causal, R=R0,
+         main=if (iw_RSS$converged) &quot;IW-select RSS&quot; else
+           &quot;IW-select RSS&quot;)
+plot_pip(insample_RSS, causal=causal, R=R0,
+         main=if (insample_RSS$converged) &quot;In-sample RSS&quot; else
+           &quot;In-sample RSS (not converged)&quot;)</code></pre>
+<p><img src="figure/05-susie-iw.Rmd/reported-pips-3-1.png" alt="" width="1056" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>par(mfrow=c(1, 1))</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
