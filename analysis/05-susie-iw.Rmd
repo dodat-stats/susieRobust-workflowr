@@ -1,0 +1,140 @@
+---
+title: "SuSiE-IW with multiple starts"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    toc: false
+editor_options:
+  chunk_output_type: inline
+---
+
+The updated `susie_iw()` fits four independent initializations, then selects
+the converged fit with the highest IW ELBO. The reference eigendecomposition
+is computed once and shared across starts.
+
+## 1. Load the example
+
+Use the same data as the [initialization example](04-IW-eta-profile.html):
+1,752 SNPs, $N=200{,}000$, $N_0=5{,}000$, $T=200$, three causal variants,
+and $h^2=1\%$.
+
+```{r}
+library(susieRobust)
+packageVersion("susieRobust")
+packageVersion("susieR")
+stopifnot(packageVersion("susieRobust") >= "0.0.0.9004")
+
+example <- readRDS("data/iw-eta-profile/example.rds")
+R0 <- example$R0; v <- example$v; N <- example$N
+causal <- example$causal
+```
+
+## 2. Fit with the new defaults
+
+The default starts are $\eta_0\in\{100,1000,5000,10000\}$, with at most
+200 iterations per start and relative ELBO tolerance $10^{-4}$.
+Both $\eta_0$ and $\lambda$ are estimated. `L = 10` is the number of fitted
+components, not the number of reported credible sets.
+
+```{r fit-iw}
+elapsed <- system.time({
+  fit <- susie_iw(v=v, R0=R0, N=N, L=10,
+                  verbose=TRUE, track_fit=TRUE)
+})["elapsed"]
+```
+
+`verbose = TRUE` prints a heading for each start, then iteration 1 and every
+10th iteration. Each line contains the IW ELBO, $\eta_0$, $\lambda$,
+$E(1/\omega)$, and `top`: the highest-posterior-probability SNP index in each
+single-effect component. These indices can repeat; they are not credible sets.
+The last iteration need not be printed.
+
+`verbose` only controls messages. `track_fit = TRUE` retains every iteration
+in `fit$diagnostics$multistart$traces`. The candidate summary is always saved:
+
+```{r}
+multi <- fit$diagnostics$multistart
+history <- multi$history
+knitr::kable(data.frame(
+  Start=history$initial_eta0, eta0=history$final_eta0,
+  ELBO=history$elbo, Iterations=history$iterations,
+  Converged=history$converged, Selected=history$selected
+), digits=3, row.names=FALSE)
+```
+
+Selection requires both the relative ELBO stopping criterion and final
+parameter stationarity. If no start converges, the highest finite-ELBO fit
+is returned with a warning and `converged = FALSE`. Exact ties use the first
+start. Convergence does not establish a global optimum.
+
+```{r trajectories, fig.width=10, fig.height=4.5}
+traces <- multi$traces
+colors <- c("grey45", "#E69F00", "#009E73", "#0072B2")
+par(mfrow=c(1, 2), mar=c(4.2, 4.5, 2.5, 1))
+for (parameter in c("eta0", "elbo")) {
+  values <- unlist(lapply(traces, `[[`, parameter))
+  plot(NA, xlim=c(1, max(history$iterations)), ylim=range(values),
+       xlab="Iteration", ylab=if (parameter == "eta0") expression(eta[0]) else "IW ELBO",
+       main=if (parameter == "eta0") "Eta0 after each update" else "ELBO trajectory")
+  for (i in seq_along(traces)) {
+    d <- traces[[i]]
+    lines(d$iteration, d[[parameter]], col=colors[i], lty=i, lwd=2)
+    points(tail(d$iteration, 1), tail(d[[parameter]], 1), col=colors[i], pch=19)
+  }
+  if (parameter == "eta0") {
+    legend("topright", paste("Start", history$initial_eta0),
+           col=colors, lty=seq_along(traces), lwd=2, bty="n", cex=0.8)
+  }
+}
+par(mfrow=c(1, 1))
+```
+
+Curves begin after the first update; points mark stopping iterations.
+Here the selected start is **`r multi$selected_initial_eta0`**, with learned
+$\eta_0 =$ `r round(fit$eta0, 3)` and
+$\lambda =$ `r signif(fit$selected_lambda, 4)`.
+
+## 3. Inspect the reported result
+
+Printing the returned object gives the final parameter, convergence, and
+credible-set summary:
+
+```{r}
+fit
+```
+
+After selecting the IW fit, 95% credible sets are filtered using reference LD
+(minimum pairwise $|r|\geq0.5$) and deduplicated. If at most one set remains,
+the default SER fallback replaces the reported posterior with a single-effect
+RSS fit. The original IW posterior remains in `raw_fit` and `raw_pip`.
+Fallback sets are also purity-filtered, so zero reported sets is possible.
+
+```{r reported-pips, fig.width=10, fig.height=4}
+plot_pip(fit, causal=causal, R=R0, main="Selected SuSiE-IW: reported PIPs")
+```
+
+Circles mark reported credible sets; red points mark the true causal SNPs.
+This example reports **`r fit$reported_L` credible sets**;
+SER fallback is **`r if (fit$postprocess$fallback_used) "used" else "not used"`**.
+
+## 4. Runtime and a single start
+
+```{r}
+knitr::kable(data.frame(
+  Step=c("Shared eigendecomposition", "Four IW fits", "Complete function call"),
+  Seconds=c(multi$spectrum_elapsed_seconds,
+            sum(history$elapsed_seconds), unname(elapsed))
+), digits=3, row.names=FALSE)
+```
+
+The complete call also includes validation, selection, credible-set reporting,
+and any fallback. Sharing the decomposition changes computation time, not the
+fitted results for the same starts. On five local examples it reduced median
+runtime by 17--72%; see the
+[benchmark report](https://github.com/stephenslab/susieRobust/blob/e63485e6e9a7dc280cdfa49e03d72e723d4a2358/validation/iw-spectrum-cache/README.md).
+
+Supply one number to run one initialization:
+
+```{r, eval=FALSE}
+fit_single <- susie_iw(v=v, R0=R0, N=N, L=10, eta0_init=1000)
+```
